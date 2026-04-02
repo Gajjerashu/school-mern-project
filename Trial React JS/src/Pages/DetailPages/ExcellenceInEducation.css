@@ -1,0 +1,512 @@
+/* === Global Styles === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* === Animations === */
+@keyframes float {
+    0%, 100% { 
+        transform: translateY(0px); 
+    }
+    50% { 
+        transform: translateY(-20px); 
+    }
+}
+
+@keyframes slideIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(30px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+    }
+    to { 
+        opacity: 1; 
+    }
+}
+
+/* === Main Page Wrapper === */
+.excellence-page {
+    background: linear-gradient(to bottom, #ffffff 0%, #f0fdf4 100%);
+    min-height: 100vh;
+}
+
+/* === Header Section === */
+.excellence-header {
+    background: linear-gradient(135deg, #A3D9A3 0%, #2ECC71 100%);
+    padding: 3rem 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.excellence-header-circle-1 {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    top: -100px;
+    right: -50px;
+}
+
+.excellence-header-circle-2 {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    bottom: -50px;
+    left: -30px;
+}
+
+.excellence-header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.excellence-back-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    color: #000;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s;
+    margin-bottom: 2rem;
+}
+
+.excellence-back-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateX(-5px);
+}
+
+.excellence-header-content {
+    text-align: center;
+}
+
+.excellence-header-emoji {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+.excellence-header-title {
+    font-size: 4rem;
+    font-weight: 900;
+    color: #000;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.excellence-header-subtitle {
+    font-size: 1.25rem;
+    color: #000;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.8;
+    font-weight: 500;
+}
+
+/* === Main Content === */
+.excellence-main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 1rem;
+}
+
+/* === Stats Section === */
+.excellence-stats-section {
+    background: linear-gradient(135deg, #2ECC71 0%, #27ae60 100%);
+    border-radius: 30px;
+    padding: 3rem 2rem;
+    margin-bottom: 5rem;
+    box-shadow: 0 20px 60px rgba(46, 204, 113, 0.3);
+}
+
+.excellence-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    text-align: center;
+}
+
+.excellence-stat-item {
+    color: #fff;
+}
+
+.excellence-stat-icon {
+    margin-bottom: 1rem;
+    opacity: 0.9;
+}
+
+.excellence-stat-number {
+    font-size: 3rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+}
+
+.excellence-stat-label {
+    font-size: 0.9rem;
+    margin: 0;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* === Two Column Layout === */
+.excellence-two-column {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 5rem;
+    animation: slideIn 0.6s ease-out;
+}
+
+/* === Benefits Card === */
+.excellence-benefits-card {
+    background: #E8F5E9;
+    border-radius: 24px;
+    padding: 3rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border: 3px solid #A3D9A3;
+}
+
+.excellence-benefits-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #000;
+    margin-bottom: 2rem;
+}
+
+.excellence-benefits-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.excellence-benefit-item {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 12px;
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s;
+}
+
+.excellence-benefit-item:hover {
+    transform: translateX(5px);
+}
+
+.excellence-benefit-icon {
+    color: #2ECC71;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.excellence-benefit-text {
+    color: #000;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* === Programs Section === */
+
+.excellence-programs-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #000;
+    margin-bottom: 2rem;
+}
+
+.excellence-programs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.excellence-program-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    border: 2px solid #E8F5E9;
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.excellence-program-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(46, 204, 113, 0.2);
+    border-color: #2ECC71;
+}
+
+.excellence-program-decorative {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 80px;
+    height: 80px;
+    background: rgba(163, 217, 163, 0.1);
+    border-radius: 50%;
+}
+
+.excellence-program-icon-box {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #E8F5E9, #A3D9A3);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    color: #000;
+}
+
+.excellence-program-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 0.75rem;
+}
+
+.excellence-program-description {
+    font-size: 0.9rem;
+    color: #000;
+    line-height: 1.6;
+    margin: 0;
+    opacity: 0.8;
+}
+
+/* === Learning Environment Section === */
+.excellence-environment-section {
+    background: linear-gradient(135deg, #E8F5E9 0%, #A3D9A3 100%);
+    border-radius: 30px;
+    padding: 3rem;
+    margin-bottom: 5rem;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
+}
+
+.excellence-environment-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    text-align: center;
+    color: #000;
+    margin-bottom: 3rem;
+}
+
+.excellence-environment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.excellence-environment-item {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 16px;
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    border-left: 4px solid #2ECC71;
+    transition: all 0.3s;
+}
+
+.excellence-environment-item:hover {
+    transform: translateX(10px);
+    box-shadow: 0 8px 24px rgba(46, 204, 113, 0.15);
+}
+
+.excellence-environment-icon-box {
+    background: linear-gradient(135deg, #E8F5E9, #A3D9A3);
+    border-radius: 12px;
+    padding: 1.25rem;
+    color: #27ae60;
+    flex-shrink: 0;
+}
+
+.excellence-environment-content h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 0.5rem;
+}
+
+.excellence-environment-content p {
+    color: #000;
+    font-size: 1rem;
+    margin: 0;
+    opacity: 0.8;
+    line-height: 1.6;
+}
+
+/* === CTA Section === */
+.excellence-cta-section {
+    background: linear-gradient(135deg, #2ECC71 0%, #27ae60 100%);
+    border-radius: 30px;
+    padding: 4rem 2rem;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(46, 204, 113, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.excellence-cta-decorative {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    top: -200px;
+    right: -100px;
+}
+
+.excellence-cta-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #000;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.excellence-cta-description {
+    font-size: 1.25rem;
+    color: #000;
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.excellence-cta-button {
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 1.25rem 3rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s;
+    position: relative;
+    z-index: 1;
+}
+
+.excellence-cta-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* === Responsive Design === */
+@media (max-width: 768px) {
+    .excellence-header-title {
+        font-size: 2.5rem;
+    }
+
+    .excellence-header-emoji {
+        font-size: 3.5rem;
+    }
+
+    .excellence-header-subtitle {
+        font-size: 1rem;
+    }
+
+    .excellence-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .excellence-stat-number {
+        font-size: 2.5rem;
+    }
+
+    .excellence-two-column {
+        grid-template-columns: 1fr;
+    }
+
+    .excellence-benefits-card,
+    .excellence-programs-section {
+        padding: 2rem;
+    }
+
+    .excellence-programs-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .excellence-environment-item {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .excellence-cta-title {
+        font-size: 1.75rem;
+    }
+
+    .excellence-cta-description {
+        font-size: 1rem;
+    }
+
+    .excellence-cta-button {
+        padding: 1rem 2rem;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .excellence-header-title {
+        font-size: 2rem;
+    }
+
+    .excellence-header-emoji {
+        font-size: 3rem;
+    }
+
+    .excellence-main-content {
+        padding: 2rem 1rem;
+    }
+
+    .excellence-benefits-card {
+        padding: 2rem;
+    }
+
+    .excellence-program-card {
+        padding: 1.5rem;
+    }
+
+    .excellence-environment-section {
+        padding: 2rem;
+    }
+
+    .excellence-cta-section {
+        padding: 3rem 1.5rem;
+    }
+}

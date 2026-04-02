@@ -1,0 +1,223 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --green-primary: #16a34a;
+    --green-dark: #15803d;
+    --green-light: #22c55e;
+}
+
+/* ── Main Footer — Green Background ── */
+.footer1-main {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    font-family: 'Poppins', sans-serif;
+    padding: 60px 20px 0;
+}
+
+.footer1-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* ── Top Grid ── */
+.footer1-top {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+    padding-bottom: 40px;
+}
+
+.footer1-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ── Logo ── */
+.footer1-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 10px;
+}
+
+.footer1-logo-icon {
+    flex-shrink: 0;
+    filter: brightness(0) invert(1);
+}
+
+/* ── Description ── */
+.footer1-description {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* ── Social Icons ── */
+.footer1-social {
+    display: flex;
+    gap: 12px;
+    margin-top: 6px;
+}
+
+.footer1-social-link {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    color: #ffffff;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.footer1-social-link:hover {
+    background: #ffffff;
+    color: var(--green-primary);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* ── Section Headings ── */
+.footer1-heading {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+/* ── Links ── */
+.footer1-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.footer1-links li a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.footer1-links li a:hover {
+    color: #ffffff;
+    transform: translateX(5px);
+}
+
+/* ── Bottom Bar ── */
+.footer1-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    margin-top: 0;
+}
+
+.footer1-copyright {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 14px;
+}
+
+.footer1-legal {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer1-legal a {
+    color: rgba(255, 255, 255, 0.75);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.footer1-legal a:hover {
+    color: #ffffff;
+}
+
+.footer1-divider {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+/* ── Tablet ── */
+@media (max-width: 1024px) {
+    .footer1-top {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+    }
+}
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+    .footer1-main {
+        padding: 40px 20px 0;
+    }
+
+    .footer1-top {
+        grid-template-columns: 1fr;
+        gap: 28px;
+    }
+
+    .footer1-bottom {
+        flex-direction: column;
+        gap: 14px;
+        text-align: center;
+    }
+
+    .footer1-logo {
+        font-size: 1.35rem;
+    }
+
+    .footer1-legal {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+/* ── Small Mobile ── */
+@media (max-width: 480px) {
+    .footer1-logo {
+        font-size: 1.2rem;
+        gap: 10px;
+    }
+
+    .footer1-logo-icon {
+        width: 28px;
+        height: 28px;
+    }
+
+    .footer1-description {
+        font-size: 13px;
+    }
+
+    .footer1-social-link {
+        width: 36px;
+        height: 36px;
+    }
+
+    .footer1-heading {
+        font-size: 14px;
+    }
+
+    .footer1-links li a,
+    .footer1-copyright,
+    .footer1-legal a {
+        font-size: 13px;
+    }
+}

@@ -1,0 +1,591 @@
+/* === Global Styles === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* === Animations === */
+@keyframes float {
+    0%, 100% { 
+        transform: translateY(0px); 
+    }
+    50% { 
+        transform: translateY(-20px); 
+    }
+}
+
+@keyframes slideIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(30px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+    }
+    to { 
+        opacity: 1; 
+    }
+}
+
+/* === Main Page Wrapper === */
+.middle-school-page {
+    background: linear-gradient(to bottom, #ffffff 0%, #f0fdf4 100%);
+    min-height: 100vh;
+}
+
+/* === Header Section === */
+.middle-school-header {
+    background: linear-gradient(135deg, #A3D9A3 0%, #2ECC71 100%);
+    padding: 3rem 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.middle-school-header-circle-1 {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    top: -100px;
+    right: -50px;
+}
+
+.middle-school-header-circle-2 {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    bottom: -50px;
+    left: -30px;
+}
+
+.middle-school-header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.middle-school-back-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    color: #000;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s;
+    margin-bottom: 2rem;
+}
+
+.middle-school-back-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateX(-5px);
+}
+
+.middle-school-header-content {
+    text-align: center;
+}
+
+.middle-school-header-emoji {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+.middle-school-header-title {
+    font-size: 4rem;
+    font-weight: 900;
+    color: #000;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.middle-school-header-subtitle {
+    font-size: 1.25rem;
+    color: #000;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.8;
+    font-weight: 500;
+}
+
+/* === Main Content === */
+.middle-school-main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 1rem;
+}
+
+/* === Hero Introduction Section === */
+.middle-school-hero-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 5rem;
+    animation: slideIn 0.6s ease-out;
+}
+
+.middle-school-hero-card-1 {
+    background: #E8F5E9;
+    border-radius: 24px;
+    padding: 3rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border: 3px solid #A3D9A3;
+}
+
+.middle-school-hero-icon-wrapper {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #2ECC71, #27ae60);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.middle-school-hero-card-1 h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #000;
+    margin-bottom: 1rem;
+}
+
+.middle-school-hero-card-1 p {
+    font-size: 1.1rem;
+    color: #000;
+    line-height: 1.8;
+}
+
+.middle-school-hero-card-2 {
+    background: linear-gradient(135deg, #A3D9A3 0%, #2ECC71 100%);
+    border-radius: 24px;
+    padding: 3rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.middle-school-hero-card-2 h3 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #000;
+    margin-bottom: 1rem;
+}
+
+.middle-school-hero-card-2 p {
+    font-size: 1.1rem;
+    color: #000;
+    line-height: 1.8;
+}
+
+/* === Stats Grid === */
+.middle-school-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-bottom: 5rem;
+}
+
+.middle-school-stat-card {
+    background: linear-gradient(135deg, #E8F5E9 0%, #fff 100%);
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 2px solid #A3D9A3;
+    transition: transform 0.3s;
+}
+
+.middle-school-stat-card:hover {
+    transform: scale(1.05);
+}
+
+.middle-school-stat-icon {
+    margin-bottom: 1rem;
+}
+
+.middle-school-stat-number {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #000;
+    margin-bottom: 0.5rem;
+}
+
+.middle-school-stat-card p {
+    font-size: 1.1rem;
+    color: #000;
+    margin: 0;
+    font-weight: 600;
+}
+
+/* === Section Title === */
+.middle-school-section-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    text-align: center;
+    color: #000;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.middle-school-section-title-underline {
+    width: 100px;
+    height: 4px;
+    background: linear-gradient(90deg, #A3D9A3, #2ECC71);
+    margin: 1rem auto 0;
+}
+
+/* === Subjects Grid === */
+.middle-school-subjects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-bottom: 5rem;
+}
+
+.middle-school-subject-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    border: 2px solid #E8F5E9;
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.middle-school-subject-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(46, 204, 113, 0.2);
+    border-color: #2ECC71;
+}
+
+.middle-school-subject-decorative {
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    width: 100px;
+    height: 100px;
+    background: rgba(163, 217, 163, 0.1);
+    border-radius: 50%;
+}
+
+.middle-school-subject-icon-box {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #E8F5E9, #A3D9A3);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    color: #000;
+}
+
+.middle-school-subject-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 1rem;
+}
+
+.middle-school-subject-card p {
+    font-size: 1rem;
+    color: #000;
+    line-height: 1.7;
+}
+
+/* === Features Section === */
+.middle-school-features-section {
+    background: linear-gradient(135deg, #E8F5E9 0%, #A3D9A3 100%);
+    border-radius: 30px;
+    padding: 3rem;
+    margin-bottom: 5rem;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
+}
+
+.middle-school-features-section h2 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    text-align: center;
+    color: #000;
+    margin-bottom: 3rem;
+}
+
+.middle-school-features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.middle-school-feature-card {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 16px;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s;
+}
+
+.middle-school-feature-card:hover {
+    transform: scale(1.02);
+}
+
+.middle-school-feature-icon-box {
+    background: linear-gradient(135deg, #2ECC71, #27ae60);
+    border-radius: 8px;
+    padding: 0.5rem;
+    flex-shrink: 0;
+}
+
+.middle-school-feature-card p {
+    color: #000;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* === Outcomes Section === */
+.middle-school-outcomes-section {
+    margin-bottom: 5rem;
+}
+
+.middle-school-outcomes-section h2 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    text-align: center;
+    color: #000;
+    margin-bottom: 3rem;
+}
+
+.middle-school-outcome-item {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    background: #fff;
+    padding: 1.5rem 2rem;
+    border-radius: 16px;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    border-left: 4px solid #2ECC71;
+    transition: all 0.3s;
+}
+
+.middle-school-outcome-item:hover {
+    transform: translateX(10px);
+    box-shadow: 0 8px 24px rgba(46, 204, 113, 0.15);
+}
+
+.middle-school-outcome-icon-box {
+    background: linear-gradient(135deg, #E8F5E9, #A3D9A3);
+    border-radius: 12px;
+    padding: 1rem;
+    color: #27ae60;
+}
+
+.middle-school-outcome-item p {
+    color: #000;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* === CTA Section === */
+.middle-school-cta-section {
+    background: linear-gradient(135deg, #2ECC71 0%, #27ae60 100%);
+    border-radius: 30px;
+    padding: 4rem 2rem;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(46, 204, 113, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.middle-school-cta-decorative {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    top: -200px;
+    right: -100px;
+}
+
+.middle-school-cta-section h2 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #000;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.middle-school-cta-section p {
+    font-size: 1.25rem;
+    color: #000;
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.middle-school-cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+}
+
+.middle-school-cta-button-primary {
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 1.25rem 3rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s;
+}
+
+.middle-school-cta-button-primary:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+.middle-school-cta-button-secondary {
+    background: transparent;
+    color: #000;
+    border: 2px solid #000;
+    padding: 1.25rem 3rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.middle-school-cta-button-secondary:hover {
+    background: #fff;
+    transform: scale(1.05);
+}
+
+/* === Responsive Design === */
+@media (max-width: 768px) {
+    .middle-school-header-title {
+        font-size: 2.5rem;
+    }
+
+    .middle-school-header-emoji {
+        font-size: 3.5rem;
+    }
+
+    .middle-school-header-subtitle {
+        font-size: 1rem;
+    }
+
+    .middle-school-hero-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .middle-school-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .middle-school-stat-number {
+        font-size: 2.5rem;
+    }
+
+    .middle-school-subjects-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .middle-school-features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .middle-school-outcome-item {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .middle-school-cta-buttons {
+        flex-direction: column;
+    }
+
+    .middle-school-cta-button-primary,
+    .middle-school-cta-button-secondary {
+        width: 100%;
+    }
+
+    .middle-school-cta-section h2 {
+        font-size: 1.75rem;
+    }
+
+    .middle-school-cta-section p {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .middle-school-header-title {
+        font-size: 2rem;
+    }
+
+    .middle-school-header-emoji {
+        font-size: 3rem;
+    }
+
+    .middle-school-main-content {
+        padding: 2rem 1rem;
+    }
+
+    .middle-school-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .middle-school-hero-card-1,
+    .middle-school-hero-card-2 {
+        padding: 2rem;
+    }
+
+    .middle-school-subject-card {
+        padding: 2rem;
+    }
+
+    .middle-school-features-section {
+        padding: 2rem;
+    }
+
+    .middle-school-cta-section {
+        padding: 3rem 1.5rem;
+    }
+}

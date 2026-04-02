@@ -1,0 +1,712 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Main Page Container */
+.receipt-page {
+    min-height: 100vh;
+    background: #ffffff;
+    padding: 40px 20px;
+    position: relative;
+    font-family: 'Poppins', sans-serif;
+}
+
+.watermark {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 8rem;
+    font-weight: 900;
+    color: rgba(16, 185, 129, 0.03);
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Receipt Container */
+.receipt-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 1;
+    border: 3px solid #10b981;
+}
+
+/* Success Badge */
+.success-badge-top {
+    text-align: center;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 3px solid #10b981;
+}
+
+.success-check-big {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    color: white;
+    font-size: 3rem;
+    font-weight: bold;
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+    animation: scaleIn 0.5s ease-out;
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
+}
+
+.success-badge-top h1 {
+    color: #10b981;
+    font-size: 2rem;
+    margin-bottom: 8px;
+    font-weight: 800;
+}
+
+.success-badge-top p {
+    color: #6b7280;
+    font-size: 1rem;
+}
+
+/* School Header */
+.school-header-receipt {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.school-logo-receipt {
+    width: 90px;
+    height: 90px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    flex-shrink: 0;
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+}
+
+.school-header-receipt h2 {
+    color: #1f2937;
+    font-size: 1.8rem;
+    margin-bottom: 4px;
+    font-weight: 800;
+}
+
+.school-header-receipt p {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+    line-height: 1.5;
+}
+
+.school-address {
+    font-weight: 600;
+    color: #374151 !important;
+}
+
+.receipt-divider {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #10b981, transparent);
+    margin: 24px 0;
+}
+
+/* Receipt Header Section */
+.receipt-header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    padding: 20px;
+    background: #f0fdf4;
+    border-radius: 12px;
+    border-left: 4px solid #10b981;
+}
+
+.receipt-header-section h3 {
+    color: #1f2937;
+    font-size: 1.4rem;
+    margin-bottom: 6px;
+    font-weight: 800;
+}
+
+.receipt-header-section p {
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.receipt-number {
+    text-align: right;
+}
+
+.receipt-number p {
+    color: #6b7280;
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+}
+
+.receipt-number strong {
+    color: #10b981;
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+/* Info Sections */
+.info-section {
+    margin-bottom: 24px;
+}
+
+.info-section h4 {
+    color: #1f2937;
+    font-size: 1.2rem;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #10b981;
+    font-weight: 700;
+}
+
+.info-grid-receipt {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.info-item {
+    padding: 12px;
+    background: #f9fafb;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border-left: 3px solid #10b981;
+}
+
+.info-label {
+    font-size: 0.8rem;
+    color: #6b7280;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-item strong {
+    color: #1f2937;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.status-paid {
+    color: #10b981 !important;
+    font-weight: 800 !important;
+}
+
+/* Fee Breakdown */
+.fee-breakdown-section {
+    margin-bottom: 24px;
+    padding: 20px;
+    background: #f0fdf4;
+    border-radius: 12px;
+    border: 2px solid #10b981;
+}
+
+.fee-breakdown-section h4 {
+    color: #065f46;
+    font-size: 1.2rem;
+    margin-bottom: 16px;
+    font-weight: 700;
+}
+
+.fee-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.fee-table th {
+    background: #10b981;
+    color: white;
+    padding: 12px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.fee-table td {
+    padding: 12px;
+    border-bottom: 1px solid #d1fae5;
+    font-size: 0.9rem;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.highlight-row {
+    background: #d1fae5;
+}
+
+.highlight-row td {
+    font-weight: 700;
+    color: #065f46;
+}
+
+.pending-row {
+    background: #fee2e2;
+    border-top: 2px solid #10b981;
+}
+
+.pending-row td {
+    color: #991b1b;
+    font-weight: 700;
+}
+
+.amount-words {
+    padding: 16px;
+    background: white;
+    border-radius: 8px;
+    border: 2px dashed #10b981;
+}
+
+.amount-words p {
+    margin: 4px 0;
+    font-size: 0.9rem;
+}
+
+.words-text {
+    color: #065f46;
+    font-weight: 600;
+    font-style: italic;
+}
+
+/* Terms Section */
+.terms-section {
+    margin-bottom: 24px;
+    padding: 20px;
+    background: #f9fafb;
+    border-radius: 12px;
+}
+
+.terms-section h4 {
+    color: #1f2937;
+    margin-bottom: 12px;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.terms-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.terms-section li {
+    padding: 8px 0;
+    color: #1f2937;
+    display: flex;
+    align-items: flex-start;
+    font-size: 0.9rem;
+}
+
+.terms-section li:before {
+    content: "✓";
+    color: #10b981;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+/* Footer Section */
+.receipt-footer-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin: 32px 0 24px;
+    padding-top: 24px;
+    border-top: 2px solid #e5e7eb;
+}
+
+.footer-left strong {
+    color: #1f2937;
+    font-size: 0.9rem;
+}
+
+.footer-left p {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.signature-line {
+    width: 200px;
+    height: 2px;
+    background: #d1d5db;
+    margin: 24px 0 8px;
+}
+
+.school-seal {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.seal-circle {
+    width: 100px;
+    height: 100px;
+    border: 3px dashed #10b981;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #10b981;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.receipt-bottom-note {
+    text-align: center;
+    padding: 20px;
+    background: #f0fdf4;
+    border-radius: 12px;
+    color: #6b7280;
+}
+
+.receipt-bottom-note p {
+    margin: 4px 0;
+    font-size: 0.9rem;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    padding: 14px 28px;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+}
+
+.action-btn.download {
+    background: #10b981;
+    color: white;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.action-btn.print {
+    background: #059669;
+    color: white;
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+}
+
+.action-btn.another {
+    background: #047857;
+    color: white;
+    box-shadow: 0 4px 12px rgba(4, 120, 87, 0.3);
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+}
+
+/* Error Card - Enhanced Styling */
+.school-logo-error {
+    margin: 0 auto 20px;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.receipt-error {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 60px 40px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    border: 3px solid #10b981;
+}
+
+.receipt-error h2 {
+    font-size: 2rem;
+    color: #10b981;
+    margin-bottom: 24px;
+    font-weight: 800;
+}
+
+.error-icon {
+    font-size: 5rem;
+    margin: 20px 0;
+}
+
+.receipt-error h3 {
+    font-size: 1.8rem;
+    color: #1f2937;
+    margin-bottom: 16px;
+    font-weight: 700;
+}
+
+.error-message {
+    font-size: 1.1rem;
+    color: #374151;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.error-sub {
+    font-size: 1rem;
+    color: #6b7280;
+    line-height: 1.6;
+    margin-bottom: 32px;
+}
+
+.error-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.pay-fees-btn,
+.home-btn {
+    padding: 14px 32px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pay-fees-btn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.pay-fees-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+.home-btn {
+    background: #ffffff;
+    color: #10b981;
+    border: 2px solid #10b981;
+}
+
+.home-btn:hover {
+    background: #f0fdf4;
+    transform: translateY(-2px);
+}
+
+/* Print Styles */
+@media print {
+    .receipt-page {
+        background: white;
+        padding: 0;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .watermark {
+        font-size: 12rem;
+        opacity: 0.02;
+    }
+
+    .receipt-container {
+        box-shadow: none;
+        max-width: 100%;
+        border: 1px solid #e5e7eb;
+    }
+}
+
+/* Tablet Responsive (1024px) */
+@media (max-width: 1024px) {
+    .receipt-container {
+        padding: 32px;
+    }
+
+    .info-grid-receipt {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Mobile Responsive (768px) */
+@media (max-width: 768px) {
+    .receipt-page {
+        padding: 24px 12px;
+    }
+
+    .receipt-container {
+        padding: 24px 20px;
+        border-radius: 16px;
+    }
+
+    .school-header-receipt {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .school-logo-receipt {
+        width: 70px;
+        height: 70px;
+        font-size: 2.5rem;
+    }
+
+    .school-header-receipt h2 {
+        font-size: 1.5rem;
+    }
+
+    .school-header-receipt p {
+        font-size: 0.85rem;
+    }
+
+    .receipt-header-section {
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px;
+    }
+
+    .receipt-number {
+        text-align: left;
+    }
+
+    .info-grid-receipt {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .fee-table {
+        font-size: 0.85rem;
+    }
+
+    .fee-table th,
+    .fee-table td {
+        padding: 10px 8px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .receipt-footer-section {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        text-align: center;
+    }
+
+    .signature-line {
+        margin: 20px auto 8px;
+    }
+
+    /* Error Card Mobile */
+    .receipt-error {
+        padding: 40px 24px;
+    }
+
+    .receipt-error h2 {
+        font-size: 1.6rem;
+    }
+
+    .receipt-error h3 {
+        font-size: 1.4rem;
+    }
+
+    .error-icon {
+        font-size: 4rem;
+    }
+
+    .error-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .pay-fees-btn,
+    .home-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Small Mobile (480px) */
+@media (max-width: 480px) {
+    .success-badge-top h1 {
+        font-size: 1.6rem;
+    }
+
+    .success-check-big {
+        width: 70px;
+        height: 70px;
+        font-size: 2.5rem;
+    }
+
+    .receipt-container {
+        padding: 20px 16px;
+    }
+
+    .info-section h4,
+    .fee-breakdown-section h4,
+    .terms-section h4 {
+        font-size: 1.1rem;
+    }
+
+    .fee-table {
+        font-size: 0.8rem;
+    }
+
+    .amount-words {
+        padding: 12px;
+    }
+
+    .terms-section li {
+        font-size: 0.85rem;
+    }
+}

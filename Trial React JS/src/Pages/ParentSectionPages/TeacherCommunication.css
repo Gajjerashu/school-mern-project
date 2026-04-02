@@ -1,0 +1,753 @@
+/* === Global Styles === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* === Animations === */
+@keyframes float {
+    0%, 100% { 
+        transform: translateY(0px); 
+    }
+    50% { 
+        transform: translateY(-20px); 
+    }
+}
+
+/* === Main Page === */
+.teacher-comm-page {
+    background: linear-gradient(to bottom, #ffffff 0%, #f0fdf4 100%);
+    min-height: 100vh;
+}
+
+/* === Header === */
+.teacher-comm-header {
+    background: linear-gradient(135deg, #A3D9A3 0%, #2ECC71 100%);
+    padding: 3rem 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.teacher-comm-header-circle-1 {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    top: -100px;
+    right: -50px;
+}
+
+.teacher-comm-header-circle-2 {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    bottom: -50px;
+    left: -30px;
+}
+
+.teacher-comm-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.teacher-comm-back-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    color: #000;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s;
+    margin-bottom: 2rem;
+}
+
+.teacher-comm-back-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateX(-5px);
+}
+
+.teacher-comm-header-content {
+    text-align: center;
+}
+
+.teacher-comm-header-emoji {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+.teacher-comm-header-title {
+    font-size: 4rem;
+    font-weight: 900;
+    color: #000;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.teacher-comm-header-subtitle {
+    font-size: 1.25rem;
+    color: #000;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.8;
+    font-weight: 500;
+}
+
+/* === Main Content === */
+.teacher-comm-main-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 4rem 1rem;
+}
+
+/* === Student Selector === */
+.teacher-comm-selector-section {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 2px solid #E8F5E9;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.teacher-comm-selector-section label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #000;
+}
+
+.teacher-comm-select {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    border: 2px solid #E8F5E9;
+    font-size: 1rem;
+    background: #fff;
+    color: #000;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.teacher-comm-select:focus {
+    outline: none;
+    border-color: #2ECC71;
+}
+
+/* === Main Layout === */
+.teacher-comm-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr 320px;
+    gap: 2rem;
+    margin-bottom: 4rem;
+    min-height: 600px;
+}
+
+/* === Sidebar - Teachers List === */
+.teacher-comm-sidebar {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 2px solid #E8F5E9;
+    overflow: hidden;
+}
+
+.sidebar-header {
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #E8F5E9, #A3D9A3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-header h3 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #000;
+}
+
+.teachers-list {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.teacher-item {
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-bottom: 1px solid #E8F5E9;
+    position: relative;
+}
+
+.teacher-item:hover {
+    background: #f8fdf9;
+}
+
+.teacher-item.active {
+    background: linear-gradient(135deg, #E8F5E9, #f8fdf9);
+    border-left: 4px solid #27ae60;
+}
+
+.teacher-item-avatar {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    flex-shrink: 0;
+}
+
+.teacher-item-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.online-indicator {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 12px;
+    height: 12px;
+    background: #27ae60;
+    border: 2px solid #fff;
+    border-radius: 50%;
+}
+
+.teacher-item-info {
+    flex: 1;
+}
+
+.teacher-item-info h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 0.25rem;
+}
+
+.teacher-subject {
+    font-size: 0.85rem;
+    color: #27ae60;
+    margin-bottom: 0.25rem;
+}
+
+.teacher-last-seen {
+    font-size: 0.75rem;
+    color: #999;
+}
+
+.unread-badge {
+    background: #27ae60;
+    color: #fff;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+/* === Chat Area === */
+.teacher-comm-chat-area {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 2px solid #E8F5E9;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.chat-header {
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #E8F5E9, #A3D9A3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #E8F5E9;
+}
+
+.chat-header-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.chat-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.chat-header-info h3 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #000;
+    margin-bottom: 0.25rem;
+}
+
+.chat-subject {
+    font-size: 0.9rem;
+    color: #27ae60;
+}
+
+.chat-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.chat-action-btn {
+    padding: 0.75rem;
+    border-radius: 50%;
+    border: none;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chat-action-btn:hover {
+    background: #27ae60;
+    color: #fff;
+    transform: scale(1.1);
+}
+
+/* === Chat Messages === */
+.chat-messages {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+    background: #f8fdf9;
+    max-height: 450px;
+}
+
+.message {
+    margin-bottom: 1.5rem;
+    display: flex;
+}
+
+.message.sent {
+    justify-content: flex-end;
+}
+
+.message.received {
+    justify-content: flex-start;
+}
+
+.message-content {
+    max-width: 70%;
+    padding: 1rem 1.5rem;
+    border-radius: 20px;
+    position: relative;
+}
+
+.message.sent .message-content {
+    background: linear-gradient(135deg, #2ECC71, #27ae60);
+    color: #fff;
+    border-bottom-right-radius: 5px;
+}
+
+.message.received .message-content {
+    background: #fff;
+    color: #000;
+    border: 2px solid #E8F5E9;
+    border-bottom-left-radius: 5px;
+}
+
+.message-content p {
+    margin: 0 0 0.5rem 0;
+    line-height: 1.5;
+}
+
+.message-time {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    justify-content: flex-end;
+}
+
+/* === Chat Input === */
+.chat-input-area {
+    padding: 1.5rem;
+    background: #fff;
+    border-top: 2px solid #E8F5E9;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.attach-btn {
+    padding: 0.75rem;
+    border-radius: 50%;
+    border: none;
+    background: #f8fdf9;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.attach-btn:hover {
+    background: #E8F5E9;
+}
+
+.chat-input {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    border-radius: 25px;
+    border: 2px solid #E8F5E9;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.chat-input:focus {
+    border-color: #27ae60;
+}
+
+.send-btn {
+    padding: 1rem;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #2ECC71, #27ae60);
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.send-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+}
+
+/* === Right Sidebar === */
+.teacher-comm-right-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.teacher-info-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 2px solid #E8F5E9;
+    text-align: center;
+}
+
+.teacher-info-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 1rem;
+    border: 4px solid #E8F5E9;
+}
+
+.teacher-info-card h3 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #000;
+    margin-bottom: 0.5rem;
+}
+
+.teacher-info-subject {
+    color: #27ae60;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.teacher-contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: #f8fdf9;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.schedule-meeting-btn {
+    width: 100%;
+    padding: 1rem;
+    border-radius: 50px;
+    border: none;
+    background: linear-gradient(135deg, #2ECC71, #27ae60);
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s;
+}
+
+.schedule-meeting-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+}
+
+/* === Notices Section === */
+.notices-section {
+    background: #fff;
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 2px solid #E8F5E9;
+}
+
+.notices-section h3 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #000;
+    margin-bottom: 1rem;
+}
+
+.notice-card {
+    padding: 1rem;
+    background: #f8fdf9;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    border-left: 4px solid #27ae60;
+}
+
+.notice-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.notice-priority {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.notice-card h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 0.5rem;
+}
+
+.notice-description {
+    font-size: 0.85rem;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+}
+
+.notice-footer {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.notice-date,
+.notice-time {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    color: #999;
+}
+
+.notice-from {
+    font-size: 0.75rem;
+    color: #27ae60;
+    font-weight: 600;
+}
+
+/* === CTA Section === */
+.teacher-comm-cta-section {
+    background: linear-gradient(135deg, #2ECC71 0%, #27ae60 100%);
+    border-radius: 30px;
+    padding: 4rem 2rem;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(46, 204, 113, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.teacher-comm-cta-decorative {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    top: -200px;
+    right: -100px;
+}
+
+.teacher-comm-cta-section h2 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #000;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.teacher-comm-cta-section p {
+    font-size: 1.25rem;
+    color: #000;
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.teacher-comm-cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+}
+
+.teacher-comm-cta-button-primary {
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 1.25rem 3rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.teacher-comm-cta-button-primary:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+.teacher-comm-cta-button-secondary {
+    background: transparent;
+    color: #000;
+    border: 2px solid #000;
+    padding: 1.25rem 3rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.teacher-comm-cta-button-secondary:hover {
+    background: #fff;
+    transform: scale(1.05);
+}
+
+/* === Responsive === */
+@media (max-width: 1200px) {
+    .teacher-comm-layout {
+        grid-template-columns: 280px 1fr;
+    }
+
+    .teacher-comm-right-sidebar {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .teacher-comm-header-title {
+        font-size: 2.5rem;
+    }
+
+    .teacher-comm-header-emoji {
+        font-size: 3.5rem;
+    }
+
+    .teacher-comm-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .teacher-comm-sidebar {
+        max-height: 300px;
+    }
+
+    .teacher-comm-selector-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .chat-messages {
+        max-height: 350px;
+    }
+
+    .message-content {
+        max-width: 85%;
+    }
+}
+
+@media (max-width: 480px) {
+    .teacher-comm-header-title {
+        font-size: 2rem;
+    }
+
+    .teacher-comm-main-content {
+        padding: 2rem 1rem;
+    }
+
+    .chat-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .teacher-comm-cta-buttons {
+        flex-direction: column;
+    }
+
+    .teacher-comm-cta-button-primary,
+    .teacher-comm-cta-button-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+}

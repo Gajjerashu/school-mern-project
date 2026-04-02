@@ -1,0 +1,744 @@
+/* src/pages/ScienceLabs.css */
+/* INSPIREEDGE SCHOOL - WHITE & GREEN THEME 🌿 */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --green-primary: #16a34a;
+  --green-dark: #15803d;
+  --green-light: #4ade80;
+  --green-lighter: #bbf7d0;
+  --green-bg: #f0fdf4;
+  --green-hover: #14532d;
+  --white: #ffffff;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+}
+
+/* Main Container */
+.labs-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 40%, #dcfce7 100%);
+  padding: 3rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.labs-page::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(22, 163, 74, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: float 20s ease-in-out infinite;
+}
+
+.labs-page::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(74, 222, 128, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: float 15s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-20px, 20px);
+  }
+}
+
+.labs-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* Header */
+.labs-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  animation: fadeInDown 0.8s ease-out;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.school-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--green-primary) 0%, var(--green-dark) 100%);
+  color: var(--white);
+  padding: 0.875rem 2.5rem;
+  border-radius: 50px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 8px 20px rgba(22, 163, 74, 0.35);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.school-badge::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.school-badge:hover::before {
+  left: 100%;
+}
+
+.school-badge:hover {
+  transform: translateY(-3px);
+}
+
+.school-badge h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.labs-header h2 {
+  font-size: 2.75rem;
+  color: var(--gray-900);
+  margin-bottom: 0.75rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--gray-900) 0%, var(--green-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.labs-header p {
+  color: var(--gray-600);
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Lab Selector */
+.lab-selector {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+  animation: fadeInUp 0.6s ease-out 0.2s both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lab-btn {
+  background: var(--white);
+  border: 3px solid var(--green-lighter);
+  border-radius: 24px;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  text-align: left;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.lab-btn:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  border-color: var(--green-light);
+}
+
+.lab-btn.active {
+  background: linear-gradient(135deg, var(--green-primary), var(--green-dark));
+  border-color: var(--green-primary);
+  color: var(--white);
+  box-shadow: 0 12px 32px rgba(22, 163, 74, 0.3);
+}
+
+.lab-icon {
+  font-size: 4rem;
+  flex-shrink: 0;
+}
+
+.lab-btn-content h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+.lab-btn-content p {
+  font-size: 0.9375rem;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.lab-btn.active .lab-btn-content p {
+  color: var(--white);
+}
+
+/* Virtual Tour Banner */
+.tour-banner {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  border-radius: 24px;
+  padding: 2rem 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+  box-shadow: 0 12px 32px rgba(59, 130, 246, 0.3);
+  animation: fadeInUp 0.6s ease-out 0.3s both;
+}
+
+.tour-content {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  color: var(--white);
+}
+
+.tour-icon {
+  font-size: 4rem;
+}
+
+.tour-text h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+.tour-text p {
+  font-size: 1rem;
+  margin: 0;
+  opacity: 0.95;
+}
+
+.tour-btn {
+  background: var(--white);
+  color: #3b82f6;
+  border: none;
+  border-radius: 14px;
+  padding: 1rem 2rem;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.tour-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.tour-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Facilities Section */
+.facilities-section {
+  margin-bottom: 3rem;
+  animation: fadeInUp 0.6s ease-out 0.4s both;
+}
+
+.section-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: 1.5rem;
+}
+
+.facilities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.facility-card {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 2rem;
+  text-align: center;
+  border: 2px solid var(--green-lighter);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  animation: slideIn 0.5s ease-out both;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.facility-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(22, 163, 74, 0.15);
+  border-color: var(--green-light);
+}
+
+.facility-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.facility-card h4 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin: 0 0 0.5rem 0;
+}
+
+.facility-card p {
+  font-size: 0.9375rem;
+  color: var(--gray-600);
+  margin: 0;
+}
+
+/* Experiments Section */
+.experiments-section {
+  animation: fadeInUp 0.6s ease-out 0.5s both;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.experiments-count {
+  color: var(--gray-600);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.experiments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.experiment-card {
+  background: var(--white);
+  border-radius: 20px;
+  overflow: hidden;
+  border: 2px solid var(--green-lighter);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  animation: slideUp 0.5s ease-out both;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.experiment-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(22, 163, 74, 0.15);
+  border-color: var(--green-light);
+}
+
+.experiment-image {
+  background: linear-gradient(135deg, var(--green-lighter), var(--green-light));
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 5rem;
+}
+
+.experiment-content {
+  padding: 1.5rem;
+}
+
+.experiment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.experiment-header h4 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin: 0;
+  line-height: 1.3;
+  flex: 1;
+}
+
+.level-badge {
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  color: #1e40af;
+  padding: 0.375rem 0.875rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.experiment-description {
+  color: var(--gray-600);
+  font-size: 0.9375rem;
+  margin: 0 0 1rem 0;
+  line-height: 1.5;
+}
+
+.experiment-meta {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--gray-200);
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--gray-600);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.meta-item svg {
+  width: 18px;
+  height: 18px;
+  color: var(--green-primary);
+}
+
+.book-btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--green-primary), var(--green-dark));
+  color: var(--white);
+  border: none;
+  border-radius: 12px;
+  padding: 0.875rem 1.5rem;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: inherit;
+}
+
+.book-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.book-btn:hover {
+  background: linear-gradient(135deg, var(--green-dark), var(--green-hover));
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(22, 163, 74, 0.3);
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: var(--white);
+  border-radius: 24px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideUp 0.3s ease-out;
+}
+
+.modal-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: var(--gray-100);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+  background: var(--gray-200);
+  transform: rotate(90deg);
+}
+
+.modal-close svg {
+  width: 20px;
+  height: 20px;
+  color: var(--gray-700);
+}
+
+.modal-header {
+  text-align: center;
+  padding: 2.5rem 2rem 1.5rem;
+  border-bottom: 2px solid var(--gray-200);
+}
+
+.modal-icon {
+  font-size: 5rem;
+  margin-bottom: 1rem;
+}
+
+.modal-header h3 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin: 0 0 1rem 0;
+}
+
+.modal-body {
+  padding: 2rem;
+}
+
+.modal-body p {
+  font-size: 1.0625rem;
+  color: var(--gray-700);
+  line-height: 1.6;
+  margin: 0 0 1.5rem 0;
+}
+
+.modal-info {
+  background: var(--green-bg);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.info-item {
+  margin-bottom: 1rem;
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+}
+
+.info-item strong {
+  display: block;
+  color: var(--gray-900);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.info-item ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: var(--gray-700);
+}
+
+.info-item li {
+  margin-bottom: 0.375rem;
+}
+
+.modal-book-btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--green-primary), var(--green-dark));
+  color: var(--white);
+  border: none;
+  border-radius: 14px;
+  padding: 1.125rem 2rem;
+  font-weight: 700;
+  font-size: 1.0625rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.modal-book-btn:hover {
+  background: linear-gradient(135deg, var(--green-dark), var(--green-hover));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(22, 163, 74, 0.3);
+}
+
+/* Footer */
+.labs-footer {
+  text-align: center;
+  margin-top: 4rem;
+  color: var(--gray-600);
+  animation: fadeIn 1s ease-out 0.8s both;
+}
+
+.labs-footer p {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .experiments-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .labs-page {
+    padding: 2rem 1rem;
+  }
+
+  .labs-header h2 {
+    font-size: 2.25rem;
+  }
+
+  .school-badge h1 {
+    font-size: 1.5rem;
+  }
+
+  .lab-selector {
+    grid-template-columns: 1fr;
+  }
+
+  .tour-banner {
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: center;
+  }
+
+  .tour-content {
+    flex-direction: column;
+  }
+
+  .tour-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .facilities-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+
+  .experiments-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .labs-header h2 {
+    font-size: 1.875rem;
+  }
+
+  .school-badge {
+    padding: 0.625rem 1.5rem;
+  }
+
+  .school-badge h1 {
+    font-size: 1.25rem;
+  }
+
+  .lab-btn {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .tour-icon {
+    font-size: 3rem;
+  }
+}
+
+::selection {
+  background: var(--green-light);
+  color: var(--white);
+}
+
+::-moz-selection {
+  background: var(--green-light);
+  color: var(--white);
+}

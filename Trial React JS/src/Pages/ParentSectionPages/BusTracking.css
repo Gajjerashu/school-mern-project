@@ -1,0 +1,707 @@
+/* === Global Styles === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* === Animations === */
+@keyframes float {
+    0%, 100% { 
+        transform: translateY(0px); 
+    }
+    50% { 
+        transform: translateY(-20px); 
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { 
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 0.5;
+        transform: scale(1.2);
+    }
+}
+
+/* === Main Page === */
+.bus-tracking-page {
+    background: linear-gradient(to bottom, #ffffff 0%, #f0fdf4 100%);
+    min-height: 100vh;
+}
+
+/* === Header === */
+.bus-tracking-header {
+    background: linear-gradient(135deg, #A3D9A3 0%, #2ECC71 100%);
+    padding: 3rem 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.bus-tracking-header-circle-1 {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    top: -100px;
+    right: -50px;
+}
+
+.bus-tracking-header-circle-2 {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    bottom: -50px;
+    left: -30px;
+}
+
+.bus-tracking-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.bus-tracking-back-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    color: #000;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s;
+    margin-bottom: 2rem;
+}
+
+.bus-tracking-back-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateX(-5px);
+}
+
+.bus-tracking-header-content {
+    text-align: center;
+}
+
+.bus-tracking-header-emoji {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+.bus-tracking-header-title {
+    font-size: 4rem;
+    font-weight: 900;
+    color: #000;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bus-tracking-header-subtitle {
+    font-size: 1.25rem;
+    color: #000;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.8;
+    font-weight: 500;
+}
+
+/* === Main Content === */
+.bus-tracking-main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 1rem;
+}
+
+/* === Student Selector === */
+.bus-tracking-selector-section {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 2px solid #E8F5E9;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.bus-tracking-selector-section label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #000;
+}
+
+.bus-tracking-select {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    border: 2px solid #E8F5E9;
+    font-size: 1rem;
+    background: #fff;
+    color: #000;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.bus-tracking-select:focus {
+    outline: none;
+    border-color: #2ECC71;
+}
+
+/* === Stats Grid === */
+.bus-tracking-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.bus-tracking-stat-card {
+    background: linear-gradient(135deg, #E8F5E9 0%, #fff 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 2px solid #A3D9A3;
+    transition: transform 0.3s;
+}
+
+.bus-tracking-stat-card:hover {
+    transform: scale(1.05);
+}
+
+.bus-tracking-stat-icon {
+    margin-bottom: 1rem;
+}
+
+.bus-tracking-stat-number {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #000;
+    margin-bottom: 0.5rem;
+}
+
+.bus-tracking-stat-label {
+    font-size: 1rem;
+    color: #000;
+    margin: 0;
+    font-weight: 600;
+}
+
+/* === Live Status === */
+.bus-tracking-live-status {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 2px solid #E8F5E9;
+}
+
+.live-status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #E8F5E9;
+}
+
+.live-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 700;
+    color: #27ae60;
+    font-size: 1.1rem;
+}
+
+.pulse {
+    width: 12px;
+    height: 12px;
+    background: #27ae60;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.last-updated {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.live-status-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8fdf9;
+    border-radius: 12px;
+}
+
+.status-label {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.status-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #000;
+}
+
+.bus-status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 700;
+    display: inline-block;
+}
+
+/* === Map Section === */
+.bus-tracking-map-section {
+    margin-bottom: 3rem;
+}
+
+.section-title {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #000;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.map-placeholder {
+    background: linear-gradient(135deg, #E8F5E9, #A3D9A3);
+    border-radius: 20px;
+    padding: 4rem 2rem;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 2px solid #A3D9A3;
+}
+
+.map-placeholder p {
+    font-size: 1.1rem;
+    color: #000;
+    margin-top: 1rem;
+}
+
+.map-coordinates {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 0.5rem !important;
+}
+
+.view-map-button {
+    margin-top: 2rem;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    border: none;
+    background: linear-gradient(135deg, #2ECC71, #27ae60);
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s;
+}
+
+.view-map-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+}
+
+/* === Route Timeline === */
+.bus-tracking-route-section {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 2px solid #E8F5E9;
+}
+
+.route-timeline {
+    position: relative;
+    padding-left: 3rem;
+}
+
+.route-timeline::before {
+    content: '';
+    position: absolute;
+    left: 1.25rem;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: #E8F5E9;
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 2rem;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -2.65rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    z-index: 1;
+}
+
+.timeline-content {
+    background: #f8fdf9;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    border: 2px solid #E8F5E9;
+}
+
+.timeline-item.current .timeline-content {
+    background: linear-gradient(135deg, #E8F5E9, #A3D9A3);
+    border-color: #27ae60;
+}
+
+.timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.timeline-header h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #000;
+}
+
+.timeline-time {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 600;
+}
+
+.timeline-arrival {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #27ae60;
+    font-weight: 600;
+}
+
+/* === Bus Info Grid === */
+.bus-tracking-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.bus-info-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 2px solid #E8F5E9;
+}
+
+.bus-info-card h3 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #000;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.info-item,
+.schedule-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8fdf9;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+}
+
+.info-label {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 0.25rem;
+}
+
+.info-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #000;
+}
+
+.contact-button {
+    width: 100%;
+    padding: 1rem;
+    border-radius: 50px;
+    border: none;
+    background: linear-gradient(135deg, #2ECC71, #27ae60);
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s;
+    margin-top: 1rem;
+}
+
+.contact-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+}
+
+/* === Notifications === */
+.bus-tracking-notifications {
+    margin-bottom: 3rem;
+}
+
+.notifications-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.notification-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 2px solid #E8F5E9;
+    display: flex;
+    gap: 1rem;
+    transition: all 0.3s;
+}
+
+.notification-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(46, 204, 113, 0.15);
+}
+
+.notification-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #f8fdf9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.notification-content h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 0.5rem;
+}
+
+.notification-content p {
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+}
+
+.notification-time {
+    font-size: 0.8rem;
+    color: #999;
+}
+
+/* === CTA Section === */
+.bus-tracking-cta-section {
+    background: linear-gradient(135deg, #2ECC71 0%, #27ae60 100%);
+    border-radius: 30px;
+    padding: 4rem 2rem;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(46, 204, 113, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.bus-tracking-cta-decorative {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    top: -200px;
+    right: -100px;
+}
+
+.bus-tracking-cta-section h2 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #000;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.bus-tracking-cta-section p {
+    font-size: 1.25rem;
+    color: #000;
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.bus-tracking-cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+}
+
+.bus-tracking-cta-button-primary {
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 1.25rem 3rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.bus-tracking-cta-button-primary:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+.bus-tracking-cta-button-secondary {
+    background: transparent;
+    color: #000;
+    border: 2px solid #000;
+    padding: 1.25rem 3rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.bus-tracking-cta-button-secondary:hover {
+    background: #fff;
+    transform: scale(1.05);
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+    .bus-tracking-header-title {
+        font-size: 2.5rem;
+    }
+
+    .bus-tracking-header-emoji {
+        font-size: 3.5rem;
+    }
+
+    .bus-tracking-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .bus-tracking-selector-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .live-status-content {
+        grid-template-columns: 1fr;
+    }
+
+    .bus-tracking-info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .notifications-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .bus-tracking-header-title {
+        font-size: 2rem;
+    }
+
+    .bus-tracking-main-content {
+        padding: 2rem 1rem;
+    }
+
+    .bus-tracking-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .bus-tracking-stat-number {
+        font-size: 1.75rem;
+    }
+
+    .route-timeline {
+        padding-left: 2.5rem;
+    }
+
+    .timeline-marker {
+        left: -2.15rem;
+        width: 35px;
+        height: 35px;
+    }
+
+    .bus-tracking-cta-buttons {
+        flex-direction: column;
+    }
+
+    .bus-tracking-cta-button-primary,
+    .bus-tracking-cta-button-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+}

@@ -1,0 +1,421 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Main Container */
+.admissions-dashboard-main {
+  min-height: 100vh;
+  background: #ffffff;
+  padding: 40px 20px;
+  font-family: "Inter", sans-serif;
+}
+
+.admissions-dashboard-container {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* Header */
+.admissions-header-section {
+  background: #ffffff;
+  padding: 40px 30px;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 32px;
+  border: 2px solid #e5e7eb;
+}
+
+.admissions-header-content {
+  text-align: center;
+}
+
+.admissions-school-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  padding: 12px 28px;
+  border-radius: 50px;
+  margin-bottom: 20px;
+  color: white;
+  font-weight: 700;
+  font-size: 1.125rem;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.admissions-main-title {
+  font-size: 3rem;
+  font-weight: 800;
+  margin: 0;
+  color: #10b981;
+}
+
+/* Stats */
+.admissions-stats-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.admissions-stat-card {
+  background: #ffffff;
+  padding: 28px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border: 2px solid #e5e7eb;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.admissions-stat-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+  border-color: #10b981;
+}
+
+.admissions-stat-selected {
+  border-color: #10b981 !important;
+  box-shadow: 0 8px 30px rgba(16, 185, 129, 0.25) !important;
+}
+
+.admissions-stat-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+}
+
+.admissions-icon-blue {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+}
+
+.admissions-icon-green {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.admissions-icon-orange {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+}
+
+.admissions-stat-icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.admissions-stat-details {
+  flex: 1;
+}
+
+.admissions-stat-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+}
+
+.admissions-stat-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1;
+}
+
+/* Search */
+.admissions-search-wrapper {
+  background: #ffffff;
+  padding: 28px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 32px;
+  border: 2px solid #e5e7eb;
+}
+
+.admissions-search-form {
+  display: flex;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.admissions-search-field {
+  flex: 0 0 calc(80% - 10px);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 20px;
+  transition: all 0.3s ease;
+}
+
+.admissions-search-field:focus-within {
+  border-color: #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+  background: white;
+}
+
+.admissions-search-svg {
+  width: 22px;
+  height: 22px;
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.admissions-search-field input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  color: #111827;
+  outline: none;
+  font-weight: 500;
+}
+
+.admissions-search-field input::placeholder {
+  color: #9ca3af;
+}
+
+.admissions-search-btn {
+  flex: 0 0 calc(20% - 10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.admissions-search-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.admissions-search-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Loading */
+.admissions-loading-state {
+  background: white;
+  padding: 80px 32px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  border: 2px solid #e5e7eb;
+}
+
+.admissions-loading-spinner {
+  width: 70px;
+  height: 70px;
+  border: 5px solid #e5e7eb;
+  border-top-color: #10b981;
+  border-radius: 50%;
+  animation: admissions-rotate 0.8s linear infinite;
+  margin: 0 auto 32px;
+}
+
+@keyframes admissions-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.admissions-loading-state p {
+  color: #6b7280;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* Table */
+.admissions-table-container {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  border: 2px solid #e5e7eb;
+}
+
+.admissions-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admissions-table thead {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.admissions-table th {
+  padding: 20px 16px;
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.admissions-table tbody tr {
+  border-bottom: 1px solid #e5e7eb;
+  transition: background 0.2s ease;
+}
+
+.admissions-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.admissions-table td {
+  padding: 20px 16px;
+  font-size: 0.938rem;
+  color: #111827;
+  font-weight: 500;
+}
+
+.admissions-student-id {
+  font-weight: 700;
+  color: #3b82f6;
+  font-family: "Courier New", monospace;
+}
+
+.admissions-email-field {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admissions-class-chip {
+  display: inline-block;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.admissions-medium-chip {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.admissions-english {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.admissions-gujarati {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+.admissions-na-chip {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  background: #e5e7eb;
+  color: #6b7280;
+}
+
+/* No Data */
+.admissions-empty-state {
+  text-align: center;
+  padding: 64px 32px;
+}
+
+.admissions-empty-state svg {
+  color: #9ca3af;
+  margin-bottom: 24px;
+}
+
+.admissions-empty-state p {
+  color: #6b7280;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admissions-dashboard-main {
+    padding: 24px 12px;
+  }
+  .admissions-header-section {
+    padding: 32px 24px;
+  }
+  .admissions-main-title {
+    font-size: 2.25rem;
+  }
+  .admissions-search-form {
+    flex-direction: column;
+  }
+  .admissions-search-field,
+  .admissions-search-btn {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+  .admissions-stats-container {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .admissions-stat-card {
+    padding: 24px;
+  }
+  .admissions-stat-icon {
+    width: 60px;
+    height: 60px;
+  }
+  .admissions-stat-icon svg {
+    width: 28px;
+    height: 28px;
+  }
+  .admissions-stat-value {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .admissions-main-title {
+    font-size: 2rem;
+  }
+  .admissions-school-badge {
+    font-size: 1rem;
+    padding: 10px 20px;
+  }
+  .admissions-stat-value {
+    font-size: 1.75rem;
+  }
+}

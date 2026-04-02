@@ -1,0 +1,559 @@
+/* === Global Styles === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* === Animations === */
+@keyframes float {
+    0%, 100% { 
+        transform: translateY(0px); 
+    }
+    50% { 
+        transform: translateY(-20px); 
+    }
+}
+
+@keyframes slideIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(30px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+    }
+    to { 
+        opacity: 1; 
+    }
+}
+
+/* === Main Page Wrapper === */
+.digital-learning-page {
+    background: linear-gradient(to bottom, #ffffff 0%, #f0fdf4 100%);
+    min-height: 100vh;
+}
+
+/* === Header Section === */
+.digital-learning-header {
+    background: linear-gradient(135deg, #A3D9A3 0%, #2ECC71 100%);
+    padding: 3rem 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.digital-learning-header-circle-1 {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    top: -100px;
+    right: -50px;
+}
+
+.digital-learning-header-circle-2 {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    bottom: -50px;
+    left: -30px;
+}
+
+.digital-learning-header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.digital-learning-back-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    color: #000;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s;
+    margin-bottom: 2rem;
+}
+
+.digital-learning-back-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateX(-5px);
+}
+
+.digital-learning-header-content {
+    text-align: center;
+}
+
+.digital-learning-header-emoji {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+.digital-learning-header-title {
+    font-size: 4rem;
+    font-weight: 900;
+    color: #000;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.digital-learning-header-subtitle {
+    font-size: 1.25rem;
+    color: #000;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.8;
+    font-weight: 500;
+}
+
+/* === Main Content === */
+.digital-learning-main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 1rem;
+}
+
+/* === Hero Introduction Section === */
+.digital-learning-hero-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 5rem;
+    animation: slideIn 0.6s ease-out;
+}
+
+.digital-learning-hero-card-1 {
+    background: #E8F5E9;
+    border-radius: 24px;
+    padding: 3rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border: 3px solid #A3D9A3;
+}
+
+.digital-learning-hero-icon-wrapper {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #2ECC71, #27ae60);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.digital-learning-hero-card-1 h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #000;
+    margin-bottom: 1rem;
+}
+
+.digital-learning-hero-card-1 p {
+    font-size: 1.1rem;
+    color: #000;
+    line-height: 1.8;
+}
+
+.digital-learning-hero-card-2 {
+    background: linear-gradient(135deg, #A3D9A3 0%, #2ECC71 100%);
+    border-radius: 24px;
+    padding: 3rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.digital-learning-hero-card-2 h3 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #000;
+    margin-bottom: 1rem;
+}
+
+.digital-learning-hero-card-2 p {
+    font-size: 1.1rem;
+    color: #000;
+    line-height: 1.8;
+}
+
+/* === Section Title === */
+.digital-learning-section-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    text-align: center;
+    color: #000;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.digital-learning-section-title-underline {
+    width: 100px;
+    height: 4px;
+    background: linear-gradient(90deg, #A3D9A3, #2ECC71);
+    margin: 1rem auto 0;
+}
+
+/* === Digital Tools Grid === */
+.digital-learning-tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-bottom: 5rem;
+}
+
+.digital-learning-tool-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    border: 2px solid #E8F5E9;
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.digital-learning-tool-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(46, 204, 113, 0.2);
+    border-color: #2ECC71;
+}
+
+.digital-learning-tool-decorative {
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    width: 100px;
+    height: 100px;
+    background: rgba(163, 217, 163, 0.1);
+    border-radius: 50%;
+}
+
+.digital-learning-tool-icon-box {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #E8F5E9, #A3D9A3);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    color: #000;
+}
+
+.digital-learning-tool-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 1rem;
+}
+
+.digital-learning-tool-card p {
+    font-size: 1rem;
+    color: #000;
+    line-height: 1.7;
+}
+
+/* === Benefits Section === */
+.digital-learning-benefits-section {
+    background: linear-gradient(135deg, #E8F5E9 0%, #A3D9A3 100%);
+    border-radius: 30px;
+    padding: 3rem;
+    margin-bottom: 5rem;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
+}
+
+.digital-learning-benefits-section h2 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    text-align: center;
+    color: #000;
+    margin-bottom: 3rem;
+}
+
+.digital-learning-benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.digital-learning-benefit-card {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 16px;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s;
+}
+
+.digital-learning-benefit-card:hover {
+    transform: scale(1.02);
+}
+
+.digital-learning-benefit-icon-box {
+    background: linear-gradient(135deg, #2ECC71, #27ae60);
+    border-radius: 8px;
+    padding: 0.5rem;
+    flex-shrink: 0;
+}
+
+.digital-learning-benefit-card p {
+    color: #000;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* === Features Section === */
+.digital-learning-features-section {
+    margin-bottom: 5rem;
+}
+
+.digital-learning-features-section h2 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    text-align: center;
+    color: #000;
+    margin-bottom: 3rem;
+}
+
+.digital-learning-feature-item {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    background: #fff;
+    padding: 1.5rem 2rem;
+    border-radius: 16px;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    border-left: 4px solid #2ECC71;
+    transition: all 0.3s;
+}
+
+.digital-learning-feature-item:hover {
+    transform: translateX(10px);
+    box-shadow: 0 8px 24px rgba(46, 204, 113, 0.15);
+}
+
+.digital-learning-feature-icon-box {
+    background: linear-gradient(135deg, #E8F5E9, #A3D9A3);
+    border-radius: 12px;
+    padding: 1rem;
+    color: #27ae60;
+}
+
+.digital-learning-feature-item p {
+    color: #000;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* === Stats Section === */
+.digital-learning-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-bottom: 5rem;
+}
+
+.digital-learning-stat-card {
+    background: linear-gradient(135deg, #E8F5E9 0%, #fff 100%);
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 2px solid #A3D9A3;
+    transition: transform 0.3s;
+}
+
+.digital-learning-stat-card:hover {
+    transform: scale(1.05);
+}
+
+.digital-learning-stat-icon {
+    margin-bottom: 1rem;
+}
+
+.digital-learning-stat-number {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #000;
+    margin-bottom: 0.5rem;
+}
+
+.digital-learning-stat-card p {
+    font-size: 1.1rem;
+    color: #000;
+    margin: 0;
+    font-weight: 600;
+}
+
+/* === CTA Section === */
+.digital-learning-cta-section {
+    background: linear-gradient(135deg, #2ECC71 0%, #27ae60 100%);
+    border-radius: 30px;
+    padding: 4rem 2rem;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(46, 204, 113, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.digital-learning-cta-decorative {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    top: -200px;
+    right: -100px;
+}
+
+.digital-learning-cta-section h2 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #000;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.digital-learning-cta-section p {
+    font-size: 1.25rem;
+    color: #000;
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.digital-learning-cta-button {
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 1.25rem 3rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s;
+    position: relative;
+    z-index: 1;
+}
+
+.digital-learning-cta-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* === Responsive Design === */
+@media (max-width: 768px) {
+    .digital-learning-header-title {
+        font-size: 2.5rem;
+    }
+
+    .digital-learning-header-emoji {
+        font-size: 3.5rem;
+    }
+
+    .digital-learning-header-subtitle {
+        font-size: 1rem;
+    }
+
+    .digital-learning-hero-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .digital-learning-tools-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .digital-learning-benefits-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .digital-learning-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .digital-learning-stat-number {
+        font-size: 2.5rem;
+    }
+
+    .digital-learning-feature-item {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .digital-learning-cta-section h2 {
+        font-size: 1.75rem;
+    }
+
+    .digital-learning-cta-section p {
+        font-size: 1rem;
+    }
+
+    .digital-learning-cta-button {
+        padding: 1rem 2rem;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .digital-learning-header-title {
+        font-size: 2rem;
+    }
+
+    .digital-learning-header-emoji {
+        font-size: 3rem;
+    }
+
+    .digital-learning-main-content {
+        padding: 2rem 1rem;
+    }
+
+    .digital-learning-hero-card-1,
+    .digital-learning-hero-card-2 {
+        padding: 2rem;
+    }
+
+    .digital-learning-tool-card {
+        padding: 2rem;
+    }
+
+    .digital-learning-benefits-section {
+        padding: 2rem;
+    }
+
+    .digital-learning-cta-section {
+        padding: 3rem 1.5rem;
+    }
+}

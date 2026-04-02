@@ -1,0 +1,158 @@
+/* Sill.css - Same green theme as MockTest page */
+
+.sill-bg {
+  min-height: 80vh;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+}
+
+.sill-card {
+  width: 100%;
+  max-width: 560px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(22, 163, 74, 0.13);
+  overflow: hidden;
+}
+
+/* ── Header ── */
+.sill-header {
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  padding: 36px 32px 28px;
+  text-align: center;
+  color: #fff;
+}
+
+.sill-header h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+
+.sill-header p {
+  font-size: 1rem;
+  opacity: 0.9;
+  margin: 0;
+}
+
+/* ── Body ── */
+.sill-body {
+  padding: 36px 32px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* ── Field ── */
+.sill-field label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #15803d;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.sill-field input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1.5px solid #bbf7d0;
+  border-radius: 10px;
+  font-size: 1rem;
+  color: #1a1a1a;
+  background: #f0fdf4;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.sill-field input:focus {
+  border-color: #16a34a;
+  background: #fff;
+}
+
+.sill-field input::placeholder {
+  color: #9ca3af;
+}
+
+/* ── Error ── */
+.sill-error {
+  color: #dc2626;
+  font-size: 0.88rem;
+  text-align: center;
+  margin: -8px 0;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+/* ── Button ── */
+.sill-btn {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  margin-top: 4px;
+}
+
+.sill-btn:hover {
+  opacity: 0.93;
+  transform: translateY(-1px);
+}
+
+.sill-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Button Loading State ── */
+.sill-btn-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.sill-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: sill-spin 0.7s linear infinite;
+}
+
+@keyframes sill-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .sill-body {
+    padding: 24px 16px 20px;
+  }
+  .sill-header {
+    padding: 28px 16px 20px;
+  }
+  .sill-header h2 {
+    font-size: 1.5rem;
+  }
+  .sill-card {
+    border-radius: 12px;
+  }
+}

@@ -1,0 +1,386 @@
+/* === Global Styles === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* === Animations === */
+@keyframes float {
+    0%, 100% { 
+        transform: translateY(0px); 
+    }
+    50% { 
+        transform: translateY(-20px); 
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { 
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 0.5;
+        transform: scale(1.2);
+    }
+}
+
+/* === Main Page === */
+.fees-page {
+    background: linear-gradient(to bottom, #ffffff 0%, #f0fdf4 100%);
+    min-height: 100vh;
+}
+
+div.fees-page{
+    padding: 0px;
+}
+
+/* === Header === */
+.fees-header {
+    background: linear-gradient(135deg, #A3D9A3 0%, #2ECC71 100%);
+    padding: 3rem 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.fees-tracking-header-circle-1 {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    top: -100px;
+    right: -50px;
+}
+
+.fees-tracking-header-circle-2 {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    bottom: -50px;
+    left: -30px;
+}
+
+.fees-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.fees-back-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    color: #000;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items:start;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s;
+    margin-bottom: 2rem;
+}
+
+button.fees-back-button{
+    align-items: start;
+    display: flex;
+}
+
+.fees-back-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateX(-5px);
+}
+
+.fees-header-content {
+    text-align: center;
+}
+
+.fees-header-emoji {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+.fees-header-title {
+    font-size: 4rem;
+    font-weight: 900;
+    color: #000;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.fees-header-subtitle {
+    font-size: 1.25rem;
+    color: #000;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.8;
+    font-weight: 500;
+}
+
+p.fees-header-subtitle{
+    text-align: center;
+}
+
+/* === Main Content === */
+.fees-main-content {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 1rem;
+}
+
+/* === Selectors === */
+.fees-selectors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.fees-selector-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
+
+.fees-select {
+    width: 100%;
+    padding: 0.7rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-top: 0.5rem;
+    font-size: 1rem;
+}
+
+/* === Stats Grid === */
+.fees-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.2rem;
+    margin-top: 2rem;
+}
+
+.fees-stat-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.fees-stat-icon {
+    margin-bottom: 10px;
+}
+
+.fees-stat-number {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #2e7d32;
+}
+
+.fees-stat-label {
+    color: #555;
+    font-size: 0.9rem;
+}
+
+/* === Payment Progress === */
+.fees-progress-section {
+    margin-top: 2rem;
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.fees-progress-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.fees-progress-bar {
+    background: #e8f5e9;
+    height: 12px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.fees-progress-fill {
+    height: 100%;
+    background: #2ecc71;
+    border-radius: 10px;
+}
+
+.fees-progress-info {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    color: #444;
+}
+
+/* === Alerts === */
+.fees-alert-card {
+    background: #fff7e6;
+    border-left: 6px solid #f39c12;
+    padding: 1rem;
+    margin-top: 1.5rem;
+    border-radius: 8px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* === Installments === */
+.installments-grid {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.installment-card {
+    background: #fff;
+    padding: 1.2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
+
+.installment-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.installment-status {
+    padding: 5px 10px;
+    color: #fff;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.installment-button {
+    width: 100%;
+    margin-top: 1rem;
+    padding: 0.7rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.installment-button.pay {
+    background: #27ae60;
+    color: #fff;
+}
+
+.installment-button.download {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+/* === Breakdown === */
+.breakdown-grid {
+    margin-top: 1rem;
+}
+
+.breakdown-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 0.7rem 0;
+}
+
+.breakdown-bar {
+    flex: 1;
+    height: 10px;
+    background: #dcedc8;
+    border-radius: 12px;
+}
+
+.breakdown-fill {
+    height: 100%;
+    border-radius: 12px;
+}
+
+/* === History === */
+.history-table-wrapper {
+    margin-top: 1rem;
+    overflow-x: auto;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.history-table th,
+.history-table td {
+    padding: 0.8rem;
+    border-bottom: 1px solid #ddd;
+}
+
+/* === Payment Options === */
+.payment-options-grid {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.payment-option-card {
+    text-align: center;
+    background: #fff;
+    padding: 1.3rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
+
+/* === CTA Section === */
+.fees-cta-section {
+    margin-top: 2rem;
+    background: #2ecc71;
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    color: #fff;
+    position: relative;
+}
+
+.fees-cta-buttons {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.fees-cta-button-primary {
+    padding: 0.7rem 1.5rem;
+    background: #fff;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #2ecc71;
+}
+
+.fees-cta-button-secondary {
+    padding: 0.7rem 1.5rem;
+    background: #1b5e20;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #fff;
+}

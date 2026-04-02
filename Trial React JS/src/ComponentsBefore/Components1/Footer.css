@@ -1,0 +1,310 @@
+/* ============================================
+   FOOTER SECTION - GREEN & WHITE THEME
+   Responsive & Non-overlapping Design
+   ============================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.school-footer {
+  background: linear-gradient(135deg, #15803d 0%, #16a34a 100%);
+  color: #ffffff;
+  padding: 60px 20px 20px;
+  margin-top: 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.school-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #22c55e, #16a34a, #15803d);
+}
+
+.school-footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Footer Top — 3 columns: About (wide) | Contact | Login */
+.school-footer-top {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 40px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.school-footer-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Logo */
+.school-footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.school-footer-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.school-footer-logo span {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.school-footer-description {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+}
+
+/* Social */
+.school-footer-social {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.school-footer-social-link {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.school-footer-social-link:hover {
+  background: #ffffff;
+  color: #16a34a;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Headings */
+.school-footer-heading {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Nav Links */
+.school-footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.school-footer-links li a {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  display: inline-block;
+  position: relative;
+}
+
+.school-footer-links li a::before {
+  content: '→';
+  position: absolute;
+  left: -20px;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.school-footer-links li a:hover {
+  color: #ffffff;
+  padding-left: 20px;
+  font-weight: 600;
+}
+
+.school-footer-links li a:hover::before {
+  opacity: 1;
+  left: 0;
+}
+
+/* Contact Info */
+.school-footer-contact {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.school-footer-contact li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.school-footer-contact li svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  opacity: 0.9;
+}
+
+/* Footer Bottom */
+.school-footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 20px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.school-footer-copyright {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.school-footer-legal {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.school-footer-legal a {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.school-footer-legal a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.school-footer-divider {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .school-footer-top {
+    grid-template-columns: 1fr 1fr;
+    gap: 35px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .school-footer {
+    padding: 50px 20px 20px;
+    margin-top: 60px;
+  }
+
+  .school-footer-top {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+  }
+
+  .school-footer-logo span {
+    font-size: 1.3rem;
+  }
+
+  .school-footer-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .school-footer-bottom {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .school-footer-legal {
+    justify-content: center;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .school-footer {
+    padding: 40px 15px 15px;
+    margin-top: 50px;
+  }
+
+  .school-footer-top {
+    gap: 25px;
+  }
+
+  .school-footer-logo {
+    gap: 10px;
+  }
+
+  .school-footer-logo span {
+    font-size: 1.2rem;
+  }
+
+  .school-footer-icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .school-footer-heading {
+    font-size: 1rem;
+  }
+
+  .school-footer-description,
+  .school-footer-links li a,
+  .school-footer-contact li,
+  .school-footer-copyright,
+  .school-footer-legal a {
+    font-size: 0.875rem;
+  }
+
+  .school-footer-social {
+    gap: 10px;
+  }
+
+  .school-footer-social-link {
+    width: 36px;
+    height: 36px;
+  }
+
+  .school-footer-legal {
+    gap: 10px;
+  }
+}

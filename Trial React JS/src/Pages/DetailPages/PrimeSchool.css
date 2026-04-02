@@ -1,0 +1,373 @@
+/* === Global Styles === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* === Animations === */
+@keyframes float {
+    0%, 100% { 
+        transform: translateY(0px); 
+    }
+    50% { 
+        transform: translateY(-20px); 
+    }
+}
+
+@keyframes slideIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(30px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+/* === Main Page Wrapper === */
+.prime-school-page {
+    background: linear-gradient(to bottom, #ffffff 0%, #f0fdf4 100%);
+    min-height: 100vh;
+}
+
+/* === Header Section === */
+.prime-school-header {
+    background: linear-gradient(135deg, #A3D9A3 0%, #2ECC71 100%);
+    padding: 3rem 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.prime-school-header-circle-1 {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    top: -100px;
+    right: -50px;
+}
+
+.prime-school-header-circle-2 {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    bottom: -50px;
+    left: -30px;
+}
+
+.prime-school-header-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+    padding: 0 1rem;
+}
+
+.prime-school-back-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    color: #000;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s;
+    margin-bottom: 2rem;
+}
+
+.prime-school-back-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateX(-5px);
+}
+
+.prime-school-header-content {
+    text-align: center;
+}
+
+.prime-school-header-emoji {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+.prime-school-header-title {
+    font-size: 4rem;
+    font-weight: 900;
+    color: #000;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.prime-school-header-subtitle {
+    font-size: 1.25rem;
+    color: #000;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.8;
+    font-weight: 500;
+}
+
+/* === Main Content === */
+.prime-school-main-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 4rem 1rem;
+}
+
+/* === Grade Tabs === */
+.prime-school-tabs-wrapper {
+    background: #fff;
+    border-radius: 25px;
+    padding: 1.5rem;
+    box-shadow: 0 15px 50px rgba(46, 125, 50, 0.15);
+    margin-bottom: 3rem;
+    border: 2px solid #E8F5E9;
+}
+
+.prime-school-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.prime-school-tab {
+    background: transparent;
+    border: none;
+    color: #2e7d32;
+    padding: 1rem 2rem;
+    border-radius: 20px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.prime-school-tab:hover {
+    background: rgba(46, 204, 113, 0.1);
+}
+
+.prime-school-tab.active {
+    background: linear-gradient(135deg, #2ECC71, #27ae60);
+    color: #fff;
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+}
+
+/* === Grade Info Banner === */
+.prime-school-grade-banner {
+    background: linear-gradient(135deg, #E8F5E9 0%, #f1f8f4 100%);
+    padding: 2.5rem;
+    border-radius: 20px;
+    margin-bottom: 3rem;
+    border-left: 6px solid #2ECC71;
+    box-shadow: 0 10px 30px rgba(46, 125, 50, 0.1);
+}
+
+.prime-school-grade-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #000;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.prime-school-grade-subtitle {
+    color: #2ECC71;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* === Section Heading === */
+.prime-school-section-heading {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.prime-school-section-title {
+    font-size: 3rem;
+    font-weight: 900;
+    color: #000;
+    margin-bottom: 0.5rem;
+}
+
+.prime-school-section-subtitle {
+    color: #4a5568;
+    font-size: 1.2rem;
+}
+
+/* === Teachers Grid === */
+.prime-school-teachers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-bottom: 5rem;
+}
+
+.prime-school-teacher-card {
+    background: #fff;
+    border-radius: 25px;
+    overflow: hidden;
+    border: 2px solid #E8F5E9;
+    box-shadow: 0 15px 45px rgba(46, 125, 50, 0.08);
+    transition: all 0.5s;
+    position: relative;
+}
+
+.prime-school-teacher-card:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 25px 60px rgba(46, 125, 50, 0.2);
+    border-color: #c8e6c9;
+}
+
+.prime-school-teacher-image-wrapper {
+    position: relative;
+    height: 320px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f1f8f4, #e8f5e9);
+}
+
+.prime-school-teacher-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s;
+}
+
+.prime-school-teacher-card:hover .prime-school-teacher-image {
+    transform: scale(1.08);
+}
+
+.prime-school-teacher-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: linear-gradient(135deg, #2ECC71, #27ae60);
+    color: #fff;
+    padding: 8px 18px;
+    border-radius: 25px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.prime-school-teacher-content {
+    padding: 2rem;
+}
+
+.prime-school-teacher-name {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #000;
+    margin-bottom: 0.5rem;
+}
+
+.prime-school-teacher-designation {
+    color: #2ECC71;
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-bottom: 1rem;
+}
+
+.prime-school-teacher-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.prime-school-meta-badge {
+    background: #f1f8f4;
+    color: #2e7d32;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid #e8f5e9;
+}
+
+.prime-school-teacher-qualification {
+    color: #4a5568;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.prime-school-teacher-description {
+    color: #4a5568;
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 2px solid #f1f8f4;
+    margin: 0;
+}
+
+/* === Responsive Design === */
+@media (max-width: 1024px) {
+    .prime-school-teachers-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .prime-school-header-title {
+        font-size: 2.8rem;
+    }
+
+    .prime-school-header-emoji {
+        font-size: 4rem;
+    }
+
+    .prime-school-tabs {
+        flex-direction: column;
+    }
+
+    .prime-school-tab {
+        width: 100%;
+    }
+
+    .prime-school-teachers-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .prime-school-section-title {
+        font-size: 2.2rem;
+    }
+
+    .prime-school-grade-title {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .prime-school-header-title {
+        font-size: 2.2rem;
+    }
+
+    .prime-school-teacher-content {
+        padding: 1.5rem;
+    }
+
+    .prime-school-main-content {
+        padding: 2rem 1rem;
+    }
+}

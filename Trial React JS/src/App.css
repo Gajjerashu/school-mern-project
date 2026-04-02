@@ -1,0 +1,54 @@
+/* Body - White Background */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Root div - White background */
+#root {
+  background-color: white;
+  min-height: 100vh;
+}
+
+/* Navbar - Green gradient (તમારો હાલનો green gradient) */
+.navbar,
+header,
+.admin-header {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  /* Or use solid color: background-color: #10b981; */
+  color: white;
+}
+
+/* Footer - Green gradient */
+footer,
+.admin-footer {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  /* Or use solid color: background-color: #10b981; */
+  color: white;
+}
+
+/* Main content area - White background */
+.main-content,
+.dashboard-content,
+.inquiry-dashboard {
+  background-color: white;
+  min-height: calc(100vh - 120px); /* Adjust based on navbar/footer height */
+}
+
+/* Cards and containers - Keep them clean */
+.card,
+.dashboard-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
