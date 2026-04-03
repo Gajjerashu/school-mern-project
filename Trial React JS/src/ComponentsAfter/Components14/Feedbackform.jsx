@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import './FeedbackForm.css';
+import './Feedbackform.css';
 import axios from 'axios';
 
-const FeedbackForm = () => {
+const Feedbackform = () => {
     const [formData, setFormData] = useState({
         studentName: '',
         studentId: '',
@@ -198,7 +198,7 @@ const FeedbackForm = () => {
                     {/* Student Information */}
                     <div className="form-section">
                         <h2 className="section-title">📋 YOUR INFORMATION</h2>
-                        
+
                         <div className="form-group">
                             <label htmlFor="studentName">Student Name *</label>
                             <input
@@ -249,7 +249,7 @@ const FeedbackForm = () => {
                                 {formData.goodPoints.length}/5
                             </span>
                         </div>
-                        
+
                         <div className="options-grid good-grid">
                             {goodOptions.map((option, index) => (
                                 <label key={index} className="option-item good-option">
@@ -277,7 +277,7 @@ const FeedbackForm = () => {
                                 {formData.badPoints.length}/5
                             </span>
                         </div>
-                        
+
                         <div className="options-grid bad-grid">
                             {badOptions.map((option, index) => (
                                 <label key={index} className="option-item bad-option">
@@ -300,7 +300,7 @@ const FeedbackForm = () => {
                     {/* Additional Comments */}
                     <div className="form-section">
                         <h2 className="section-title">💭 ADDITIONAL COMMENTS (OPTIONAL)</h2>
-                        
+
                         <div className="form-group">
                             <textarea
                                 name="comment"
@@ -330,4 +330,4 @@ const FeedbackForm = () => {
     );
 };
 
-export default FeedbackForm;
+export default Feedbackform;
