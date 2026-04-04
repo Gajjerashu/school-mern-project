@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./Prime.css";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
@@ -10,24 +11,14 @@ const SUBJECT_COLORS = [
 ];
 
 const ICON_MAP = {
-    Mathematics: "🔢", Ganit: "🔢",
-    English: "📖", Gujarati: "📖",
-    EVS: "🌿", Paryavaran: "🌿",
-    Hindi: "🇮🇳",
-    Science: "🔬", Vigyan: "🔬",
-    "Social Science": "🌍", "Samajik Vigyan": "🌍",
-    Art: "🎨", Kala: "🎨",
-    Physics: "⚡", Bhautikshaastr: "⚡",
-    Chemistry: "🧪", Rasayanshaastr: "🧪",
-    Biology: "🧬", Jivvigyan: "🧬",
-    Accountancy: "📊", "Hisabi Vidya": "📊",
-    "Business Studies": "💼", "Vanijya Vyavasaay": "💼",
-    Economics: "📈", Arthashastr: "📈",
+    Mathematics: "🔢", Ganit: "🔢", English: "📖", Gujarati: "📖",
+    EVS: "🌿", Paryavaran: "🌿", Hindi: "🇮🇳", Science: "🔬", 
+    Vigyan: "🔬", "Social Science": "🌍", "Samajik Vigyan": "🌍",
+    Art: "🎨", Kala: "🎨", Physics: "⚡", Bhautikshaastr: "⚡",
+    Chemistry: "🧪", Rasayanshaastr: "🧪", Biology: "🧬", Jivvigyan: "🧬",
+    Accountancy: "📊", "Hisabi Vidya": "📊", "Business Studies": "💼", 
+    "Vanijya Vyavasaay": "💼", Economics: "📈", Arthashastr: "📈",
 };
-
-function getIcon(subject) {
-    return ICON_MAP[subject] || "📚";
-}
 
 const Prime = () => {
     const location = useLocation();
@@ -38,32 +29,53 @@ const Prime = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-    useEffect(() => {
-        if (!studentName || !applyClass) return;
+    // Memoize the icon function to avoid recalculation
+    const getIcon = (subject) => ICON_MAP[subject] || "📚";
 
-        const controller = new AbortController(); // ✅ Add Cleanup controller
+    // Memoize Level Label
+    const levelLabel = useMemo(() => {
+        const cls = parseInt(applyClass);
+        if (cls <= 5) return "Primary School";
+        if (cls <= 8) return "Middle School";
+        if (cls <= 10) return "High School";
+        return "Higher Secondary School";
+    }, [applyClass]);
+
+    useEffect(() => {
+        // Redirect if direct access
+        if (!studentName || !applyClass) {
+            return;
+        }
+
+        const source = axios.CancelToken.source();
+
         const fetchSyllabus = async () => {
             setLoading(true);
             setError("");
             try {
-                let url = `${API_BASE_URL}/api/syllabus-data?standard=${applyClass}&medium=${language || "English"}`;
-                
-                // ✅ Check class number correctly
+                const params = {
+                    standard: applyClass,
+                    medium: language || "English"
+                };
+
+                // Add stream only for higher secondary
                 if (parseInt(applyClass) >= 11 && stream && stream !== "NA") {
-                    url += `&stream=${stream}`;
+                    params.stream = stream;
                 }
 
-                const res = await fetch(url, { signal: controller.signal });
-                const data = await res.json();
+                const res = await axios.get(`${API_BASE_URL}/api/syllabus-data`, {
+                    params,
+                    cancelToken: source.token
+                });
 
-                if (!res.ok || !data.success) {
-                    setError("Syllabus not found for your class.");
+                if (res.data.success) {
+                    setSyllabusData(res.data.data);
                 } else {
-                    setSyllabusData(data.data);
+                    setError("Syllabus not found for your class.");
                 }
             } catch (err) {
-                if (err.name !== 'AbortError') {
-                    setError("Server error. Please try again.");
+                if (!axios.isCancel(err)) {
+                    setError(err.response?.data?.message || "Server error. Please try again.");
                 }
             } finally {
                 setLoading(false);
@@ -71,35 +83,35 @@ const Prime = () => {
         };
 
         fetchSyllabus();
-        return () => controller.abort(); // ✅ Cleanup on unmount
+        return () => source.cancel("Operation canceled by the user.");
     }, [applyClass, language, stream, studentName]);
 
-    // Access Denied Logic... (Same as your code)
+    // Access Denied View
     if (!studentName || !applyClass) {
         return (
-            <div className="prime-error-container" style={{ textAlign: "center", marginTop: "80px" }}>
-                <p>Access denied. Please login from Syllabus page.</p>
-                <button className="prime-back-btn" onClick={() => navigate("/AfterLogin/Syllabus")}>
-                    Go Back
-                </button>
+            <div className="prime-error-container">
+                <div className="prime-error-card">
+                    <h2>🚫 Access Denied</h2>
+                    <p>Please login from the Syllabus portal to view your content.</p>
+                    <button className="prime-back-btn" onClick={() => navigate("/AfterLogin/Syllabus")}>
+                        Go to Login
+                    </button>
+                </div>
             </div>
         );
     }
 
-    const levelLabel =
-        applyClass <= 5 ? "Primary School" :
-        applyClass <= 8 ? "Middle School" :
-        applyClass <= 10 ? "High School" :
-        "Higher Secondary School";
-
     return (
         <div className="prime-bg">
-            {/* ... Rest of your UI ... */}
             <div className="prime-banner">
                 <div className="prime-banner-content">
-                    <h1>📚 {levelLabel} Syllabus</h1>
-                    <p>Standard {applyClass} {stream && stream !== "NA" ? `— ${stream}` : ""} — {language} Medium</p>
-                    <div className="prime-student-badge">👤 {studentName}</div>
+                    <span className="prime-badge-top">{levelLabel}</span>
+                    <h1>Syllabus Dashboard</h1>
+                    <p>Standard {applyClass} {stream && stream !== "NA" ? `— ${stream}` : ""} | {language} Medium</p>
+                    <div className="prime-student-info">
+                        <span className="avatar">👤</span>
+                        <span>Welcome, <strong>{studentName}</strong></span>
+                    </div>
                 </div>
             </div>
 
@@ -107,12 +119,14 @@ const Prime = () => {
                 {loading ? (
                     <div className="prime-loading">
                         <div className="prime-spinner"></div>
-                        <p>Loading Syllabus...</p>
+                        <p>Fetching your topics...</p>
                     </div>
                 ) : error ? (
                     <div className="prime-error-box">
                         <p>⚠️ {error}</p>
-                        <button className="prime-back-btn" onClick={() => navigate("/AfterLogin/Syllabus")}>← Go Back</button>
+                        <button className="prime-back-btn" onClick={() => navigate("/AfterLogin/Syllabus")}>
+                            ← Try Again
+                        </button>
                     </div>
                 ) : (
                     <>
@@ -123,21 +137,31 @@ const Prime = () => {
                                     key={subj.subjectName}
                                     style={{ "--accent": SUBJECT_COLORS[idx % SUBJECT_COLORS.length] }}
                                 >
-                                    <div className="prime-subject-header">
-                                        <span className="prime-subject-icon">{getIcon(subj.subjectName)}</span>
-                                        <h3>{subj.subjectName}</h3>
+                                    <div className="prime-card-inner">
+                                        <div className="prime-subject-header">
+                                            <div className="icon-wrapper">
+                                                {getIcon(subj.subjectName)}
+                                            </div>
+                                            <h3>{subj.subjectName}</h3>
+                                        </div>
+                                        <div className="prime-divider"></div>
+                                        <ul className="prime-topic-list">
+                                            {subj.topics.map((topic, i) => (
+                                                <li key={i}>
+                                                    <span className="prime-topic-num">{i + 1}</span>
+                                                    {topic}
+                                                </li>
+                                            ))}
+                                        </ul>
                                     </div>
-                                    <ul className="prime-topic-list">
-                                        {subj.topics.map((topic, i) => (
-                                            <li key={i}><span className="prime-dot" />{topic}</li>
-                                        ))}
-                                    </ul>
                                 </div>
                             ))}
                         </div>
-                        <button className="prime-back-btn" onClick={() => navigate("/AfterLogin/Syllabus")}>
-                            ← Back to Syllabus Portal
-                        </button>
+                        <div className="prime-footer-actions">
+                             <button className="prime-back-link" onClick={() => navigate("/AfterLogin/Syllabus")}>
+                                ← Back to Syllabus Portal
+                            </button>
+                        </div>
                     </>
                 )}
             </div>
