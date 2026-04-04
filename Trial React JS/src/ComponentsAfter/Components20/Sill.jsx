@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios"; // Axios વાપરવું વધુ હિતાવહ છે
 import "./Sill.css";
 
-// API Base URL define karo
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const Sill = () => {
@@ -12,30 +12,33 @@ const Sill = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e) => {
+        if (e) e.preventDefault(); // Form submit રોકવા માટે
         setError("");
 
-        if (!studentName.trim() || !studentId.trim()) {
+        const nameInput = studentName.trim();
+        const idInput = studentId.trim();
+
+        if (!nameInput || !idInput) {
             setError("Please fill in both Student Name and Student ID.");
             return;
         }
 
         setLoading(true);
         try {
-            const res = await fetch(
-                `${API_BASE_URL}/api/admissions/student/${studentId.trim()}`
-            );
-            const data = await res.json();
+            // API Call using Axios
+            const response = await axios.get(`${API_BASE_URL}/api/admissions/student/${idInput}`);
+            const { success, data } = response.data;
 
-            if (!res.ok || !data.success) {
+            if (!success || !data) {
                 setError("Student ID not found. Please check your ID.");
                 setLoading(false);
                 return;
             }
 
-            // ✅ Safe access with optional chaining
-            const dbName = data.data?.studentName?.toLowerCase().trim();
-            const enteredName = studentName.toLowerCase().trim();
+            // Name Verification
+            const dbName = data.studentName?.toLowerCase().trim();
+            const enteredName = nameInput.toLowerCase();
 
             if (dbName !== enteredName) {
                 setError("Student Name does not match our records.");
@@ -43,11 +46,11 @@ const Sill = () => {
                 return;
             }
 
-            // ✅ Clean up class string (e.g., "10th" -> 10)
-            const rawClass = data.data?.applyClass?.toString().replace(/\D/g, "");
+            // Class Data Cleanup
+            const rawClass = data.applyClass?.toString().replace(/\D/g, "");
             const applyClass = parseInt(rawClass);
-            const language = data.data?.language || "English";
-            const stream = data.data?.stream || "NA";
+            const language = data.language || "English";
+            const stream = data.stream || "NA";
 
             if (isNaN(applyClass)) {
                 setError("Invalid class data. Please contact admin.");
@@ -55,35 +58,34 @@ const Sill = () => {
                 return;
             }
 
-            // ✅ Helper to dry up navigation code
+            // Navigation Logic
             const commonState = { 
-                studentName: data.data.studentName, 
+                studentName: data.studentName, 
                 applyClass, 
                 language 
             };
 
-            if (applyClass >= 1 && applyClass <= 5) {
-                navigate("/AfterLogin/Syllabus/Primary", { state: { ...commonState, stream: "NA" } });
-            } else if (applyClass >= 6 && applyClass <= 8) {
-                navigate("/AfterLogin/Syllabus/Middle", { state: { ...commonState, stream: "NA" } });
-            } else if (applyClass >= 9 && applyClass <= 10) {
-                navigate("/AfterLogin/Syllabus/High", { state: { ...commonState, stream: "NA" } });
-            } else if (applyClass >= 11 && applyClass <= 12) {
-                navigate("/AfterLogin/Syllabus/High", { 
+            let targetPath = "";
+            if (applyClass >= 1 && applyClass <= 5) targetPath = "/AfterLogin/Syllabus/Primary";
+            else if (applyClass >= 6 && applyClass <= 8) targetPath = "/AfterLogin/Syllabus/Middle";
+            else if (applyClass >= 9 && applyClass <= 12) targetPath = "/AfterLogin/Syllabus/High";
+
+            if (targetPath) {
+                navigate(targetPath, { 
                     state: { 
                         ...commonState, 
-                        stream: stream !== "NA" ? stream : "Science" 
+                        stream: (applyClass >= 11 && stream !== "NA") ? stream : "NA" 
                     } 
                 });
             } else {
-                setError("Class not recognized. Please contact admin.");
+                setError("Class route not found.");
             }
 
         } catch (err) {
-            console.error("❌ Error:", err);
-            setError("Server error. Please try again.");
+            console.error("❌ Login Error:", err);
+            const msg = err.response?.data?.message || "Server error. Please try again.";
+            setError(msg);
         } finally {
-            // ✅ Always stop loading
             setLoading(false);
         }
     };
@@ -92,47 +94,55 @@ const Sill = () => {
         <div className="sill-bg">
             <div className="sill-card">
                 <div className="sill-header">
-                    <h2>📚 Syllabus Portal</h2>
-                    <p>InspireEdge School</p>
+                    <div className="sill-logo">🎓</div>
+                    <h2>Syllabus Portal</h2>
+                    <p>InspireEdge School Management</p>
                 </div>
-                <div className="sill-body">
+                
+                <form className="sill-body" onSubmit={handleSubmit}>
                     <div className="sill-field">
-                        <label>👤 STUDENT NAME</label>
+                        <label>Student Full Name</label>
                         <input
                             type="text"
-                            placeholder="Enter your name"
+                            placeholder="e.g. John Doe"
                             value={studentName}
                             autoComplete="off"
                             onChange={(e) => setStudentName(e.target.value)}
-                            onKeyDown={(e) => e.key === "Enter" && !loading && handleSubmit()}
+                            disabled={loading}
                         />
                     </div>
+
                     <div className="sill-field">
-                        <label>🪪 STUDENT ID</label>
+                        <label>Student Admission ID</label>
                         <input
                             type="text"
-                            placeholder="Enter your ID"
+                            placeholder="Enter ID Number"
                             value={studentId}
                             autoComplete="off"
                             onChange={(e) => setStudentId(e.target.value)}
-                            onKeyDown={(e) => e.key === "Enter" && !loading && handleSubmit()}
+                            disabled={loading}
                         />
                     </div>
-                    {error && <p className="sill-error">⚠️ {error}</p>}
+
+                    {error && <div className="sill-error-box">⚠️ {error}</div>}
+
                     <button
-                        className="sill-btn"
-                        onClick={handleSubmit}
+                        type="submit"
+                        className={`sill-btn ${loading ? "loading" : ""}`}
                         disabled={loading}
                     >
                         {loading ? (
-                            <span className="sill-btn-loading">
-                                <span className="sill-spinner"></span>
-                                Verifying...
+                            <span className="btn-content">
+                                <i className="spinner"></i> Verifying...
                             </span>
                         ) : (
                             "LOGIN & CONTINUE"
                         )}
                     </button>
+                </form>
+
+                <div className="sill-footer">
+                    <p>Facing issues? <a href="#">Contact Support</a></p>
                 </div>
             </div>
         </div>
