@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Check.css";
 
+// API Base URL - Future-proof logic
+const API_BASE_URL = "http://localhost:5000/api";
+
 const Check = () => {
     const navigate = useNavigate();
 
@@ -10,7 +13,7 @@ const Check = () => {
         studentId: ""
     });
 
-    const [checkType, setCheckType] = useState("fees"); // 'fees' or 'mocktest'
+    const [checkType, setCheckType] = useState("fees");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [successMsg, setSuccessMsg] = useState("");
@@ -18,8 +21,8 @@ const Check = () => {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
-        setError("");
-        setSuccessMsg("");
+        if (error) setError("");
+        if (successMsg) setSuccessMsg("");
     };
 
     const handleCheckTypeChange = (e) => {
@@ -32,6 +35,7 @@ const Check = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Basic Validation
         if (!formData.studentName.trim() || !formData.studentId.trim()) {
             setError("Please enter both Student Name and Student ID");
             return;
@@ -41,22 +45,24 @@ const Check = () => {
         setError("");
         setSuccessMsg("");
 
+        // Clean data before sending
+        const payload = {
+            studentName: formData.studentName.trim(),
+            studentId: formData.studentId.trim()
+        };
+
         try {
             if (checkType === "fees") {
-                // ── FEE STATUS CHECK ──
-                console.log("📤 Sending fee check request:", formData);
-
-                const response = await fetch("http://localhost:5000/api/check/student-fee", {
+                const response = await fetch(`${API_BASE_URL}/check/student-fee`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(formData)
+                    body: JSON.stringify(payload)
                 });
 
                 const result = await response.json();
-                console.log("📥 Fee check response:", result);
 
                 if (response.ok && result.success) {
-                    setSuccessMsg("✅ Student found! Redirecting...");
+                    setSuccessMsg("✅ Student records found! Redirecting...");
                     setTimeout(() => {
                         navigate("/AfterLogin/Info", {
                             state: {
@@ -65,222 +71,127 @@ const Check = () => {
                                 paymentHistory: result.paymentHistory
                             }
                         });
-                    }, 800);
+                    }, 1000);
                 } else {
-                    setError(result.error || "Student not found");
+                    setError(result.error || "No fee records found for this student.");
                 }
 
-            } else if (checkType === "mocktest") {
-                // ── MOCK TEST RESULT CHECK ──
-                console.log("📤 Sending mock test verification request:", formData);
-
-                const response = await fetch("http://localhost:5000/api/mocktest/verify", {
+            } else {
+                // MOCK TEST LOGIC
+                const response = await fetch(`${API_BASE_URL}/mocktest/verify`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(formData)
+                    body: JSON.stringify(payload)
                 });
 
                 const result = await response.json();
-                console.log("📥 Mock test verify response:", result);
 
                 if (response.ok && result.success) {
-                    // ✅ FIXED: Fetch latest result for this student
-                    console.log("📤 Fetching latest mock test result for student:", formData.studentId);
-                    
-                    const resultResponse = await fetch(
-                        `http://localhost:5000/api/mocktest/results/${formData.studentId}/latest`
-                    );
+                    // Result fetch karva mate
+                    const resultRes = await fetch(`${API_BASE_URL}/mocktest/results/${payload.studentId}/latest`);
+                    const resultData = await resultRes.json();
 
-                    const resultData = await resultResponse.json();
-                    console.log("📥 Latest result response:", resultData);
-
-                    if (resultResponse.ok && resultData.success && resultData.data) {
-                        // ✅ Results found - display them
-                        console.log("✅ Results found - navigating to MockTestResults");
-                        setSuccessMsg("✅ Results found! Redirecting...");
-                        
+                    if (resultRes.ok && resultData.success && resultData.data) {
+                        setSuccessMsg("✅ Results found! Opening dashboard...");
                         setTimeout(() => {
                             navigate("/MockTestResults", {
-                                state: {
-                                    studentInfo: result.student,
-                                    resultData: resultData.data
-                                }
+                                state: { studentInfo: result.student, resultData: resultData.data }
                             });
-                        }, 800);
+                        }, 1000);
                     } else {
-                        // ✅ No results - offer to take test
-                        console.log("⚠️ No results found - offering to take new test");
-                        setError("No mock test results found for this student");
-                        
-                        // ✅ FIXED: Add option to take new test
+                        // Agar student chhe pan test nathi api
+                        setError("Student verified, but no mock test results found.");
                         setTimeout(() => {
-                            const takeTest = window.confirm(
-                                "📝 No previous results found.\n\nWould you like to take a new mock test now?"
-                            );
-                            if (takeTest) {
-                                console.log("✅ Student wants to take new test");
+                            if (window.confirm("📝 No results found. Would you like to start a New Mock Test?")) {
                                 navigate("/MockTest", {
-                                    state: {
-                                        studentInfo: result.student,
-                                        isNewTest: true
-                                    }
+                                    state: { studentInfo: result.student, isNewTest: true }
                                 });
                             }
                         }, 500);
                     }
                 } else {
-                    setError(result.message || "Student not found");
+                    setError(result.message || "Student identity not verified.");
                 }
             }
-
         } catch (err) {
-            console.error("❌ Error:", err);
-            setError("Connection error. Please check if the server is running.");
+            console.error("Connection Error:", err);
+            setError("Cannot connect to server. Please ensure the backend is running.");
         } finally {
             setLoading(false);
         }
     };
 
-    const isFeesMode = checkType === "fees";
-
     return (
         <div className="unified-check-section">
             <div className="unified-check-container">
-                {/* ── HEADER ── */}
                 <div className="check-header">
-                    <div className="header-icon">
-                        {isFeesMode ? "💰" : "📝"}
-                    </div>
-                    <h1>{isFeesMode ? "Check Fee Status" : "Check Mock Test Results"}</h1>
-                    <p>
-                        {isFeesMode
-                            ? "Enter your details to view fee information"
-                            : "Enter your details to view mock test results"
-                        }
-                    </p>
+                    <div className="header-icon">{checkType === "fees" ? "💰" : "📝"}</div>
+                    <h1>{checkType === "fees" ? "Fee Portal" : "Assessment Center"}</h1>
+                    <p>Enter Student Credentials to proceed</p>
                 </div>
 
-                {/* ── SEARCH CARD ── */}
                 <div className="search-card">
-                    {/* ── DROPDOWN SELECTOR ── */}
                     <div className="selector-bar">
-                        <div className="selector-label">Check Type:</div>
+                        <span className="selector-label">I want to check:</span>
                         <div className="selector-options">
                             <label className={`selector-option ${checkType === "fees" ? "active" : ""}`}>
-                                <input
-                                    type="radio"
-                                    name="checkType"
-                                    value="fees"
-                                    checked={checkType === "fees"}
-                                    onChange={handleCheckTypeChange}
-                                />
-                                <span className="option-text">💰 Fee Status</span>
+                                <input type="radio" name="type" value="fees" checked={checkType === "fees"} onChange={handleCheckTypeChange} />
+                                <span className="option-text">Fees</span>
                             </label>
                             <label className={`selector-option ${checkType === "mocktest" ? "active" : ""}`}>
-                                <input
-                                    type="radio"
-                                    name="checkType"
-                                    value="mocktest"
-                                    checked={checkType === "mocktest"}
-                                    onChange={handleCheckTypeChange}
-                                />
-                                <span className="option-text">📝 Mock Test Results</span>
+                                <input type="radio" name="type" value="mocktest" checked={checkType === "mocktest"} onChange={handleCheckTypeChange} />
+                                <span className="option-text">Mock Test</span>
                             </label>
                         </div>
                     </div>
 
                     <form onSubmit={handleSubmit} className="search-form">
-                        {/* ── FORM GRID ── */}
                         <div className="form-grid">
                             <div className="form-group">
-                                <label>
-                                    <span className="label-icon">👤</span>
-                                    Student Name
-                                </label>
-                                <input
-                                    type="text"
-                                    name="studentName"
-                                    value={formData.studentName}
-                                    onChange={handleChange}
-                                    placeholder="Enter Student Name"
-                                    disabled={loading}
-                                    required
+                                <label><span className="label-icon">👤</span> Full Name</label>
+                                <input 
+                                    type="text" 
+                                    name="studentName" 
+                                    value={formData.studentName} 
+                                    onChange={handleChange} 
+                                    placeholder="e.g. Rahul Sharma" 
+                                    required 
                                 />
                             </div>
-
                             <div className="form-group">
-                                <label>
-                                    <span className="label-icon">🆔</span>
-                                    Student ID
-                                </label>
-                                <input
-                                    type="text"
-                                    name="studentId"
-                                    value={formData.studentId}
-                                    onChange={handleChange}
-                                    placeholder="Enter Student ID"
-                                    disabled={loading}
-                                    required
+                                <label><span className="label-icon">🆔</span> Student ID</label>
+                                <input 
+                                    type="text" 
+                                    name="studentId" 
+                                    value={formData.studentId} 
+                                    onChange={handleChange} 
+                                    placeholder="e.g. ST10234" 
+                                    required 
                                 />
                             </div>
                         </div>
 
-                        {/* ── ERROR MESSAGE ── */}
-                        {error && (
-                            <div className="error-message">
-                                ⚠️ {error}
-                            </div>
-                        )}
+                        {error && <div className="error-message">⚠️ {error}</div>}
+                        {successMsg && <div className="success-message">{successMsg}</div>}
 
-                        {/* ── SUCCESS MESSAGE ── */}
-                        {successMsg && (
-                            <div className="success-message">
-                                {successMsg}
-                            </div>
-                        )}
-
-                        {/* ── SUBMIT BUTTON ── */}
                         <div className="search-btn-container">
-                            <button type="submit" className="search-btn" disabled={loading}>
-                                {loading ? (
-                                    <>
-                                        <span className="btn-icon spinning">🔍</span>
-                                        <span>Searching...</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <span className="btn-icon">🔍</span>
-                                        <span>
-                                            {isFeesMode ? "Check Fee Status" : "Check Results"}
-                                        </span>
-                                    </>
-                                )}
+                            <button type="submit" className={`search-btn ${loading ? 'loading' : ''}`} disabled={loading}>
+                                {loading ? "Searching..." : `Check ${checkType === "fees" ? "Status" : "Results"}`}
                             </button>
                         </div>
                     </form>
                 </div>
 
-                {/* ── INFO CARDS ── */}
                 <div className="info-cards">
-                    <div className="info-card info-card-1">
-                        <div className="info-icon">💡</div>
-                        <h3>{isFeesMode ? "Fee Information" : "Test Results"}</h3>
-                        <p>
-                            {isFeesMode
-                                ? "View your total fees, paid amount, and pending balance"
-                                : "Check your mock test scores, correct answers, and performance"
-                            }
-                        </p>
-                    </div>
-                    <div className="info-card info-card-2">
-                        <div className="info-icon">🔒</div>
-                        <h3>Secure Access</h3>
-                        <p>Your information is encrypted and protected with secure authentication</p>
-                    </div>
-                    <div className="info-card info-card-3">
+                    <div className="info-card">
                         <div className="info-icon">⚡</div>
-                        <h3>Instant Results</h3>
-                        <p>Get immediate access to your data without any delays or waiting time</p>
+                        <h3>Real-time Data</h3>
+                        <p>Access the latest updates directly from our servers.</p>
+                    </div>
+                    <div className="info-card">
+                        <div className="info-icon">🔒</div>
+                        <h3>Secure</h3>
+                        <p>Your data is encrypted and visible only to authorized users.</p>
                     </div>
                 </div>
             </div>
