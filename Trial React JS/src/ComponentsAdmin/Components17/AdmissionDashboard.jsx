@@ -8,6 +8,8 @@ const AdmissionDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [activeFilter, setActiveFilter] = useState("all");
 
+    const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
     const filterLastWeek = (data) => {
         const oneWeekAgo = new Date();
         oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
@@ -24,7 +26,8 @@ const AdmissionDashboard = () => {
         try {
             setLoading(true);
             const trimmedSearch = searchQuery.trim();
-            const response = await fetch(`http://localhost:5000/api/addDash?search=${encodeURIComponent(trimmedSearch)}`);
+            const response = await fetch(`${API_BASE_URL}/api/addDash?search=${encodeURIComponent(trimmedSearch)}`);
+            
             if (!response.ok) throw new Error("Failed to fetch admissions");
             
             const result = await response.json();
