@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./StudentSignup.css";
 
-// Dynamic API URL (Deployment vakhte badlavu na pade etle)
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+// ✅ Vite mate correct Environment Variable access
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const StudentSignup = () => {
     const navigate = useNavigate();
@@ -25,13 +25,13 @@ const StudentSignup = () => {
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
-        if (error) setError(""); // Typing vakhte error clear thai jay
+        if (error) setError(""); 
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Basic Validation
+        // ✅ Sudharelu Validation
         if (formData.password !== formData.confirmPassword) {
             setError("Passwords do not match!");
             return;
@@ -62,13 +62,12 @@ const StudentSignup = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                // Backend mathi aavti error (e.g., Email already exists) handle karo
                 throw new Error(data.message || "Signup failed. Please try again.");
             }
 
-            console.log("✅ Signup successful:", data);
+            console.log("✅ Signup successful");
 
-            // Redirect with success message
+            // ✅ Success pachi login par redirect
             navigate("/login", {
                 state: {
                     message: "Account created successfully! Please login.",
@@ -77,7 +76,10 @@ const StudentSignup = () => {
             });
         } catch (err) {
             console.error("❌ Signup Error:", err);
-            setError(err.message || "Server error. Please check your connection.");
+            // ✅ CORS ke Network error handle karva mate
+            setError(err.message === "Failed to fetch" 
+                ? "Server connect nathi thai rahyu. Please check internet or backend status." 
+                : err.message);
         } finally {
             setLoading(false);
         }
@@ -97,7 +99,7 @@ const StudentSignup = () => {
                 <h2>Student Signup</h2>
                 <p className="signup-subtitle">Create your account to get started</p>
 
-                {error && <div className="error-message">⚠️ {error}</div>}
+                {error && <div className="error-message" style={{ color: '#ff4d4d', marginBottom: '15px' }}>⚠️ {error}</div>}
 
                 <form onSubmit={handleSubmit} className="signup-form">
                     <div className="form-group">
@@ -109,6 +111,7 @@ const StudentSignup = () => {
                             value={formData.fullname}
                             onChange={handleChange}
                             required
+                            autoComplete="name"
                         />
                     </div>
 
@@ -121,6 +124,7 @@ const StudentSignup = () => {
                             value={formData.email}
                             onChange={handleChange}
                             required
+                            autoComplete="email"
                         />
                     </div>
 
@@ -133,6 +137,7 @@ const StudentSignup = () => {
                             value={formData.phone}
                             onChange={handleChange}
                             required
+                            autoComplete="tel"
                         />
                     </div>
 
@@ -146,10 +151,11 @@ const StudentSignup = () => {
                                 value={formData.password}
                                 onChange={handleChange}
                                 required
+                                autoComplete="new-password"
+                                style={{ width: '100%', paddingRight: '40px' }}
                             />
                             <button
                                 type="button"
-                                className="toggle-password"
                                 onClick={() => setShowPassword(!showPassword)}
                                 style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer' }}
                             >
@@ -168,10 +174,11 @@ const StudentSignup = () => {
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
                                 required
+                                autoComplete="new-password"
+                                style={{ width: '100%', paddingRight: '40px' }}
                             />
                             <button
                                 type="button"
-                                className="toggle-password"
                                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                 style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer' }}
                             >
@@ -180,15 +187,11 @@ const StudentSignup = () => {
                         </div>
                     </div>
 
-                    <button type="submit" className="btn-submit" disabled={loading}>
-                        {loading ? (
-                            <><span className="spinner"></span> Processing...</>
-                        ) : (
-                            "SIGNUP"
-                        )}
+                    <button type="submit" className="btn-submit" disabled={loading} style={{ width: '100%', padding: '12px', cursor: loading ? 'not-allowed' : 'pointer' }}>
+                        {loading ? "PROCESSING..." : "SIGNUP"}
                     </button>
 
-                    <p className="login-link">
+                    <p className="login-link" style={{ textAlign: 'center', marginTop: '15px' }}>
                         Already have an account?{" "}
                         <span onClick={() => navigate("/login")} style={{ cursor: 'pointer', color: '#007bff', fontWeight: 'bold' }}>Login here</span>
                     </p>
