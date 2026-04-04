@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./AdmissionShow.css";
 
+const API_BASE_URL = "http://localhost:5000/api";
+
 const AdmissionShow = () => {
     const [activeSection, setActiveSection] = useState("all");
     const [activeClass, setActiveClass] = useState("all");
@@ -22,9 +24,9 @@ const AdmissionShow = () => {
         fetchAdmissions();
     }, [activeSection, activeClass, activeLanguage, searchTerm]);
 
-    const fetchStats = async () => {
+   const fetchStats = async () => {
         try {
-            const response = await fetch("http://localhost:5000/api/admission-dash/stats");
+            const response = await fetch(`${API_BASE_URL}/admission-dash/stats`);
             const data = await response.json();
             if (data.success) setStats(data.statistics);
         } catch (error) {
@@ -41,7 +43,8 @@ const AdmissionShow = () => {
                 language: activeLanguage,
                 search: searchTerm
             });
-            const response = await fetch(`http://localhost:5000/api/admission-dash?${params.toString()}`);
+            const response = await fetch(`${API_BASE_URL}/admission-dash?${params.toString()}`);
+            const data = await response.json();
             const data = await response.json();
             if (data.success) setAdmissions(data.admissions);
         } catch (error) {
