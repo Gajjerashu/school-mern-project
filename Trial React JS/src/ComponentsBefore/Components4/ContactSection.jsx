@@ -12,11 +12,19 @@ const ContactSection = () => {
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+        // Typing vakhte alert hide karva mate
         if (status.msg) setStatus({ loading: false, msg: "", type: "" });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        // Basic Email Validation
+        if (!formData.email.includes("@")) {
+            setStatus({ loading: false, msg: "❌ Please enter a valid email.", type: "error" });
+            return;
+        }
+
         setStatus({ loading: true, msg: "", type: "" });
 
         const templateParams = {
@@ -27,11 +35,13 @@ const ContactSection = () => {
         };
 
         try {
+            // ✅ Vite Environment Variables vaparva best chhe (Security mate)
+            // .env file ma: VITE_EMAILJS_SERVICE_ID, VITE_EMAILJS_TEMPLATE_ID, VITE_EMAILJS_PUBLIC_KEY
             const response = await emailjs.send(
-                "service_zz0wjx8", // Tamari Service ID
-                "template_8livzh9", // Tamari Template ID
+                import.meta.env.VITE_EMAILJS_SERVICE_ID || "service_zz0wjx8", 
+                import.meta.env.VITE_EMAILJS_TEMPLATE_ID || "template_8livzh9", 
                 templateParams,
-                "ixS9p5SDSZYMsvndX" // Tamari Public Key
+                import.meta.env.VITE_EMAILJS_PUBLIC_KEY || "ixS9p5SDSZYMsvndX"
             );
 
             if (response.status === 200) {
@@ -41,6 +51,9 @@ const ContactSection = () => {
                     type: "success" 
                 });
                 setFormData({ email: "", message: "" });
+                
+                // 5 second pachi success message hide thai jay
+                setTimeout(() => setStatus({ loading: false, msg: "", type: "" }), 5000);
             }
         } catch (error) {
             console.error("FAILED...", error);
@@ -76,25 +89,38 @@ const ContactSection = () => {
                         
                         {/* Status Message Display */}
                         {status.msg && (
-                            <div className={`status-alert ${status.type}`}>
+                            <div className={`status-alert ${status.type}`} style={{
+                                padding: '10px',
+                                borderRadius: '5px',
+                                marginBottom: '15px',
+                                textAlign: 'center',
+                                backgroundColor: status.type === 'success' ? '#eafaf1' : '#fdedec',
+                                color: status.type === 'success' ? '#2ecc71' : '#e74c3c',
+                                border: `1px solid ${status.type === 'success' ? '#2ecc71' : '#e74c3c'}`
+                            }}>
                                 {status.msg}
                             </div>
                         )}
 
                         <form onSubmit={handleSubmit}>
                             <div className="form-group">
+                                <label htmlFor="email" style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>YOUR EMAIL</label>
                                 <input
                                     type="email"
+                                    id="email"
                                     name="email"
-                                    placeholder="Your Email"
+                                    placeholder="example@gmail.com"
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
+                                    autoComplete="email"
                                 />
                             </div>
 
                             <div className="form-group">
+                                <label htmlFor="message" style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>MESSAGE</label>
                                 <textarea
+                                    id="message"
                                     name="message"
                                     rows="4"
                                     placeholder="How can we help you?"
@@ -108,12 +134,14 @@ const ContactSection = () => {
                                 type="submit" 
                                 className="btn-submit" 
                                 disabled={status.loading}
+                                style={{
+                                    width: '100%',
+                                    padding: '12px',
+                                    cursor: status.loading ? 'not-allowed' : 'pointer',
+                                    opacity: status.loading ? 0.7 : 1
+                                }}
                             >
-                                {status.loading ? (
-                                    <><span className="spinner"></span> SENDING...</>
-                                ) : (
-                                    "SEND MESSAGE"
-                                )}
+                                {status.loading ? "SENDING..." : "SEND MESSAGE"}
                             </button>
                         </form>
                     </div>
