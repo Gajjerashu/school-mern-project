@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./Inquiry.css";
 
 const MAX_MESSAGE_LENGTH = 500;
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const Inquiry = () => {
     const navigate = useNavigate();
@@ -64,10 +65,10 @@ const Inquiry = () => {
         setIsSubmitting(true);
 
         try {
-            const response = await fetch("http://localhost:5000/api/inquiries", {
+              const response = await fetch(`${API_BASE_URL}/api/inquiries`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData), // ✅ Send form data as is, backend will convert
+                body: JSON.stringify(formData),
             });
 
             const data = await response.json();
