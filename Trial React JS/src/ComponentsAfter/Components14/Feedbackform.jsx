@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import './Feedbackform.css';
 import axios from 'axios';
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 const Feedbackform = () => {
     const [formData, setFormData] = useState({
         studentName: '',
@@ -147,7 +149,7 @@ const Feedbackform = () => {
                 comment: formData.comment || 'No additional comments'
             };
 
-            const response = await axios.post('http://localhost:5000/api/feedback', submitData);
+           const response = await axios.post(`${API_BASE_URL}/api/feedback`, submitData);
 
             if (response.data.success) {
                 setSuccess(true);
