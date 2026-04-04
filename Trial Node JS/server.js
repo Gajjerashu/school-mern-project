@@ -22,8 +22,8 @@ const feedbackRoutes = require('./Routes/feed');
 const mcqRoutes = require('./Routes/mcq');
 const syllabusDataRoutes = require('./Routes/syllabusData');
 
-const PORT = 5000;
-const MONGO_URI = "mongodb://localhost:27017/schoolDB";
+const PORT = process.env.PORT || 5000;
+const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/schoolDB";
 
 
 // Middleware
@@ -45,8 +45,11 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // MongoDB connection
 mongoose.connect(MONGO_URI)
-    .then(() => console.log("✅ MongoDB Connected"))
-    .catch(err => console.error("❌ MongoDB connection error:", err));
+    .then(() => console.log("✅ MongoDB Connected Successfully"))
+    .catch(err => {
+        console.error("❌ MongoDB Connection Error:", err.message);
+        process.exit(1);
+    });
 
 // Routes
 app.use("/api/auth", signupRouter);
@@ -65,7 +68,9 @@ app.use('/api/syllabus-data', syllabusDataRoutes);
 
 
 // Test Route
-app.get("/", (req, res) => res.send("Server running successfully!"));
+app.get("/", (req, res) => {
+    res.status(200).json({ message: "InspireEdge School Server is running!" });
+});
 
 // ✅ Global Error Handler
 app.use((err, req, res, next) => {
@@ -74,5 +79,8 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📡 API Base URL: http://localhost:${PORT}/api`);
+});
 
