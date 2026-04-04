@@ -23,19 +23,19 @@ const InqValid = () => {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
-        setError("");
+        if (error) setError(""); // ✅ Clear error when typing
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!isLoggedIn) {
-            setError("Please Login Your A/C");
+            setError("Please Login to your account first.");
             return;
         }
 
         if (!formData.studentName.trim() || !formData.parentEmail.trim()) {
-            setError("Please enter both Student Name and Parent Email.");
+            setError("Both Student Name and Parent Email are required.");
             return;
         }
 
@@ -44,7 +44,7 @@ const InqValid = () => {
         setInquiry(null);
 
         try {
-               const res = await fetch(`${API_BASE_URL}/api/valid/check`, {
+            const res = await fetch(`${API_BASE_URL}/api/valid/check`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -53,16 +53,16 @@ const InqValid = () => {
                 body: JSON.stringify(formData),
             });
 
-            const data = await response.json();
+            const data = await res.json(); // ✅ FIXED: changed 'response' to 'res'
 
-            if (!response.ok) {
-                throw new Error(data.error || "Failed to fetch inquiry details");
+            if (!res.ok) {
+                throw new Error(data.error || "No inquiry found with these details.");
             }
 
             setInquiry(data);
         } catch (err) {
             console.error("❌ Error:", err);
-            setError(err.message || "Failed to fetch inquiry. Please try again.");
+            setError(err.message);
         } finally {
             setLoading(false);
         }
@@ -70,7 +70,6 @@ const InqValid = () => {
 
     const handleProceedToAdmission = () => {
         if (inquiry?.inquiryId && inquiry?.approved) {
-            // Store inquiry data for admission form auto-fill
             const admissionData = {
                 inquiryId: inquiry.inquiryId,
                 studentName: inquiry.studentName,
@@ -84,160 +83,87 @@ const InqValid = () => {
 
             sessionStorage.setItem('inquiryData', JSON.stringify(admissionData));
 
-            // Scroll to admission form on home page
+            // Navigate with smooth transition
             navigate("/AfterLogin/Home1", {
-                state: {
-                    scrollToAdmission: true,
-                    inquiryData: admissionData
-                }
+                state: { scrollToAdmission: true }
             });
         }
     };
 
     return (
-        <section className="inqvalid-section">
+        <section className="inqvalid-section fade-in">
             <div className="inqvalid-container">
                 <div className="inqvalid-header">
-                    <h2 className="inqvalid-title">🔍 Verify Inquiry ID</h2>
-                    <p className="inqvalid-subtitle">
-                        Enter your details to verify your inquiry status
-                    </p>
+                    <h2 className="inqvalid-title">🔍 Inquiry Verification</h2>
+                    <p className="inqvalid-subtitle">Check your status to proceed with admission</p>
                 </div>
 
                 {!isLoggedIn && (
-                    <div className="warning-message">
-                        <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
-                        </svg>
-                        ⚠️ You must be logged in to check inquiry status
+                    <div className="login-warning-card">
+                        <p>⚠️ Login required to access this service.</p>
+                        <button className="login-link-btn" onClick={() => navigate("/login")}>Go to Login</button>
                     </div>
                 )}
 
-                {!inquiry ? (
+                {isLoggedIn && !inquiry && (
                     <form className="inqvalid-form" onSubmit={handleSubmit}>
                         <div className="form-group">
-                            <label htmlFor="studentName">👤 Student Name</label>
+                            <label>Student Full Name</label>
                             <input
-                                id="studentName"
-                                type="text"
                                 name="studentName"
-                                placeholder="Enter student name"
+                                type="text"
+                                placeholder="Enter registered student name"
                                 value={formData.studentName}
                                 onChange={handleChange}
-                                disabled={!isLoggedIn}
+                                required
                             />
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="parentEmail">📧 Parent Email</label>
+                            <label>Parent Email ID</label>
                             <input
-                                id="parentEmail"
-                                type="email"
                                 name="parentEmail"
-                                placeholder="Enter parent email"
+                                type="email"
+                                placeholder="Enter registered email"
                                 value={formData.parentEmail}
                                 onChange={handleChange}
-                                disabled={!isLoggedIn}
+                                required
                             />
                         </div>
 
-                        {error && <div className="error-message">❌ {error}</div>}
+                        {error && <div className="error-box">❌ {error}</div>}
 
-                        <button
-                            type="submit"
-                            className="submit-btn"
-                            disabled={loading || !isLoggedIn}
-                        >
-                            {loading ? (
-                                <>
-                                    <span className="spinner"></span>
-                                    ⏳ Checking...
-                                </>
-                            ) : (
-                                "✅ Verify Inquiry"
-                            )}
+                        <button type="submit" className="verify-btn" disabled={loading}>
+                            {loading ? "⌛ Verifying..." : "Verify Status"}
                         </button>
-
-                        {!isLoggedIn && (
-                            <button
-                                type="button"
-                                className="login-redirect-btn"
-                                onClick={() => navigate("/login")}
-                            >
-                                🔐 Go to Login
-                            </button>
-                        )}
                     </form>
-                ) : (
-                    <div className="inquiry-result">
+                )}
+
+                {inquiry && (
+                    <div className="result-card scale-up">
                         {inquiry.approved ? (
-                            <>
-                                <div className="success-icon">
-                                    <svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
-                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                                    </svg>
+                            <div className="status-success">
+                                <div className="icon-circle">✓</div>
+                                <h3>Approved!</h3>
+                                <div className="info-list">
+                                    <p><strong>Inquiry ID:</strong> {inquiry.inquiryId}</p>
+                                    <p><strong>Student:</strong> {inquiry.studentName}</p>
+                                    <p><strong>Standard:</strong> {inquiry.applyClass}</p>
                                 </div>
-
-                                <h3 className="success-title">✅ Inquiry Approved!</h3>
-
-                                <div className="inquiry-details">
-                                    <div className="detail-item">
-                                        <span className="detail-label">🆔 Inquiry ID:</span>
-                                        <span className="detail-value inquiry-id">{inquiry.inquiryId}</span>
-                                    </div>
-                                    <div className="detail-item">
-                                        <span className="detail-label">👤 Student Name:</span>
-                                        <span className="detail-value">{inquiry.studentName}</span>
-                                    </div>
-                                    <div className="detail-item">
-                                        <span className="detail-label">📧 Parent Email:</span>
-                                        <span className="detail-value">{inquiry.parentEmail}</span>
-                                    </div>
-                                    <div className="detail-item">
-                                        <span className="detail-label">📊 Status:</span>
-                                        <span className="status-badge approved">
-                                            ✓ Approved
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <button
-                                    className="proceed-btn"
-                                    onClick={handleProceedToAdmission}
-                                >
-                                    🎓 Proceed to Admission Form
+                                <button className="proceed-btn" onClick={handleProceedToAdmission}>
+                                    🎓 Start Admission Process
                                 </button>
-                            </>
+                            </div>
                         ) : (
-                            <>
-                                <div className="pending-icon">
-                                    <svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
-                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
-                                    </svg>
-                                </div>
-
-                                <h3 className="pending-title">⏳ Inquiry Under Review</h3>
-
-                                <div className="pending-message-box">
-                                    <p className="pending-text">
-                                        📋 Your inquiry has been received and is currently being reviewed by our admin team.
-                                    </p>
-                                    <p className="pending-subtext">
-                                        📬 You will be notified once your inquiry is approved. Please check back later.
-                                    </p>
-                                </div>
-                            </>
+                            <div className="status-pending">
+                                <div className="icon-circle-pending">⌛</div>
+                                <h3>Under Review</h3>
+                                <p>Your application is being verified by the admin office. Please check back in 24-48 hours.</p>
+                            </div>
                         )}
-
-                        <button
-                            className="reset-btn"
-                            onClick={() => {
-                                setInquiry(null);
-                                setFormData({ studentName: "", parentEmail: "" });
-                                sessionStorage.removeItem('inquiryData');
-                            }}
-                        >
-                            🔄 Check Another Inquiry
+                        
+                        <button className="check-again-btn" onClick={() => setInquiry(null)}>
+                            🔄 Check Another
                         </button>
                     </div>
                 )}
