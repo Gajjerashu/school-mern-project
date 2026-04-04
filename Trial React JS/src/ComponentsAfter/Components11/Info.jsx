@@ -26,29 +26,31 @@ const Info = () => {
 
     const formatDate = (date) => {
         return new Date(date).toLocaleDateString('en-IN', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric'
+            day: '2-digit', month: 'short', year: 'numeric'
         });
     };
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('en-IN', {
-            style: 'currency',
-            currency: 'INR',
-            maximumFractionDigits: 0
+            style: 'currency', currency: 'INR', maximumFractionDigits: 0
         }).format(amount);
+    };
+
+    // --- NAVIGATE TO RECEIPT ---
+    const handleViewReceipt = (txnId) => {
+        navigate(`/AfterLogin/PayReceive/${txnId}`);
     };
 
     return (
         <div className="info-page">
             <div className="info-container">
-                {/* Header */}
+                {/* Header with Print Option */}
                 <div className="info-header">
-                    <button onClick={() => navigate(-1)} className="back-button">
-                        ← Back
-                    </button>
-                    <h1>Fee Details</h1>
+                    <div className="header-left">
+                        <button onClick={() => navigate(-1)} className="back-button">← Back</button>
+                        <h1>Fee Dashboard</h1>
+                    </div>
+                    <button onClick={() => window.print()} className="print-btn">🖨️ Print Report</button>
                 </div>
 
                 {/* Student Info Card */}
@@ -56,38 +58,22 @@ const Info = () => {
                     <div className="card-header">
                         <div className="student-icon">👨‍🎓</div>
                         <div>
-                            <h2>Student Information</h2>
-                            <p>Personal & Academic Details</p>
+                            <h2>{studentInfo.studentName}</h2>
+                            <p>ID: {studentInfo.studentId} | Class: {studentInfo.applyClass}</p>
                         </div>
                     </div>
                     <div className="info-grid">
-                        <div className="info-item">
-                            <span className="info-label">Student Name</span>
-                            <span className="info-value">{studentInfo.studentName}</span>
-                        </div>
-                        <div className="info-item">
-                            <span className="info-label">Student ID</span>
-                            <span className="info-value">{studentInfo.studentId}</span>
-                        </div>
-                        <div className="info-item">
-                            <span className="info-label">Class</span>
-                            <span className="info-value">{studentInfo.applyClass}</span>
-                        </div>
                         <div className="info-item">
                             <span className="info-label">Medium</span>
                             <span className="info-value">{studentInfo.language}</span>
                         </div>
                         <div className="info-item">
-                            <span className="info-label">Email</span>
-                            <span className="info-value">{studentInfo.email}</span>
-                        </div>
-                        <div className="info-item">
-                            <span className="info-label">Parent Name</span>
-                            <span className="info-value">{studentInfo.parentName || 'N/A'}</span>
-                        </div>
-                        <div className="info-item">
                             <span className="info-label">Parent Phone</span>
                             <span className="info-value">{studentInfo.parentPhone}</span>
+                        </div>
+                        <div className="info-item">
+                            <span className="info-label">Email</span>
+                            <span className="info-value">{studentInfo.email}</span>
                         </div>
                     </div>
                 </div>
@@ -97,51 +83,40 @@ const Info = () => {
                     <div className="card-header">
                         <div className="fee-icon">💰</div>
                         <div>
-                            <h2>Fee Summary</h2>
-                            <p>Payment Status & Balance</p>
+                            <h2>Financial Summary</h2>
+                            <p>Current balance and status</p>
                         </div>
                     </div>
                     <div className="fee-summary">
                         <div className="fee-row">
-                            <span className="fee-label">Total Fees</span>
+                            <span>Total Fees</span>
                             <span className="fee-value total">{formatCurrency(feeDetails.totalFees)}</span>
                         </div>
                         <div className="fee-row">
-                            <span className="fee-label">Amount Paid</span>
+                            <span>Paid</span>
                             <span className="fee-value paid">{formatCurrency(feeDetails.totalPaid)}</span>
                         </div>
-                        <div className="fee-row">
-                            <span className="fee-label">Pending Amount</span>
+                        <div className="fee-row highlight">
+                            <span>Pending</span>
                             <span className="fee-value pending">{formatCurrency(feeDetails.pendingAmount)}</span>
-                        </div>
-                        <div className="fee-row status-row">
-                            <span className="fee-label">Payment Status</span>
-                            <span className={`status-badge ${feeDetails.status.toLowerCase()}`}>
-                                {feeDetails.status}
-                            </span>
                         </div>
                     </div>
 
-                    {/* Make Payment Button */}
-                    <div className="payment-action">
-                        <button
-                            onClick={() => navigate('/AfterLogin/Fees', {
-                                state: {
-                                    studentId: studentInfo.studentId,
-                                    studentName: studentInfo.studentName,
-                                    email: studentInfo.email,
-                                    parentPhone: studentInfo.parentPhone,
-                                    applyClass: studentInfo.applyClass,
-                                    parentName: studentInfo.parentName,
-                                    language: studentInfo.language,
-                                    feeDetails: feeDetails  // ✅ Pass fee details
-                                }
-                            })}
-                            className="pay-now-btn"
-                        >
-                            💳 Make Payment
-                        </button>
-                    </div>
+                    {/* Show button ONLY if balance is pending */}
+                    {feeDetails.pendingAmount > 0 ? (
+                        <div className="payment-action">
+                            <button
+                                onClick={() => navigate('/AfterLogin/Fees', { state: { ...studentInfo, feeDetails } })}
+                                className="pay-now-btn"
+                            >
+                                💳 Pay Outstanding Balance
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="status-complete">
+                            ✅ All fees are cleared!
+                        </div>
+                    )}
                 </div>
 
                 {/* Payment History Card */}
@@ -149,29 +124,29 @@ const Info = () => {
                     <div className="info-card">
                         <div className="card-header">
                             <div className="history-icon">📋</div>
-                            <div>
-                                <h2>Payment History</h2>
-                                <p>{paymentHistory.length} Transaction{paymentHistory.length > 1 ? 's' : ''}</p>
-                            </div>
+                            <h2>Transaction History</h2>
                         </div>
                         <div className="history-table">
                             <div className="table-header">
-                                <div>Transaction ID</div>
                                 <div>Date</div>
                                 <div>Amount</div>
-                                <div>Type</div>
-                                <div>Status</div>
+                                <div>ID</div>
+                                <div>Receipt</div>
                             </div>
                             {paymentHistory.map((payment, index) => (
                                 <div key={index} className="table-row">
-                                    <div className="txn-id" data-label="Transaction ID">{payment.transactionId}</div>
                                     <div data-label="Date">{formatDate(payment.paidAt)}</div>
-                                    <div className="amount-cell" data-label="Amount">{formatCurrency(payment.paidAmount)}</div>
-                                    <div data-label="Type">{payment.paymentType}</div>
-                                    <div data-label="Status">
-                                        <span className={`mini-badge ${payment.status.toLowerCase()}`}>
-                                            {payment.status}
-                                        </span>
+                                    <div className="amount-cell" data-label="Amount">
+                                        {formatCurrency(payment.paidAmount)}
+                                    </div>
+                                    <div className="txn-id-small" data-label="ID">{payment.transactionId}</div>
+                                    <div data-label="Receipt">
+                                        <button 
+                                            className="view-link"
+                                            onClick={() => handleViewReceipt(payment.transactionId)}
+                                        >
+                                            View 📄
+                                        </button>
                                     </div>
                                 </div>
                             ))}
