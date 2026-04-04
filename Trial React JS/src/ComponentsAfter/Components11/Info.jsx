@@ -1,22 +1,25 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { FaArrowLeft, FaPrint, FaUserGraduate, FaMoneyBillWave, FaHistory, FaFileInvoice } from 'react-icons/fa';
 import './Info.css';
 
 const Info = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
+    // Destructuring with safety check
     const { studentInfo, feeDetails, paymentHistory } = location.state || {};
 
+    // Redirect if no data is found (Security check)
     if (!studentInfo || !feeDetails) {
         return (
             <div className="info-page">
                 <div className="info-container">
                     <div className="error-card">
-                        <h2>⚠️ No Data Found</h2>
-                        <p>Please search for a student first.</p>
-                        <button onClick={() => navigate('/AfterLogin/Fees')} className="back-btn">
-                            Go Back
+                        <h2>⚠️ Data Not Accessible</h2>
+                        <p>Student session has expired or no data was provided.</p>
+                        <button onClick={() => navigate('/AfterLogin/Check')} className="primary-btn">
+                            Go Back to Search
                         </button>
                     </div>
                 </div>
@@ -33,10 +36,9 @@ const Info = () => {
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('en-IN', {
             style: 'currency', currency: 'INR', maximumFractionDigits: 0
-        }).format(amount);
+        }).format(amount || 0);
     };
 
-    // --- NAVIGATE TO RECEIPT ---
     const handleViewReceipt = (txnId) => {
         navigate(`/AfterLogin/PayReceive/${txnId}`);
     };
@@ -44,115 +46,128 @@ const Info = () => {
     return (
         <div className="info-page">
             <div className="info-container">
-                {/* Header with Print Option */}
-                <div className="info-header">
-                    <div className="header-left">
-                        <button onClick={() => navigate(-1)} className="back-button">← Back</button>
-                        <h1>Fee Dashboard</h1>
+                {/* Dashboard Header */}
+                <div className="info-header no-print">
+                    <div className="header-nav">
+                        <button onClick={() => navigate(-1)} className="back-nav-btn">
+                            <FaArrowLeft /> Back
+                        </button>
+                        <h1>Student Fee Dashboard</h1>
                     </div>
-                    <button onClick={() => window.print()} className="print-btn">🖨️ Print Report</button>
+                    <button onClick={() => window.print()} className="print-action-btn">
+                        <FaPrint /> Print Report
+                    </button>
                 </div>
 
-                {/* Student Info Card */}
-                <div className="info-card">
-                    <div className="card-header">
-                        <div className="student-icon">👨‍🎓</div>
-                        <div>
-                            <h2>{studentInfo.studentName}</h2>
-                            <p>ID: {studentInfo.studentId} | Class: {studentInfo.applyClass}</p>
-                        </div>
+                {/* Print Only Header (Visible only when printing) */}
+                <div className="only-print school-print-header">
+                    <h2>InspireEdge School - Fee Statement</h2>
+                    <p>Generated on: {new Date().toLocaleString()}</p>
+                    <hr />
+                </div>
+
+                {/* 1. Student Identity Section */}
+                <div className="info-section-card profile-card">
+                    <div className="section-title">
+                        <FaUserGraduate className="icon" />
+                        <h3>Student Profile</h3>
                     </div>
-                    <div className="info-grid">
-                        <div className="info-item">
-                            <span className="info-label">Medium</span>
-                            <span className="info-value">{studentInfo.language}</span>
+                    <div className="profile-details-grid">
+                        <div className="detail-item">
+                            <span className="label">Full Name</span>
+                            <span className="value high-light">{studentInfo.studentName}</span>
                         </div>
-                        <div className="info-item">
-                            <span className="info-label">Parent Phone</span>
-                            <span className="info-value">{studentInfo.parentPhone}</span>
+                        <div className="detail-item">
+                            <span className="label">Student ID</span>
+                            <span className="value">#{studentInfo.studentId}</span>
                         </div>
-                        <div className="info-item">
-                            <span className="info-label">Email</span>
-                            <span className="info-value">{studentInfo.email}</span>
+                        <div className="detail-item">
+                            <span className="label">Class & Medium</span>
+                            <span className="value">{studentInfo.applyClass} ({studentInfo.language})</span>
+                        </div>
+                        <div className="detail-item">
+                            <span className="label">Contact</span>
+                            <span className="value">{studentInfo.parentPhone}</span>
                         </div>
                     </div>
                 </div>
 
-                {/* Fee Summary Card */}
-                <div className="info-card">
-                    <div className="card-header">
-                        <div className="fee-icon">💰</div>
-                        <div>
-                            <h2>Financial Summary</h2>
-                            <p>Current balance and status</p>
-                        </div>
+                {/* 2. Financial Overview */}
+                <div className="info-section-card financial-card">
+                    <div className="section-title">
+                        <FaMoneyBillWave className="icon" />
+                        <h3>Financial Summary</h3>
                     </div>
-                    <div className="fee-summary">
-                        <div className="fee-row">
-                            <span>Total Fees</span>
-                            <span className="fee-value total">{formatCurrency(feeDetails.totalFees)}</span>
+                    <div className="finance-summary-boxes">
+                        <div className="finance-box">
+                            <span className="label">Total Course Fee</span>
+                            <span className="value">{formatCurrency(feeDetails.totalFees)}</span>
                         </div>
-                        <div className="fee-row">
-                            <span>Paid</span>
-                            <span className="fee-value paid">{formatCurrency(feeDetails.totalPaid)}</span>
+                        <div className="finance-box paid">
+                            <span className="label">Total Amount Paid</span>
+                            <span className="value">{formatCurrency(feeDetails.totalPaid)}</span>
                         </div>
-                        <div className="fee-row highlight">
-                            <span>Pending</span>
-                            <span className="fee-value pending">{formatCurrency(feeDetails.pendingAmount)}</span>
+                        <div className={`finance-box pending ${feeDetails.pendingAmount > 0 ? 'alert' : 'clear'}`}>
+                            <span className="label">Balance Due</span>
+                            <span className="value">{formatCurrency(feeDetails.pendingAmount)}</span>
                         </div>
                     </div>
 
-                    {/* Show button ONLY if balance is pending */}
                     {feeDetails.pendingAmount > 0 ? (
-                        <div className="payment-action">
+                        <div className="payment-alert-action no-print">
+                            <p>Payment is currently outstanding for this student.</p>
                             <button
                                 onClick={() => navigate('/AfterLogin/Fees', { state: { ...studentInfo, feeDetails } })}
                                 className="pay-now-btn"
                             >
-                                💳 Pay Outstanding Balance
+                                💳 Make a Payment
                             </button>
                         </div>
                     ) : (
-                        <div className="status-complete">
-                            ✅ All fees are cleared!
-                        </div>
+                        <div className="success-badge">✅ No Dues Pending</div>
                     )}
                 </div>
 
-                {/* Payment History Card */}
-                {paymentHistory && paymentHistory.length > 0 && (
-                    <div className="info-card">
-                        <div className="card-header">
-                            <div className="history-icon">📋</div>
-                            <h2>Transaction History</h2>
-                        </div>
-                        <div className="history-table">
-                            <div className="table-header">
-                                <div>Date</div>
-                                <div>Amount</div>
-                                <div>ID</div>
-                                <div>Receipt</div>
-                            </div>
-                            {paymentHistory.map((payment, index) => (
-                                <div key={index} className="table-row">
-                                    <div data-label="Date">{formatDate(payment.paidAt)}</div>
-                                    <div className="amount-cell" data-label="Amount">
-                                        {formatCurrency(payment.paidAmount)}
-                                    </div>
-                                    <div className="txn-id-small" data-label="ID">{payment.transactionId}</div>
-                                    <div data-label="Receipt">
-                                        <button 
-                                            className="view-link"
-                                            onClick={() => handleViewReceipt(payment.transactionId)}
-                                        >
-                                            View 📄
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                {/* 3. Transaction History */}
+                <div className="info-section-card history-card">
+                    <div className="section-title">
+                        <FaHistory className="icon" />
+                        <h3>Recent Transactions</h3>
                     </div>
-                )}
+                    {paymentHistory?.length > 0 ? (
+                        <div className="table-responsive">
+                            <table className="styled-history-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Transaction ID</th>
+                                        <th>Amount</th>
+                                        <th className="no-print">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {paymentHistory.map((payment, index) => (
+                                        <tr key={payment.transactionId || index}>
+                                            <td>{formatDate(payment.paidAt)}</td>
+                                            <td className="txn-id-text">{payment.transactionId}</td>
+                                            <td className="amount-text">{formatCurrency(payment.paidAmount)}</td>
+                                            <td className="no-print">
+                                                <button 
+                                                    className="btn-view-receipt"
+                                                    onClick={() => handleViewReceipt(payment.transactionId)}
+                                                >
+                                                    <FaFileInvoice /> Receipt
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    ) : (
+                        <p className="no-data-text">No payment history found.</p>
+                    )}
+                </div>
             </div>
         </div>
     );
