@@ -32,11 +32,9 @@ const FeesForm = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isExistingStudent, setIsExistingStudent] = useState(false);
 
-    // Initial Data Loading from Navigation State
     useEffect(() => {
         if (location.state) {
             const state = location.state;
-
             setFormData(prev => ({
                 ...prev,
                 studentId: state.studentId || "",
@@ -51,7 +49,6 @@ const FeesForm = () => {
             if (state.applyClass) {
                 const fees = CLASS_FEES[state.applyClass] || 0;
                 setTotalFees(fees);
-
                 if (state.feeDetails) {
                     setIsExistingStudent(true);
                     const alreadyPaid = state.feeDetails.totalPaid || 0;
@@ -68,22 +65,13 @@ const FeesForm = () => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
 
-        // Dynamic Fee Calculation when Class changes
         if (name === "applyClass") {
             const fees = CLASS_FEES[value] || 0;
             setTotalFees(fees);
-            
-            if (isExistingStudent) {
-                setPendingAmount(fees - previouslyPaid);
-            } else {
-                setPendingAmount(fees);
-            }
+            setPendingAmount(isExistingStudent ? (fees - previouslyPaid) : fees);
         }
 
-        // Clear error when user starts typing
-        if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: "" }));
-        }
+        if (errors[name]) setErrors(prev => ({ ...prev, [name]: "" }));
     };
 
     const validateForm = () => {
@@ -91,18 +79,13 @@ const FeesForm = () => {
         const paidAmountNum = parseFloat(formData.paidAmount) || 0;
 
         if (!formData.studentId.trim()) newErrors.studentId = "Student ID is required";
-        if (!formData.studentName.trim()) newErrors.studentName = "Student name is required";
-        if (!formData.email.trim()) newErrors.email = "Email is required";
-        if (!formData.parentPhone.trim()) newErrors.parentPhone = "Phone is required";
+        if (!formData.studentName.trim()) newErrors.studentName = "Name is required";
+        if (!formData.email.includes("@")) newErrors.email = "Valid email is required";
+        if (!formData.parentPhone.match(/^\d{10}$/)) newErrors.parentPhone = "10-digit phone is required";
         if (!formData.applyClass) newErrors.applyClass = "Class is required";
-
-        if (!formData.paidAmount || paidAmountNum <= 0) {
-            newErrors.paidAmount = "Enter a valid amount";
-        } else if (paidAmountNum > pendingAmount) {
-            newErrors.paidAmount = `Amount exceeds pending limit (Max: ₹${pendingAmount.toLocaleString("en-IN")})`;
-        }
-
-        if (!formData.paymentType) newErrors.paymentType = "Payment method is required";
+        if (paidAmountNum <= 0) newErrors.paidAmount = "Enter valid amount";
+        if (paidAmountNum > pendingAmount) newErrors.paidAmount = `Max: ₹${pendingAmount}`;
+        if (!formData.paymentType) newErrors.paymentType = "Select payment method";
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -111,18 +94,17 @@ const FeesForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validateForm()) return;
-
         setIsSubmitting(true);
 
         try {
             const paymentData = {
-                transactionId: `TXN_${Date.now()}${Math.floor(Math.random() * 1000)}`,
+                transactionId: `TXN_${Date.now()}`,
                 ...formData,
                 paidAmount: parseFloat(formData.paidAmount),
-                paymentMethod: "Online",
                 paidAt: new Date()
             };
 
+            // ✅ Backend URL check karjo (localhost:5000 chhe ke 8080)
             const response = await fetch("http://localhost:5000/api/payments/process", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -132,60 +114,34 @@ const FeesForm = () => {
             const result = await response.json();
 
             if (response.ok && result.success) {
-                navigate("/AfterLogin/PayReceive", {
-                    state: { ...paymentData, ...result }
-                });
+                navigate("/AfterLogin/PayReceive", { state: { ...paymentData, ...result } });
             } else {
-                setErrors({ submit: result.error || "Payment failed. Please try again." });
+                setErrors({ submit: result.message || "Payment process failed." });
             }
         } catch (error) {
-            console.error("Payment Error:", error);
-            setErrors({ submit: "Server connection failed. Is the backend running?" });
+            setErrors({ submit: "Backend Server is not reachable. Check console for CORS error." });
         } finally {
             setIsSubmitting(false);
         }
-    };
-
-    const displayPendingAfterPayment = () => {
-        const paidNow = parseFloat(formData.paidAmount) || 0;
-        return Math.max(0, pendingAmount - paidNow);
     };
 
     return (
         <section className="fees-section">
             <div className="fees-container">
                 <div className="fees-header">
-                    <div className="header-decoration">
-                        <div className="circle-icon">💳</div>
-                    </div>
                     <h2 className="fees-title">Fee Payment Portal</h2>
-                    <p className="fees-subtitle">Secure • Fast • Convenient</p>
+                    <p className="fees-subtitle">InspireEdge School Management</p>
                 </div>
 
                 {totalFees > 0 && (
                     <div className="fee-summary-card">
                         <div className="summary-item">
-                            <span className="summary-label">📊 Total Annual Fees</span>
-                            <span className="summary-value total">₹{totalFees.toLocaleString("en-IN")}</span>
+                            <span>📊 Total Fees:</span>
+                            <span className="summary-value">₹{totalFees.toLocaleString("en-IN")}</span>
                         </div>
-                        <div className="summary-divider"></div>
-                        {isExistingStudent && (
-                            <>
-                                <div className="summary-item">
-                                    <span className="summary-label">✅ Already Paid</span>
-                                    <span className="summary-value paid">₹{previouslyPaid.toLocaleString("en-IN")}</span>
-                                </div>
-                                <div className="summary-divider"></div>
-                            </>
-                        )}
                         <div className="summary-item">
-                            <span className="summary-label">💰 Amount to Pay</span>
-                            <span className="summary-value paying">₹{(parseFloat(formData.paidAmount) || 0).toLocaleString("en-IN")}</span>
-                        </div>
-                        <div className="summary-divider"></div>
-                        <div className="summary-item">
-                            <span className="summary-label">⏳ Remaining Balance</span>
-                            <span className="summary-value pending">₹{displayPendingAfterPayment().toLocaleString("en-IN")}</span>
+                            <span>⏳ Remaining Balance:</span>
+                            <span className="summary-value pending">₹{(pendingAmount - (parseFloat(formData.paidAmount) || 0)).toLocaleString("en-IN")}</span>
                         </div>
                     </div>
                 )}
@@ -193,134 +149,40 @@ const FeesForm = () => {
                 <form className="fees-form" onSubmit={handleSubmit}>
                     <div className="form-row">
                         <div className="form-group">
-                            <label><span className="icon">🆔</span> Student ID</label>
-                            <input
-                                type="text"
-                                name="studentId"
-                                value={formData.studentId}
-                                onChange={handleChange}
-                                placeholder="Enter ID"
-                                readOnly={!!location.state?.studentId}
-                                className={location.state?.studentId ? "readonly-field" : ""}
-                            />
-                            {errors.studentId && <span className="error-text">{errors.studentId}</span>}
+                            <label>Student ID</label>
+                            <input name="studentId" value={formData.studentId} readOnly className="readonly-field" />
                         </div>
-
                         <div className="form-group">
-                            <label><span className="icon">👤</span> Student Name</label>
-                            <input
-                                type="text"
-                                name="studentName"
-                                value={formData.studentName}
-                                onChange={handleChange}
-                                placeholder="Full Name"
-                            />
+                            <label>Full Name</label>
+                            <input name="studentName" value={formData.studentName} onChange={handleChange} />
                             {errors.studentName && <span className="error-text">{errors.studentName}</span>}
                         </div>
                     </div>
 
                     <div className="form-row">
                         <div className="form-group">
-                            <label><span className="icon">👨‍👩‍👦</span> Parent Name</label>
-                            <input
-                                type="text"
-                                name="parentName"
-                                value={formData.parentName}
-                                onChange={handleChange}
-                                placeholder="Parent Name"
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label><span className="icon">📧</span> Email Address</label>
-                            <input
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                placeholder="Email"
-                            />
-                            {errors.email && <span className="error-text">{errors.email}</span>}
-                        </div>
-                    </div>
-
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label><span className="icon">📱</span> Phone Number</label>
-                            <input
-                                type="tel"
-                                name="parentPhone"
-                                value={formData.parentPhone}
-                                onChange={handleChange}
-                                placeholder="Phone"
-                            />
-                            {errors.parentPhone && <span className="error-text">{errors.parentPhone}</span>}
-                        </div>
-
-                        <div className="form-group">
-                            <label><span className="icon">🌐</span> Medium</label>
-                            <select name="language" value={formData.language} onChange={handleChange}>
-                                <option value="English">English</option>
-                                <option value="Gujarati">Gujarati</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label><span className="icon">🎓</span> Class / Standard</label>
-                            <select name="applyClass" value={formData.applyClass} onChange={handleChange}>
-                                <option value="">Select Class</option>
-                                {Object.keys(CLASS_FEES).map(cls => (
-                                    <option key={cls} value={cls}>
-                                        {cls} - ₹{CLASS_FEES[cls].toLocaleString("en-IN")}
-                                    </option>
-                                ))}
-                            </select>
-                            {errors.applyClass && <span className="error-text">{errors.applyClass}</span>}
-                        </div>
-
-                        <div className="form-group">
-                            <label><span className="icon">💵</span> Payment Amount (₹)</label>
-                            <input
-                                type="number"
-                                name="paidAmount"
-                                value={formData.paidAmount}
-                                onChange={handleChange}
-                                placeholder="Amount"
-                            />
+                            <label>Amount to Pay (₹)</label>
+                            <input type="number" name="paidAmount" value={formData.paidAmount} onChange={handleChange} placeholder="Enter Amount" />
                             {errors.paidAmount && <span className="error-text">{errors.paidAmount}</span>}
                         </div>
-                    </div>
-
-                    <div className="form-row">
-                        <div className="form-group full-width">
-                            <label><span className="icon">💳</span> Payment Method</label>
+                        <div className="form-group">
+                            <label>Payment Method</label>
                             <select name="paymentType" value={formData.paymentType} onChange={handleChange}>
                                 <option value="">Select Method</option>
-                                <option value="GPay">🟢 Google Pay</option>
-                                <option value="PhonePe">🟣 PhonePe</option>
-                                <option value="Paytm">🔵 Paytm</option>
-                                <option value="UPI">💠 UPI</option>
-                                <option value="Cash">💵 Cash</option>
+                                <option value="GPay">Google Pay</option>
+                                <option value="PhonePe">PhonePe</option>
+                                <option value="Cash">Cash</option>
                             </select>
                             {errors.paymentType && <span className="error-text">{errors.paymentType}</span>}
                         </div>
                     </div>
 
-                    {errors.submit && <div className="submit-error">⚠️ {errors.submit}</div>}
+                    {errors.submit && <div className="submit-error" style={{color: 'red', marginBottom: '10px'}}>{errors.submit}</div>}
 
                     <button type="submit" className="submit-btn" disabled={isSubmitting}>
-                        <span className="btn-icon">✓</span>
-                        {isSubmitting ? "Processing..." : "Confirm Payment"}
-                        <span className="btn-arrow">→</span>
+                        {isSubmitting ? "Processing..." : "Confirm & Pay"}
                     </button>
                 </form>
-
-                <div className="security-badge">
-                    <span className="badge-icon">🔒</span>
-                    <span>SSL Secured • School Management System</span>
-                </div>
             </div>
         </section>
     );
