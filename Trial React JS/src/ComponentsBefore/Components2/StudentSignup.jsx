@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./StudentSignup.css";
 
+// Dynamic API URL (Deployment vakhte badlavu na pade etle)
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 const StudentSignup = () => {
     const navigate = useNavigate();
 
@@ -22,14 +25,20 @@ const StudentSignup = () => {
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
-        setError("");
+        if (error) setError(""); // Typing vakhte error clear thai jay
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Basic Validation
         if (formData.password !== formData.confirmPassword) {
-            setError("Passwords do not match");
+            setError("Passwords do not match!");
+            return;
+        }
+
+        if (formData.password.length < 6) {
+            setError("Password must be at least 6 characters long.");
             return;
         }
 
@@ -37,9 +46,11 @@ const StudentSignup = () => {
         setError("");
 
         try {
-            const response = await fetch("http://localhost:5000/api/auth/signup", {
+            const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Content-Type": "application/json" 
+                },
                 body: JSON.stringify({
                     fullname: formData.fullname,
                     email: formData.email,
@@ -51,21 +62,22 @@ const StudentSignup = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                setError(data.message || "Signup failed");
-                return;
+                // Backend mathi aavti error (e.g., Email already exists) handle karo
+                throw new Error(data.message || "Signup failed. Please try again.");
             }
 
             console.log("✅ Signup successful:", data);
 
+            // Redirect with success message
             navigate("/login", {
                 state: {
-                    message: "Signup successful! Please login to continue.",
+                    message: "Account created successfully! Please login.",
                     email: formData.email
                 }
             });
-        } catch (error) {
-            console.error(error);
-            setError("Server error. Please try again.");
+        } catch (err) {
+            console.error("❌ Signup Error:", err);
+            setError(err.message || "Server error. Please check your connection.");
         } finally {
             setLoading(false);
         }
@@ -85,16 +97,11 @@ const StudentSignup = () => {
                 <h2>Student Signup</h2>
                 <p className="signup-subtitle">Create your account to get started</p>
 
-                {error && <div className="error-message">{error}</div>}
+                {error && <div className="error-message">⚠️ {error}</div>}
 
                 <form onSubmit={handleSubmit} className="signup-form">
                     <div className="form-group">
-                        <label>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                            </svg>
-                            FULL NAME
-                        </label>
+                        <label>👤 FULL NAME</label>
                         <input
                             type="text"
                             name="fullname"
@@ -106,12 +113,7 @@ const StudentSignup = () => {
                     </div>
 
                     <div className="form-group">
-                        <label>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
-                            </svg>
-                            EMAIL ADDRESS
-                        </label>
+                        <label>📧 EMAIL ADDRESS</label>
                         <input
                             type="email"
                             name="email"
@@ -123,12 +125,7 @@ const StudentSignup = () => {
                     </div>
 
                     <div className="form-group">
-                        <label>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
-                            </svg>
-                            PHONE NUMBER
-                        </label>
+                        <label>📞 PHONE NUMBER</label>
                         <input
                             type="tel"
                             name="phone"
@@ -139,15 +136,9 @@ const StudentSignup = () => {
                         />
                     </div>
 
-                    {/* Password Field with Show/Hide */}
                     <div className="form-group">
-                        <label>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" />
-                            </svg>
-                            PASSWORD
-                        </label>
-                        <div className="password-input-wrapper">
+                        <label>🔐 PASSWORD</label>
+                        <div className="password-input-wrapper" style={{ position: 'relative' }}>
                             <input
                                 type={showPassword ? "text" : "password"}
                                 name="password"
@@ -160,34 +151,16 @@ const StudentSignup = () => {
                                 type="button"
                                 className="toggle-password"
                                 onClick={() => setShowPassword(!showPassword)}
-                                aria-label="Toggle password visibility"
+                                style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer' }}
                             >
-                                {showPassword ? (
-                                    // Eye Slash Icon (Hide)
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                                        <line x1="1" y1="1" x2="23" y2="23"></line>
-                                    </svg>
-                                ) : (
-                                    // Eye Icon (Show)
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                        <circle cx="12" cy="12" r="3"></circle>
-                                    </svg>
-                                )}
+                                {showPassword ? "🙈" : "👁️"}
                             </button>
                         </div>
                     </div>
 
-                    {/* Confirm Password Field with Show/Hide */}
                     <div className="form-group">
-                        <label>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" />
-                            </svg>
-                            CONFIRM PASSWORD
-                        </label>
-                        <div className="password-input-wrapper">
+                        <label>🛡️ CONFIRM PASSWORD</label>
+                        <div className="password-input-wrapper" style={{ position: 'relative' }}>
                             <input
                                 type={showConfirmPassword ? "text" : "password"}
                                 name="confirmPassword"
@@ -200,29 +173,16 @@ const StudentSignup = () => {
                                 type="button"
                                 className="toggle-password"
                                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                aria-label="Toggle confirm password visibility"
+                                style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer' }}
                             >
-                                {showConfirmPassword ? (
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                                        <line x1="1" y1="1" x2="23" y2="23"></line>
-                                    </svg>
-                                ) : (
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                        <circle cx="12" cy="12" r="3"></circle>
-                                    </svg>
-                                )}
+                                {showConfirmPassword ? "🙈" : "👁️"}
                             </button>
                         </div>
                     </div>
 
                     <button type="submit" className="btn-submit" disabled={loading}>
                         {loading ? (
-                            <>
-                                <span className="spinner"></span>
-                                Processing...
-                            </>
+                            <><span className="spinner"></span> Processing...</>
                         ) : (
                             "SIGNUP"
                         )}
@@ -230,7 +190,7 @@ const StudentSignup = () => {
 
                     <p className="login-link">
                         Already have an account?{" "}
-                        <span onClick={() => navigate("/login")}>Login here</span>
+                        <span onClick={() => navigate("/login")} style={{ cursor: 'pointer', color: '#007bff', fontWeight: 'bold' }}>Login here</span>
                     </p>
                 </form>
             </div>
