@@ -32,6 +32,7 @@ const FeesForm = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isExistingStudent, setIsExistingStudent] = useState(false);
 
+    // Initial Data Loading from Navigation State
     useEffect(() => {
         if (location.state) {
             const state = location.state;
@@ -53,8 +54,9 @@ const FeesForm = () => {
 
                 if (state.feeDetails) {
                     setIsExistingStudent(true);
-                    setPreviouslyPaid(state.feeDetails.totalPaid || 0);
-                    setPendingAmount(state.feeDetails.pendingAmount || 0);
+                    const alreadyPaid = state.feeDetails.totalPaid || 0;
+                    setPreviouslyPaid(alreadyPaid);
+                    setPendingAmount(fees - alreadyPaid);
                 } else {
                     setPendingAmount(fees);
                 }
@@ -66,14 +68,19 @@ const FeesForm = () => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
 
+        // Dynamic Fee Calculation when Class changes
         if (name === "applyClass") {
             const fees = CLASS_FEES[value] || 0;
             setTotalFees(fees);
-            if (!isExistingStudent) {
+            
+            if (isExistingStudent) {
+                setPendingAmount(fees - previouslyPaid);
+            } else {
                 setPendingAmount(fees);
             }
         }
 
+        // Clear error when user starts typing
         if (errors[name]) {
             setErrors(prev => ({ ...prev, [name]: "" }));
         }
@@ -90,11 +97,9 @@ const FeesForm = () => {
         if (!formData.applyClass) newErrors.applyClass = "Class is required";
 
         if (!formData.paidAmount || paidAmountNum <= 0) {
-            newErrors.paidAmount = "Enter valid amount";
-        } else if (isExistingStudent && paidAmountNum > pendingAmount) {
-            newErrors.paidAmount = `Amount cannot exceed pending amount (₹${pendingAmount.toLocaleString("en-IN")})`;
-        } else if (!isExistingStudent && paidAmountNum > totalFees) {
-            newErrors.paidAmount = `Amount cannot exceed total fees (₹${totalFees.toLocaleString("en-IN")})`;
+            newErrors.paidAmount = "Enter a valid amount";
+        } else if (paidAmountNum > pendingAmount) {
+            newErrors.paidAmount = `Amount exceeds pending limit (Max: ₹${pendingAmount.toLocaleString("en-IN")})`;
         }
 
         if (!formData.paymentType) newErrors.paymentType = "Payment method is required";
@@ -112,16 +117,10 @@ const FeesForm = () => {
         try {
             const paymentData = {
                 transactionId: `TXN_${Date.now()}${Math.floor(Math.random() * 1000)}`,
-                studentId: formData.studentId,
-                studentName: formData.studentName,
-                parentName: formData.parentName || "",
-                email: formData.email,
-                parentPhone: formData.parentPhone,
-                applyClass: formData.applyClass,
-                language: formData.language,
+                ...formData,
                 paidAmount: parseFloat(formData.paidAmount),
-                paymentType: formData.paymentType,
-                paymentMethod: "Online"
+                paymentMethod: "Online",
+                paidAt: new Date()
             };
 
             const response = await fetch("http://localhost:5000/api/payments/process", {
@@ -134,39 +133,22 @@ const FeesForm = () => {
 
             if (response.ok && result.success) {
                 navigate("/AfterLogin/PayReceive", {
-                    state: {
-                        transactionId: result.transactionId,
-                        studentId: formData.studentId,
-                        studentName: formData.studentName,
-                        parentName: formData.parentName,
-                        email: formData.email,
-                        parentPhone: formData.parentPhone,
-                        applyClass: formData.applyClass,
-                        language: formData.language,
-                        totalFees: result.totalFees,
-                        paidAmount: result.paidAmount,
-                        pendingAmount: result.pendingAmount,
-                        paymentType: formData.paymentType,
-                        paidAt: new Date()
-                    }
+                    state: { ...paymentData, ...result }
                 });
             } else {
-                setErrors({ submit: result.error || "Payment failed" });
+                setErrors({ submit: result.error || "Payment failed. Please try again." });
             }
         } catch (error) {
             console.error("Payment Error:", error);
-            setErrors({ submit: "Connection error. Please check if server is running." });
+            setErrors({ submit: "Server connection failed. Is the backend running?" });
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    const getCurrentPending = () => {
+    const displayPendingAfterPayment = () => {
         const paidNow = parseFloat(formData.paidAmount) || 0;
-        if (isExistingStudent) {
-            return Math.max(0, pendingAmount - paidNow);
-        }
-        return Math.max(0, totalFees - paidNow);
+        return Math.max(0, pendingAmount - paidNow);
     };
 
     return (
@@ -191,25 +173,19 @@ const FeesForm = () => {
                             <>
                                 <div className="summary-item">
                                     <span className="summary-label">✅ Already Paid</span>
-                                    <span className="summary-value paid">
-                                        ₹{previouslyPaid.toLocaleString("en-IN")}
-                                    </span>
+                                    <span className="summary-value paid">₹{previouslyPaid.toLocaleString("en-IN")}</span>
                                 </div>
                                 <div className="summary-divider"></div>
                             </>
                         )}
                         <div className="summary-item">
-                            <span className="summary-label">💰 Paying Now</span>
-                            <span className="summary-value paying">
-                                ₹{(parseFloat(formData.paidAmount) || 0).toLocaleString("en-IN")}
-                            </span>
+                            <span className="summary-label">💰 Amount to Pay</span>
+                            <span className="summary-value paying">₹{(parseFloat(formData.paidAmount) || 0).toLocaleString("en-IN")}</span>
                         </div>
                         <div className="summary-divider"></div>
                         <div className="summary-item">
-                            <span className="summary-label">⏳ {isExistingStudent ? 'Remaining' : 'Pending'}</span>
-                            <span className="summary-value pending">
-                                ₹{getCurrentPending().toLocaleString("en-IN")}
-                            </span>
+                            <span className="summary-label">⏳ Remaining Balance</span>
+                            <span className="summary-value pending">₹{displayPendingAfterPayment().toLocaleString("en-IN")}</span>
                         </div>
                     </div>
                 )}
@@ -223,7 +199,7 @@ const FeesForm = () => {
                                 name="studentId"
                                 value={formData.studentId}
                                 onChange={handleChange}
-                                placeholder="Enter Student ID"
+                                placeholder="Enter ID"
                                 readOnly={!!location.state?.studentId}
                                 className={location.state?.studentId ? "readonly-field" : ""}
                             />
@@ -237,7 +213,7 @@ const FeesForm = () => {
                                 name="studentName"
                                 value={formData.studentName}
                                 onChange={handleChange}
-                                placeholder="Enter Student Name"
+                                placeholder="Full Name"
                             />
                             {errors.studentName && <span className="error-text">{errors.studentName}</span>}
                         </div>
@@ -251,7 +227,7 @@ const FeesForm = () => {
                                 name="parentName"
                                 value={formData.parentName}
                                 onChange={handleChange}
-                                placeholder="Enter Parent Name"
+                                placeholder="Parent Name"
                             />
                         </div>
 
@@ -262,7 +238,7 @@ const FeesForm = () => {
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
-                                placeholder="Enter Email"
+                                placeholder="Email"
                             />
                             {errors.email && <span className="error-text">{errors.email}</span>}
                         </div>
@@ -276,7 +252,7 @@ const FeesForm = () => {
                                 name="parentPhone"
                                 value={formData.parentPhone}
                                 onChange={handleChange}
-                                placeholder="Enter Phone"
+                                placeholder="Phone"
                             />
                             {errors.parentPhone && <span className="error-text">{errors.parentPhone}</span>}
                         </div>
@@ -311,9 +287,7 @@ const FeesForm = () => {
                                 name="paidAmount"
                                 value={formData.paidAmount}
                                 onChange={handleChange}
-                                placeholder="Enter Amount to Pay"
-                                min="1"
-                                step="1"
+                                placeholder="Amount"
                             />
                             {errors.paidAmount && <span className="error-text">{errors.paidAmount}</span>}
                         </div>
@@ -328,28 +302,24 @@ const FeesForm = () => {
                                 <option value="PhonePe">🟣 PhonePe</option>
                                 <option value="Paytm">🔵 Paytm</option>
                                 <option value="UPI">💠 UPI</option>
-                                <option value="Net Banking">🏦 Net Banking</option>
-                                <option value="Debit Card">💳 Debit Card</option>
-                                <option value="Credit Card">💳 Credit Card</option>
                                 <option value="Cash">💵 Cash</option>
-                                <option value="Cheque">📝 Cheque</option>
                             </select>
                             {errors.paymentType && <span className="error-text">{errors.paymentType}</span>}
                         </div>
                     </div>
 
-                    {errors.submit && <div className="submit-error">{errors.submit}</div>}
+                    {errors.submit && <div className="submit-error">⚠️ {errors.submit}</div>}
 
                     <button type="submit" className="submit-btn" disabled={isSubmitting}>
                         <span className="btn-icon">✓</span>
-                        {isSubmitting ? "Processing Payment..." : "Pay Now"}
+                        {isSubmitting ? "Processing..." : "Confirm Payment"}
                         <span className="btn-arrow">→</span>
                     </button>
                 </form>
 
                 <div className="security-badge">
                     <span className="badge-icon">🔒</span>
-                    <span>Secure Payment • SSL Encrypted</span>
+                    <span>SSL Secured • School Management System</span>
                 </div>
             </div>
         </section>
