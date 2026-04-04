@@ -1,3 +1,4 @@
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 import React, { useEffect, useState } from "react";
 import "./AdminDashboard.css";
 
@@ -25,7 +26,7 @@ const AdminDashboard = () => {
         try {
             setLoading(true);
             const trimmedSearch = searchQuery.trim();
-            const response = await fetch(`http://localhost:5000/api/admin?search=${encodeURIComponent(trimmedSearch)}`);
+            const response = await fetch(`${API_URL}/api/admin?search=${encodeURIComponent(trimmedSearch)}`);
             if (!response.ok) throw new Error("Failed to fetch inquiries");
             
             const data = await response.json();
@@ -45,7 +46,7 @@ const AdminDashboard = () => {
     const handleApproval = async (inquiryId, currentStatus) => {
         try {
             setProcessingId(inquiryId);
-            const response = await fetch(`http://localhost:5000/api/admin/approve/${inquiryId}`, {
+            const response = await fetch(`${API_URL}/api/admin/approve/${inquiryId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ isApproved: !currentStatus }),
