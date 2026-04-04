@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Sill.css";
 
+// API Base URL define karo
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 const Sill = () => {
     const [studentName, setStudentName] = useState("");
     const [studentId, setStudentId] = useState("");
@@ -20,7 +23,7 @@ const Sill = () => {
         setLoading(true);
         try {
             const res = await fetch(
-                `http://localhost:5000/api/admissions/student/${studentId.trim()}`
+                `${API_BASE_URL}/api/admissions/student/${studentId.trim()}`
             );
             const data = await res.json();
 
@@ -30,7 +33,8 @@ const Sill = () => {
                 return;
             }
 
-            const dbName = data.data.studentName?.toLowerCase().trim();
+            // ✅ Safe access with optional chaining
+            const dbName = data.data?.studentName?.toLowerCase().trim();
             const enteredName = studentName.toLowerCase().trim();
 
             if (dbName !== enteredName) {
@@ -39,13 +43,11 @@ const Sill = () => {
                 return;
             }
 
-            // ✅ "6th", "1st" jeva strings fix karo
-            const rawClass = data.data.applyClass?.toString().replace(/\D/g, "");
+            // ✅ Clean up class string (e.g., "10th" -> 10)
+            const rawClass = data.data?.applyClass?.toString().replace(/\D/g, "");
             const applyClass = parseInt(rawClass);
-            const language = data.data.language || "English";
-            const stream = data.data.stream || "NA";
-
-            console.log("✅ applyClass:", applyClass, "| language:", language, "| stream:", stream);
+            const language = data.data?.language || "English";
+            const stream = data.data?.stream || "NA";
 
             if (isNaN(applyClass)) {
                 setError("Invalid class data. Please contact admin.");
@@ -53,27 +55,25 @@ const Sill = () => {
                 return;
             }
 
-            // ✅ Navigate based on class
+            // ✅ Helper to dry up navigation code
+            const commonState = { 
+                studentName: data.data.studentName, 
+                applyClass, 
+                language 
+            };
+
             if (applyClass >= 1 && applyClass <= 5) {
-                navigate("/AfterLogin/Syllabus/Primary", {
-                    state: { studentName: data.data.studentName, applyClass, language, stream: "NA" }
-                });
+                navigate("/AfterLogin/Syllabus/Primary", { state: { ...commonState, stream: "NA" } });
             } else if (applyClass >= 6 && applyClass <= 8) {
-                navigate("/AfterLogin/Syllabus/Middle", {
-                    state: { studentName: data.data.studentName, applyClass, language, stream: "NA" }
-                });
+                navigate("/AfterLogin/Syllabus/Middle", { state: { ...commonState, stream: "NA" } });
             } else if (applyClass >= 9 && applyClass <= 10) {
-                navigate("/AfterLogin/Syllabus/High", {
-                    state: { studentName: data.data.studentName, applyClass, language, stream: "NA" }
-                });
+                navigate("/AfterLogin/Syllabus/High", { state: { ...commonState, stream: "NA" } });
             } else if (applyClass >= 11 && applyClass <= 12) {
-                navigate("/AfterLogin/Syllabus/High", {
-                    state: {
-                        studentName: data.data.studentName,
-                        applyClass,
-                        language,
-                        stream: stream !== "NA" ? stream : "Science"
-                    }
+                navigate("/AfterLogin/Syllabus/High", { 
+                    state: { 
+                        ...commonState, 
+                        stream: stream !== "NA" ? stream : "Science" 
+                    } 
                 });
             } else {
                 setError("Class not recognized. Please contact admin.");
@@ -82,8 +82,10 @@ const Sill = () => {
         } catch (err) {
             console.error("❌ Error:", err);
             setError("Server error. Please try again.");
+        } finally {
+            // ✅ Always stop loading
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     return (
@@ -100,8 +102,9 @@ const Sill = () => {
                             type="text"
                             placeholder="Enter your name"
                             value={studentName}
+                            autoComplete="off"
                             onChange={(e) => setStudentName(e.target.value)}
-                            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+                            onKeyDown={(e) => e.key === "Enter" && !loading && handleSubmit()}
                         />
                     </div>
                     <div className="sill-field">
@@ -110,8 +113,9 @@ const Sill = () => {
                             type="text"
                             placeholder="Enter your ID"
                             value={studentId}
+                            autoComplete="off"
                             onChange={(e) => setStudentId(e.target.value)}
-                            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+                            onKeyDown={(e) => e.key === "Enter" && !loading && handleSubmit()}
                         />
                     </div>
                     {error && <p className="sill-error">⚠️ {error}</p>}
