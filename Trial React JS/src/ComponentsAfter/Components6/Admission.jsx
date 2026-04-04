@@ -2,12 +2,16 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./Admission.css";
 
+// Dynamic API URL
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 const Admission = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
     const [isLocked, setIsLocked] = useState(true);
     const [inquiryIdInput, setInquiryIdInput] = useState("");
+    const [isUnlocking, setIsUnlocking] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState({});
 
@@ -19,86 +23,77 @@ const Admission = () => {
         applyClass: "", language: "", aadharNumber: "", inquiryId: ""
     });
 
+    // Function to populate form data (Reusable logic)
+    const fillFormData = (data) => {
+        if (!data) return;
+        setFormData(prev => ({
+            ...prev,
+            studentName: data.studentName || "",
+            parentEmail: data.parentEmail || "",
+            parentPhone: data.parentPhone || "",
+            applyClass: data.applyClass || "",
+            language: data.language || "",
+            previousSchool: data.previousSchool || "",
+            inquiryId: data.inquiryId || ""
+        }));
+        setIsLocked(false);
+    };
+
     useEffect(() => {
         const storedInquiryData = sessionStorage.getItem('inquiryData');
-
         if (storedInquiryData) {
             try {
-                const inquiryData = JSON.parse(storedInquiryData);
-                console.log("📥 Loading inquiry data:", inquiryData);
-
-                setIsLocked(false);
-                setFormData(prev => ({
-                    ...prev,
-                    studentName: inquiryData.studentName || "",
-                    parentEmail: inquiryData.parentEmail || "",
-                    parentPhone: inquiryData.parentPhone || "",
-                    applyClass: inquiryData.applyClass || "",
-                    language: inquiryData.language || "",
-                    previousSchool: inquiryData.previousSchool || "",
-                    inquiryId: inquiryData.inquiryId || ""
-                }));
+                fillFormData(JSON.parse(storedInquiryData));
             } catch (error) {
                 console.error("❌ Error parsing inquiry data:", error);
             }
         } else if (location.state?.inquiryData) {
-            const inquiryData = location.state.inquiryData;
-            setIsLocked(false);
-            setFormData(prev => ({
-                ...prev,
-                studentName: inquiryData.studentName || "",
-                parentEmail: inquiryData.parentEmail || "",
-                parentPhone: inquiryData.parentPhone || "",
-                applyClass: inquiryData.applyClass || "",
-                language: inquiryData.language || "",
-                previousSchool: inquiryData.previousSchool || "",
-                inquiryId: inquiryData.inquiryId || ""
-            }));
+            fillFormData(location.state.inquiryData);
         }
     }, [location.state]);
 
     const handleUnlock = async () => {
         if (!inquiryIdInput.trim()) return setErrors({ unlock: "Enter Inquiry ID" });
 
+        setIsUnlocking(true);
+        setErrors({});
         try {
-            const res = await fetch(`http://localhost:5000/api/inquiries/${inquiryIdInput}`);
+            const res = await fetch(`${API_BASE_URL}/api/inquiries/${inquiryIdInput.trim()}`);
             const data = await res.json();
 
             if (res.ok && data.approved) {
-                setIsLocked(false);
-                setFormData(prev => ({
-                    ...prev,
-                    studentName: data.studentName || "",
-                    parentEmail: data.parentEmail || "",
-                    parentPhone: data.parentPhone || "",
-                    applyClass: data.applyClass || "",
-                    language: data.language || "",
-                    previousSchool: data.previousSchool || "",
-                    inquiryId: inquiryIdInput
-                }));
-                setErrors({});
+                fillFormData({ ...data, inquiryId: inquiryIdInput.trim() });
             } else {
                 setErrors({ unlock: "Inquiry not approved or ID invalid." });
             }
         } catch (err) {
-            setErrors({ unlock: "Connection Error." });
+            setErrors({ unlock: "Server connection error. Please try again." });
+        } finally {
+            setIsUnlocking(false);
         }
     };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+        // Validation for numbers only fields
+        if ((name === "aadharNumber" || name === "parentPhone" || name === "pincode") && value !== "" && !/^\d+$/.test(value)) {
+            return;
+        }
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Basic Validations
+        if (formData.aadharNumber.length !== 12) return setErrors({ submit: "Aadhar must be exactly 12 digits." });
+        if (formData.parentPhone.length !== 10) return setErrors({ submit: "Phone must be 10 digits." });
+
         setIsSubmitting(true);
         setErrors({});
 
-        console.log("📤 Sending Data to Backend:", formData);
-
         try {
-            const res = await fetch("http://localhost:5000/api/admissions", {
+            const res = await fetch(`${API_BASE_URL}/api/admissions`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
@@ -108,11 +103,9 @@ const Admission = () => {
 
             if (res.ok && data.success) {
                 sessionStorage.removeItem('inquiryData');
-
-                // Navigate to Fees page with student data INCLUDING studentId
                 navigate("/AfterLogin/Fees", {
                     state: {
-                        studentId: data.studentId, // ✅ IMPORTANT: Student ID from backend
+                        studentId: data.studentId,
                         studentName: formData.studentName,
                         parentName: formData.fatherName,
                         email: formData.parentEmail,
@@ -121,10 +114,10 @@ const Admission = () => {
                     }
                 });
             } else {
-                setErrors({ submit: data.error || "Validation Error" });
+                setErrors({ submit: data.error || "Validation Error from Server." });
             }
         } catch (err) {
-            setErrors({ submit: "Server Error. Check Backend Console." });
+            setErrors({ submit: "Server Error. Please try again later." });
         } finally {
             setIsSubmitting(false);
         }
@@ -144,9 +137,12 @@ const Admission = () => {
                         placeholder="🔑 Enter Inquiry ID"
                         value={inquiryIdInput}
                         onChange={(e) => setInquiryIdInput(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleUnlock()}
                     />
                     {errors.unlock && <p className="field-error">{errors.unlock}</p>}
-                    <button className="unlock-btn" onClick={handleUnlock}>🔓 Unlock Form</button>
+                    <button className="unlock-btn" onClick={handleUnlock} disabled={isUnlocking}>
+                        {isUnlocking ? "⏳ Verifying..." : "🔓 Unlock Form"}
+                    </button>
                 </div>
             </div>
         </section>
@@ -165,13 +161,13 @@ const Admission = () => {
                 )}
 
                 <form className="admission-form" onSubmit={handleSubmit}>
-
+                    {/* Section 1: Personal Info */}
                     <div className="form-section">
                         <h3 className="section-title">👤 1. Student & Parent Info</h3>
                         <div className="form-grid">
                             <div className="input-field">
                                 <label>📝 Student Name</label>
-                                <input name="studentName" placeholder="Student Name" value={formData.studentName} onChange={handleChange} required />
+                                <input name="studentName" placeholder="Full Name" value={formData.studentName} onChange={handleChange} required />
                             </div>
                             <div className="input-field">
                                 <label>📅 Date of Birth</label>
@@ -195,41 +191,39 @@ const Admission = () => {
                             </div>
                             <div className="input-field">
                                 <label>🆔 Aadhar Number</label>
-                                <input name="aadharNumber" placeholder="Aadhar Number" maxLength="12" value={formData.aadharNumber} onChange={handleChange} required />
+                                <input name="aadharNumber" placeholder="12 Digit Aadhar" maxLength="12" value={formData.aadharNumber} onChange={handleChange} required />
                             </div>
                         </div>
                     </div>
 
+                    {/* Section 2: Contact */}
                     <div className="form-section">
                         <h3 className="section-title">📍 2. Contact & Address</h3>
                         <div className="form-grid">
                             <div className="input-field">
                                 <label>📧 Email</label>
-                                <input type="email" name="parentEmail" placeholder="Email" value={formData.parentEmail} onChange={handleChange} required />
+                                <input type="email" name="parentEmail" placeholder="Email Address" value={formData.parentEmail} onChange={handleChange} required />
                             </div>
                             <div className="input-field">
                                 <label>📱 Phone</label>
-                                <input name="parentPhone" placeholder="Phone" value={formData.parentPhone} onChange={handleChange} required />
+                                <input name="parentPhone" placeholder="10 Digit Phone" maxLength="10" value={formData.parentPhone} onChange={handleChange} required />
                             </div>
                             <div className="input-field">
                                 <label>🏙️ City</label>
                                 <input name="city" placeholder="City" value={formData.city} onChange={handleChange} required />
                             </div>
                             <div className="input-field">
-                                <label>🗺️ State</label>
-                                <input name="state" placeholder="State" value={formData.state} onChange={handleChange} required />
-                            </div>
-                            <div className="input-field">
                                 <label>📮 Pincode</label>
-                                <input name="pincode" placeholder="Pincode" value={formData.pincode} onChange={handleChange} required />
+                                <input name="pincode" placeholder="Pincode" maxLength="6" value={formData.pincode} onChange={handleChange} required />
                             </div>
                             <div className="input-field full-width">
                                 <label>🏠 Full Address</label>
-                                <textarea name="address" placeholder="Full Address" value={formData.address} onChange={handleChange} required className="full-width" />
+                                <textarea name="address" placeholder="Residential Address" value={formData.address} onChange={handleChange} required />
                             </div>
                         </div>
                     </div>
 
+                    {/* Section 3: Academic */}
                     <div className="form-section">
                         <h3 className="section-title">📚 3. Academic Selection</h3>
                         <div className="form-grid">
@@ -247,21 +241,18 @@ const Admission = () => {
                             <div className="input-field">
                                 <label>🌐 Medium</label>
                                 <select name="language" value={formData.language} onChange={handleChange} required>
-                                    <option value="">Medium</option>
+                                    <option value="">Select Medium</option>
                                     <option value="English">English</option>
                                     <option value="Gujarati">Gujarati</option>
                                 </select>
                             </div>
-                            <div className="input-field full-width">
-                                <label>🏫 Previous School</label>
-                                <input name="previousSchool" placeholder="Previous School Name (if any)" value={formData.previousSchool} onChange={handleChange} />
-                            </div>
                         </div>
                     </div>
 
-                    {errors.submit && <div className="form-error">{errors.submit}</div>}
+                    {errors.submit && <div className="form-error">⚠️ {errors.submit}</div>}
+                    
                     <button type="submit" className="submit-btn" disabled={isSubmitting}>
-                        {isSubmitting ? "⏳ Processing..." : "✅ Submit Admission & Proceed to Payment"}
+                        {isSubmitting ? "⏳ Processing..." : "✅ Submit Admission & Proceed"}
                     </button>
                 </form>
             </div>
