@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import './Slide.css';
 import axios from 'axios';
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 export default function Slide() {
     const [feedbacks, setFeedbacks] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -16,7 +18,7 @@ export default function Slide() {
     const fetchFeedbacks = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('http://localhost:5000/api/feedback');
+            const response = await axios.get(`${API_BASE_URL}/api/feedback`);
             
             if (response.data.success && Array.isArray(response.data.data)) {
                 setFeedbacks(response.data.data);
