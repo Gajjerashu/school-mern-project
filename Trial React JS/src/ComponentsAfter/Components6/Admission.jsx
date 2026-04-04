@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios"; // Fetch કરતા Axios વધુ સ્ટેબલ છે
 import "./Admission.css";
 
-// Dynamic API URL
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const Admission = () => {
@@ -18,13 +18,13 @@ const Admission = () => {
     const [formData, setFormData] = useState({
         studentName: "", fatherName: "", motherName: "",
         dateOfBirth: "", gender: "", bloodGroup: "",
-        address: "", city: "", state: "", pincode: "",
+        address: "", city: "", state: "Gujarat", pincode: "",
         parentPhone: "", parentEmail: "", previousSchool: "",
         applyClass: "", language: "", aadharNumber: "", inquiryId: ""
     });
 
-    // Function to populate form data (Reusable logic)
-    const fillFormData = (data) => {
+    // ✅ Memoized fill function to prevent re-renders
+    const fillFormData = useCallback((data) => {
         if (!data) return;
         setFormData(prev => ({
             ...prev,
@@ -37,7 +37,7 @@ const Admission = () => {
             inquiryId: data.inquiryId || ""
         }));
         setIsLocked(false);
-    };
+    }, []);
 
     useEffect(() => {
         const storedInquiryData = sessionStorage.getItem('inquiryData');
@@ -45,29 +45,30 @@ const Admission = () => {
             try {
                 fillFormData(JSON.parse(storedInquiryData));
             } catch (error) {
-                console.error("❌ Error parsing inquiry data:", error);
+                console.error("❌ Storage Error:", error);
             }
         } else if (location.state?.inquiryData) {
             fillFormData(location.state.inquiryData);
         }
-    }, [location.state]);
+    }, [location.state, fillFormData]);
 
     const handleUnlock = async () => {
-        if (!inquiryIdInput.trim()) return setErrors({ unlock: "Enter Inquiry ID" });
+        const id = inquiryIdInput.trim();
+        if (!id) return setErrors({ unlock: "Please enter a valid Inquiry ID" });
 
         setIsUnlocking(true);
         setErrors({});
         try {
-            const res = await fetch(`${API_BASE_URL}/api/inquiries/${inquiryIdInput.trim()}`);
-            const data = await res.json();
-
-            if (res.ok && data.approved) {
-                fillFormData({ ...data, inquiryId: inquiryIdInput.trim() });
+            const res = await axios.get(`${API_BASE_URL}/api/inquiries/${id}`);
+            if (res.data && res.data.approved) {
+                const fetchedData = { ...res.data, inquiryId: id };
+                fillFormData(fetchedData);
+                sessionStorage.setItem('inquiryData', JSON.stringify(fetchedData));
             } else {
-                setErrors({ unlock: "Inquiry not approved or ID invalid." });
+                setErrors({ unlock: "This Inquiry ID is either invalid or not approved yet." });
             }
         } catch (err) {
-            setErrors({ unlock: "Server connection error. Please try again." });
+            setErrors({ unlock: "Connection failed. Check ID and try again." });
         } finally {
             setIsUnlocking(false);
         }
@@ -75,37 +76,40 @@ const Admission = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        // Validation for numbers only fields
-        if ((name === "aadharNumber" || name === "parentPhone" || name === "pincode") && value !== "" && !/^\d+$/.test(value)) {
-            return;
+        
+        // Number only validation
+        if (["aadharNumber", "parentPhone", "pincode"].includes(name)) {
+            if (value !== "" && !/^\d+$/.test(value)) return;
         }
+        
         setFormData(prev => ({ ...prev, [name]: value }));
+        // Clear specific error when user starts typing
+        if (errors.submit) setErrors({});
+    };
+
+    const validateForm = () => {
+        let newErrors = {};
+        if (formData.aadharNumber.length !== 12) newErrors.submit = "Aadhar Number must be exactly 12 digits.";
+        if (formData.parentPhone.length !== 10) newErrors.submit = "Phone Number must be 10 digits.";
+        if (!formData.dateOfBirth) newErrors.submit = "Please select Date of Birth.";
+        
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // Basic Validations
-        if (formData.aadharNumber.length !== 12) return setErrors({ submit: "Aadhar must be exactly 12 digits." });
-        if (formData.parentPhone.length !== 10) return setErrors({ submit: "Phone must be 10 digits." });
+        if (!validateForm()) return;
 
         setIsSubmitting(true);
-        setErrors({});
-
         try {
-            const res = await fetch(`${API_BASE_URL}/api/admissions`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
-            });
-
-            const data = await res.json();
-
-            if (res.ok && data.success) {
+            const res = await axios.post(`${API_BASE_URL}/api/admissions`, formData);
+            
+            if (res.data.success) {
                 sessionStorage.removeItem('inquiryData');
                 navigate("/AfterLogin/Fees", {
                     state: {
-                        studentId: data.studentId,
+                        studentId: res.data.studentId,
                         studentName: formData.studentName,
                         parentName: formData.fatherName,
                         email: formData.parentEmail,
@@ -113,133 +117,137 @@ const Admission = () => {
                         parentPhone: formData.parentPhone
                     }
                 });
-            } else {
-                setErrors({ submit: data.error || "Validation Error from Server." });
             }
         } catch (err) {
-            setErrors({ submit: "Server Error. Please try again later." });
+            setErrors({ submit: err.response?.data?.error || "Submission failed. Please try again." });
         } finally {
             setIsSubmitting(false);
         }
     };
 
+    // --- RENDER LOCKED VIEW ---
     if (isLocked) return (
-        <section className="admission-section">
-            <div className="admission-container locked">
-                <div className="lock-icon-container">
-                    <img src="https://cdn-icons-png.flaticon.com/512/3064/3064155.png" alt="Lock" className="lock-img" />
+        <section className="admission-section fade-in">
+            <div className="admission-container locked-card">
+                <div className="lock-visual">
+                    <div className="lock-circle">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3064/3064155.png" alt="Lock" />
+                    </div>
                 </div>
-                <h2 className="lock-title">🔒 Admission Form Locked</h2>
-                <p className="lock-subtitle">Enter your approved Inquiry ID to unlock the form</p>
-                <div className="unlock-input-box">
+                <h2 className="lock-title">Admission Portal Locked</h2>
+                <p className="lock-subtitle">Only approved inquiries can proceed to final admission.</p>
+                
+                <div className="unlock-form-group">
                     <input
                         type="text"
-                        placeholder="🔑 Enter Inquiry ID"
+                        className={`unlock-input ${errors.unlock ? "input-error" : ""}`}
+                        placeholder="Enter Approved Inquiry ID"
                         value={inquiryIdInput}
                         onChange={(e) => setInquiryIdInput(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && handleUnlock()}
                     />
-                    {errors.unlock && <p className="field-error">{errors.unlock}</p>}
-                    <button className="unlock-btn" onClick={handleUnlock} disabled={isUnlocking}>
-                        {isUnlocking ? "⏳ Verifying..." : "🔓 Unlock Form"}
+                    {errors.unlock && <span className="error-text">{errors.unlock}</span>}
+                    <button className="unlock-primary-btn" onClick={handleUnlock} disabled={isUnlocking}>
+                        {isUnlocking ? <span className="loader"></span> : "Unlock Registration"}
                     </button>
                 </div>
             </div>
         </section>
     );
 
+    // --- RENDER FORM VIEW ---
     return (
-        <section className="admission-section">
+        <section className="admission-section fade-in">
             <div className="admission-container">
-                <h2 className="admission-title">🎓 Student Admission Form</h2>
-                <p className="admission-subtitle">Complete the form below to finalize your admission</p>
-
-                {formData.inquiryId && (
-                    <div className="inquiry-badge">
-                        🆔 Inquiry ID: <strong>{formData.inquiryId}</strong>
+                <header className="form-header">
+                    <h2 className="admission-title">🎓 Student Admission Form</h2>
+                    <div className="inquiry-status-badge">
+                        Status: <span>Approved (ID: {formData.inquiryId})</span>
                     </div>
-                )}
+                </header>
 
                 <form className="admission-form" onSubmit={handleSubmit}>
                     {/* Section 1: Personal Info */}
-                    <div className="form-section">
-                        <h3 className="section-title">👤 1. Student & Parent Info</h3>
-                        <div className="form-grid">
-                            <div className="input-field">
-                                <label>📝 Student Name</label>
-                                <input name="studentName" placeholder="Full Name" value={formData.studentName} onChange={handleChange} required />
+                    <div className="form-card-section">
+                        <h3 className="section-heading">👤 1. Student & Family Details</h3>
+                        <div className="form-grid-3">
+                            <div className="input-group">
+                                <label>Student Full Name</label>
+                                <input name="studentName" value={formData.studentName} onChange={handleChange} required />
                             </div>
-                            <div className="input-field">
-                                <label>📅 Date of Birth</label>
+                            <div className="input-group">
+                                <label>Date of Birth</label>
                                 <input type="date" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange} required />
                             </div>
-                            <div className="input-field">
-                                <label>⚧ Gender</label>
+                            <div className="input-group">
+                                <label>Gender</label>
                                 <select name="gender" value={formData.gender} onChange={handleChange} required>
-                                    <option value="">Select Gender</option>
+                                    <option value="">Select</option>
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
                                 </select>
                             </div>
-                            <div className="input-field">
-                                <label>👨 Father's Name</label>
-                                <input name="fatherName" placeholder="Father's Name" value={formData.fatherName} onChange={handleChange} required />
+                            <div className="input-group">
+                                <label>Father's Name</label>
+                                <input name="fatherName" value={formData.fatherName} onChange={handleChange} required />
                             </div>
-                            <div className="input-field">
-                                <label>👩 Mother's Name</label>
-                                <input name="motherName" placeholder="Mother's Name" value={formData.motherName} onChange={handleChange} required />
+                            <div className="input-group">
+                                <label>Mother's Name</label>
+                                <input name="motherName" value={formData.motherName} onChange={handleChange} required />
                             </div>
-                            <div className="input-field">
-                                <label>🆔 Aadhar Number</label>
-                                <input name="aadharNumber" placeholder="12 Digit Aadhar" maxLength="12" value={formData.aadharNumber} onChange={handleChange} required />
+                            <div className="input-group">
+                                <label>Aadhar Number (12 Digits)</label>
+                                <input name="aadharNumber" maxLength="12" value={formData.aadharNumber} onChange={handleChange} required />
                             </div>
                         </div>
                     </div>
 
                     {/* Section 2: Contact */}
-                    <div className="form-section">
-                        <h3 className="section-title">📍 2. Contact & Address</h3>
-                        <div className="form-grid">
-                            <div className="input-field">
-                                <label>📧 Email</label>
-                                <input type="email" name="parentEmail" placeholder="Email Address" value={formData.parentEmail} onChange={handleChange} required />
+                    <div className="form-card-section">
+                        <h3 className="section-heading">📍 2. Contact Information</h3>
+                        <div className="form-grid-2">
+                            <div className="input-group">
+                                <label>Parent's Email</label>
+                                <input type="email" name="parentEmail" value={formData.parentEmail} onChange={handleChange} required />
                             </div>
-                            <div className="input-field">
-                                <label>📱 Phone</label>
-                                <input name="parentPhone" placeholder="10 Digit Phone" maxLength="10" value={formData.parentPhone} onChange={handleChange} required />
+                            <div className="input-group">
+                                <label>Primary Contact Number</label>
+                                <input name="parentPhone" maxLength="10" value={formData.parentPhone} onChange={handleChange} required />
                             </div>
-                            <div className="input-field">
-                                <label>🏙️ City</label>
-                                <input name="city" placeholder="City" value={formData.city} onChange={handleChange} required />
+                            <div className="input-group full-row">
+                                <label>Residential Address</label>
+                                <textarea name="address" rows="3" value={formData.address} onChange={handleChange} required />
                             </div>
-                            <div className="input-field">
-                                <label>📮 Pincode</label>
-                                <input name="pincode" placeholder="Pincode" maxLength="6" value={formData.pincode} onChange={handleChange} required />
+                            <div className="input-group">
+                                <label>City</label>
+                                <input name="city" value={formData.city} onChange={handleChange} required />
                             </div>
-                            <div className="input-field full-width">
-                                <label>🏠 Full Address</label>
-                                <textarea name="address" placeholder="Residential Address" value={formData.address} onChange={handleChange} required />
+                            <div className="input-group">
+                                <label>Pincode</label>
+                                <input name="pincode" maxLength="6" value={formData.pincode} onChange={handleChange} required />
                             </div>
                         </div>
                     </div>
 
                     {/* Section 3: Academic */}
-                    <div className="form-section">
-                        <h3 className="section-title">📚 3. Academic Selection</h3>
-                        <div className="form-grid">
-                            <div className="input-field">
-                                <label>🎯 Select Standard</label>
+                    <div className="form-card-section">
+                        <h3 className="section-heading">📚 3. Admission Details</h3>
+                        <div className="form-grid-2">
+                            <div className="input-group">
+                                <label>Apply for Standard</label>
                                 <select name="applyClass" value={formData.applyClass} onChange={handleChange} required>
-                                    <option value="">Select Standard</option>
+                                    <option value="">Choose Standard</option>
                                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => <option key={n} value={`${n}th`}>{n}th Standard</option>)}
-                                    <option value="11th Science">11th Science</option>
-                                    <option value="11th Commerce">11th Commerce</option>
-                                    <option value="12th Science">12th Science</option>
-                                    <option value="12th Commerce">12th Commerce</option>
+                                    <optgroup label="Higher Secondary">
+                                        <option value="11th Science">11th Science</option>
+                                        <option value="11th Commerce">11th Commerce</option>
+                                        <option value="12th Science">12th Science</option>
+                                        <option value="12th Commerce">12th Commerce</option>
+                                    </optgroup>
                                 </select>
                             </div>
-                            <div className="input-field">
-                                <label>🌐 Medium</label>
+                            <div className="input-group">
+                                <label>Instruction Medium</label>
                                 <select name="language" value={formData.language} onChange={handleChange} required>
                                     <option value="">Select Medium</option>
                                     <option value="English">English</option>
@@ -249,11 +257,13 @@ const Admission = () => {
                         </div>
                     </div>
 
-                    {errors.submit && <div className="form-error">⚠️ {errors.submit}</div>}
+                    {errors.submit && <div className="error-banner">⚠️ {errors.submit}</div>}
                     
-                    <button type="submit" className="submit-btn" disabled={isSubmitting}>
-                        {isSubmitting ? "⏳ Processing..." : "✅ Submit Admission & Proceed"}
-                    </button>
+                    <div className="form-actions">
+                        <button type="submit" className="final-submit-btn" disabled={isSubmitting}>
+                            {isSubmitting ? "Finalizing Admission..." : "Submit Admission & Proceed to Fees"}
+                        </button>
+                    </div>
                 </form>
             </div>
         </section>
