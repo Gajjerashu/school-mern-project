@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom'; // ✅ ADD: useLoca
 import './Mcq.css';
 import { FaUser, FaIdCard, FaCheckCircle, FaTimesCircle, FaClock, FaTrophy, FaForward } from 'react-icons/fa';
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 const PASS_MARKS = { 25: 12, 50: 23 };
 
 const Mcq = () => {
