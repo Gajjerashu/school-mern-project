@@ -24,7 +24,7 @@ const AdmissionShow = () => {
         fetchAdmissions();
     }, [activeSection, activeClass, activeLanguage, searchTerm]);
 
-   const fetchStats = async () => {
+    const fetchStats = async () => {
         try {
             const response = await fetch(`${API_BASE_URL}/admission-dash/stats`);
             const data = await response.json();
@@ -44,8 +44,10 @@ const AdmissionShow = () => {
                 search: searchTerm
             });
             const response = await fetch(`${API_BASE_URL}/admission-dash?${params.toString()}`);
+            
+            // ✅ FIXED: Removed double declaration of 'data'
             const data = await response.json();
-            const data = await response.json();
+            
             if (data.success) setAdmissions(data.admissions);
         } catch (error) {
             console.error("Error fetching admissions:", error);
@@ -60,6 +62,7 @@ const AdmissionShow = () => {
     };
 
     const formatDate = (date) => {
+        if (!date) return "N/A";
         return new Date(date).toLocaleDateString("en-IN", {
             day: "2-digit",
             month: "short",
