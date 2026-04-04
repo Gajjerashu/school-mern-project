@@ -1,12 +1,14 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
 const ProtectedRoute = ({ children }) => {
     const token = localStorage.getItem("token");
+    const location = useLocation();
 
+    // 1. Basic Check: Token chhe ke nahi?
     if (!token) {
-        // Redirect to login if not logged in
-        return <Navigate to="/Login" replace />;
+
+        return <Navigate to="/Login" state={{ from: location }} replace />;
     }
 
     return children;
