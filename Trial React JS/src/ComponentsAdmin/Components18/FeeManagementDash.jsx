@@ -17,6 +17,8 @@ const FeeManagementDash = () => {
         sortBy: "newest"
     });
 
+    const API_URL = "http://localhost:5000/api/fee-management";
+
     useEffect(() => {
         fetchStatistics();
         fetchPayments();
@@ -28,7 +30,7 @@ const FeeManagementDash = () => {
 
     const fetchStatistics = async () => {
         try {
-            const res = await fetch("http://localhost:5000/api/fee-management/stats");
+            const res = await fetch(`${API_URL}/stats`);
             const data = await res.json();
             if (data.success) {
                 setStats(data.statistics);
