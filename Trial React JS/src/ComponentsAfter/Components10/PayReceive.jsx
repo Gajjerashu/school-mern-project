@@ -7,6 +7,7 @@ const PayReceive = () => {
     const navigate = useNavigate();
     const receiptRef = useRef();
 
+    // Priority: location.state -> fetch from API
     const [paymentData, setPaymentData] = useState(location.state || {});
     const [loading, setLoading] = useState(!location.state?.transactionId);
 
@@ -14,7 +15,7 @@ const PayReceive = () => {
         const txnId = location.state?.transactionId;
         
         const fetchReceipt = async () => {
-            if (txnId) {
+            if (txnId && !location.state?.studentName) { // Fetch only if data is missing
                 try {
                     const res = await fetch(`http://localhost:5000/api/payments/receipt/${txnId}`);
                     const data = await res.json();
@@ -32,13 +33,14 @@ const PayReceive = () => {
         };
 
         fetchReceipt();
-    }, [location.state?.transactionId]); // Only trigger if txnId changes
+    }, [location.state?.transactionId, location.state?.studentName]);
 
+    // Data safely parsed to Number
     const totalFees = Number(paymentData?.totalFees || 0);
     const paidAmount = Number(paymentData?.paidAmount || 0);
     const pendingAmount = Number(paymentData?.pendingAmount || 0);
 
-    const handleDownloadPDF = () => {
+    const handlePrint = () => {
         window.print();
     };
 
@@ -57,33 +59,23 @@ const PayReceive = () => {
     const getPaymentIcon = (type) => {
         const icons = {
             GPay: "🟢", PhonePe: "🟣", Paytm: "🔵", UPI: "💠",
-            "Net Banking": "🏦", "Debit Card": "💳", "Credit Card": "💳",
             Cash: "💵", Cheque: "📝"
         };
         return icons[type] || "💰";
     };
 
     if (loading) {
-        return <div className="receipt-page"><div className="loader">Loading Receipt...</div></div>;
+        return <div className="receipt-page"><div className="loader">Generatring Receipt...</div></div>;
     }
 
     if (!paymentData?.transactionId) {
         return (
             <div className="receipt-page">
                 <div className="receipt-error">
-                    <div className="school-logo-error">
-                        <svg width="80" height="80" viewBox="0 0 32 32" fill="#ef4444">
-                            <path d="M16 2L4 8v12c0 7.5 5.2 14.5 12 16 6.8-1.5 12-8.5 12-16V8L16 2z" opacity=".2"/>
-                            <path d="M12 14l8 8M20 14l-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                        </svg>
-                    </div>
                     <h2>InspireEdge School</h2>
-                    <h3>No Receipt Found</h3>
-                    <p className="error-message">We couldn't find any transaction details.</p>
-                    <div className="error-actions">
-                        <button onClick={() => navigate("/AfterLogin/Fees")} className="pay-fees-btn">💰 Pay Fees Now</button>
-                        <button onClick={() => navigate("/AfterLogin/Home1")} className="home-btn">🏠 Home</button>
-                    </div>
+                    <h3>No Transaction Found</h3>
+                    <p>Please complete the payment process first.</p>
+                    <button onClick={() => navigate("/AfterLogin/Fees")} className="pay-fees-btn">Go to Fees Page</button>
                 </div>
             </div>
         );
@@ -91,23 +83,13 @@ const PayReceive = () => {
 
     return (
         <div className="receipt-page">
-            <div className="watermark no-print">PAID</div>
-
             <div className="receipt-container" ref={receiptRef}>
-                {/* Success Badge */}
-                <div className="success-badge-top">
-                    <div className="success-check-big">✓</div>
-                    <h1>Payment Successful</h1>
-                    <p>Receipt generated on {new Date().toLocaleDateString("en-IN")}</p>
-                </div>
-
                 {/* School Header */}
                 <div className="school-header-receipt">
                     <div className="school-logo-receipt">🎓</div>
                     <div>
                         <h2>InspireEdge School</h2>
-                        <p className="school-tagline">Excellence in Education Since 2010</p>
-                        <p className="school-address">Near Railway Station, Vadodara, Gujarat - 390001</p>
+                        <p className="school-address">Vadodara, Gujarat - 390001</p>
                         <p className="school-contact">📞 +91 1234567890 | 📧 info@inspireedge.edu</p>
                     </div>
                 </div>
@@ -115,102 +97,69 @@ const PayReceive = () => {
                 <div className="receipt-divider"></div>
 
                 <div className="receipt-header-section">
-                    <div>
-                        <h3>FEE PAYMENT RECEIPT</h3>
-                        <p>Academic Year: 2024-2025</p>
-                    </div>
+                    <h3>FEE PAYMENT RECEIPT</h3>
                     <div className="receipt-number">
-                        <p>Receipt No.</p>
-                        <strong>#{paymentData.transactionId}</strong>
+                        <p>Receipt No: <strong>#{paymentData.transactionId}</strong></p>
+                        <p>Date: <strong>{new Date().toLocaleDateString("en-IN")}</strong></p>
                     </div>
                 </div>
 
-                {/* Student Info */}
-                <div className="info-section">
-                    <h4>📋 Student Information</h4>
-                    <div className="info-grid-receipt">
-                        <div className="info-item"><span className="info-label">Student ID:</span> <strong>{paymentData.studentId}</strong></div>
-                        <div className="info-item"><span className="info-label">Name:</span> <strong>{paymentData.studentName}</strong></div>
-                        <div className="info-item"><span className="info-label">Class:</span> <strong>{paymentData.applyClass}</strong></div>
-                        <div className="info-item"><span className="info-label">Medium:</span> <strong>{paymentData.language}</strong></div>
-                        <div className="info-item"><span className="info-label">Parent:</span> <strong>{paymentData.parentName || "N/A"}</strong></div>
-                        <div className="info-item"><span className="info-label">Phone:</span> <strong>{paymentData.parentPhone}</strong></div>
-                    </div>
+                {/* Student & Payment Info Grid */}
+                <div className="info-grid-receipt">
+                    <div className="info-item"><span>Student ID:</span> <strong>{paymentData.studentId}</strong></div>
+                    <div className="info-item"><span>Name:</span> <strong>{paymentData.studentName}</strong></div>
+                    <div className="info-item"><span>Class:</span> <strong>{paymentData.applyClass}</strong></div>
+                    <div className="info-item"><span>Payment Mode:</span> <strong>{getPaymentIcon(paymentData.paymentType)} {paymentData.paymentType}</strong></div>
                 </div>
 
-                {/* Payment Info */}
-                <div className="info-section">
-                    <h4>💳 Payment Details</h4>
-                    <div className="info-grid-receipt">
-                        <div className="info-item"><span className="info-label">Method:</span> <strong>{getPaymentIcon(paymentData.paymentType)} {paymentData.paymentType}</strong></div>
-                        <div className="info-item"><span className="info-label">Date:</span> <strong>{formatDate(paymentData.paidAt)}</strong></div>
-                        <div className="info-item"><span className="info-label">Status:</span> <strong className="status-paid">✓ SUCCESSFUL</strong></div>
-                    </div>
+                {/* Fee Table */}
+                <table className="fee-table">
+                    <thead>
+                        <tr>
+                            <th>Particulars</th>
+                            <th className="text-right">Amount (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Total Course Fees</td>
+                            <td className="text-right">₹{totalFees.toLocaleString("en-IN")}</td>
+                        </tr>
+                        <tr className="highlight-row">
+                            <td><strong>Amount Paid (Current)</strong></td>
+                            <td className="text-right"><strong>₹{paidAmount.toLocaleString("en-IN")}</strong></td>
+                        </tr>
+                        <tr className="pending-row">
+                            <td>Remaining Balance</td>
+                            <td className="text-right">₹{pendingAmount.toLocaleString("en-IN")}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div className="amount-words">
+                    <p><strong>In Words:</strong> {numberToWords(paidAmount)} Rupees Only</p>
                 </div>
 
-                {/* Table */}
-                <div className="fee-breakdown-section">
-                    <h4>💰 Fee Breakdown</h4>
-                    <table className="fee-table">
-                        <thead>
-                            <tr>
-                                <th>Description</th>
-                                <th className="text-right">Amount (₹)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Total Annual Course Fees</td>
-                                <td className="text-right">₹{totalFees.toLocaleString("en-IN")}</td>
-                            </tr>
-                            <tr className="highlight-row">
-                                <td><strong>Amount Paid in this Transaction</strong></td>
-                                <td className="text-right"><strong>₹{paidAmount.toLocaleString("en-IN")}</strong></td>
-                            </tr>
-                            <tr className="pending-row">
-                                <td>Remaining Balance</td>
-                                <td className="text-right">₹{pendingAmount.toLocaleString("en-IN")}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <div className="amount-words">
-                        <p><strong>Amount in Words:</strong> {numberToWords(paidAmount)} Rupees Only</p>
-                    </div>
-                </div>
-
-                {/* Footer */}
+                {/* Footer Section */}
                 <div className="receipt-footer-section">
-                    <div className="footer-left">
-                        <div className="signature-box">
-                            <div className="signature-line"></div>
-                            <p>Authorized Signatory</p>
-                        </div>
+                    <div className="signature-box">
+                        <div className="signature-line"></div>
+                        <p>Authorized Signatory</p>
                     </div>
-                    <div className="footer-right">
-                        <div className="school-seal-wrapper">
-                            <div className="seal-circle">OFFICIAL SEAL</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="receipt-bottom-note">
-                    <p>This is a computer generated receipt, no physical signature required.</p>
-                    <p>Thank you for choosing InspireEdge School!</p>
+                    <div className="seal-circle">SCHOOL SEAL</div>
                 </div>
             </div>
 
-            {/* Actions */}
+            {/* Action Buttons */}
             <div className="action-buttons no-print">
-                <button onClick={handleDownloadPDF} className="action-btn download"><span>📥</span> Print / Save PDF</button>
-                <button onClick={() => navigate("/AfterLogin/Fees")} className="action-btn another"><span>💳</span> New Payment</button>
-                <button onClick={() => navigate("/AfterLogin/Home1")} className="action-btn home">🏠 Back to Dashboard</button>
+                <button onClick={handlePrint} className="action-btn download">Print Receipt</button>
+                <button onClick={() => navigate("/AfterLogin/Home1")} className="action-btn home">Back to Dashboard</button>
             </div>
         </div>
     );
 };
 
-// Robust Number to Words Function
+// Indian Number System Converter (Lakhs/Crores)
 const numberToWords = (num) => {
     if (num === 0) return "Zero";
     const a = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
