@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import './Slide.css';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { FaChevronLeft, FaChevronRight, FaSyncAlt, FaCalendarAlt, FaQuoteLeft } from 'react-icons/fa';
+import './Slide.css';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
@@ -11,11 +12,8 @@ export default function Slide() {
     const [error, setError] = useState(null);
     const [autoplay, setAutoplay] = useState(true);
 
-    useEffect(() => {
-        fetchFeedbacks();
-    }, []);
-
-    const fetchFeedbacks = async () => {
+    // Fetch data with useCallback to prevent unnecessary re-renders
+    const fetchFeedbacks = useCallback(async () => {
         try {
             setLoading(true);
             const response = await axios.get(`${API_BASE_URL}/api/feedback`);
@@ -24,188 +22,146 @@ export default function Slide() {
                 setFeedbacks(response.data.data);
                 setError(null);
             } else {
-                setError('No feedbacks available');
+                setError('No feedback responses found.');
             }
         } catch (err) {
-            console.error('Error fetching feedbacks:', err);
-            setError('Failed to load feedbacks');
+            console.error('Fetch Error:', err);
+            setError('Failed to fetch data from server.');
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    // Auto-play carousel
     useEffect(() => {
-        if (!autoplay || feedbacks.length === 0) return;
+        fetchFeedbacks();
+    }, [fetchFeedbacks]);
 
-        const interval = setInterval(() => {
-            setCurrentIndex(prevIndex => (prevIndex + 1) % feedbacks.length);
-        }, 5000); // Change slide every 5 seconds
+    // Slider logic
+    const nextSlide = useCallback(() => {
+        setCurrentIndex((prev) => (prev + 1) % feedbacks.length);
+    }, [feedbacks.length]);
 
+    const prevSlide = () => {
+        setCurrentIndex((prev) => (prev === 0 ? feedbacks.length - 1 : prev - 1));
+        setAutoplay(false);
+    };
+
+    // Autoplay effect
+    useEffect(() => {
+        let interval;
+        if (autoplay && feedbacks.length > 0) {
+            interval = setInterval(nextSlide, 5000);
+        }
         return () => clearInterval(interval);
-    }, [autoplay, feedbacks.length]);
-
-    const handlePrev = () => {
-        setCurrentIndex(prevIndex => 
-            prevIndex === 0 ? feedbacks.length - 1 : prevIndex - 1
-        );
-        setAutoplay(false);
-    };
-
-    const handleNext = () => {
-        setCurrentIndex(prevIndex => 
-            (prevIndex + 1) % feedbacks.length
-        );
-        setAutoplay(false);
-    };
-
-    const handleDotClick = (index) => {
-        setCurrentIndex(index);
-        setAutoplay(false);
-    };
+    }, [autoplay, nextSlide, feedbacks.length]);
 
     const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-GB');
+        return new Date(dateString).toLocaleDateString('en-IN', {
+            day: '2-digit', month: 'short', year: 'numeric'
+        });
     };
 
     if (loading) {
         return (
-            <div className="slide-container">
-                <div className="loading-state">
-                    <div className="spinner"></div>
-                    <p>Loading student feedbacks...</p>
-                </div>
+            <div className="slide-loader">
+                <div className="spinner"></div>
+                <p>Fetching Student Voice...</p>
             </div>
         );
     }
 
     if (error || feedbacks.length === 0) {
         return (
-            <div className="slide-container">
-                <div className="empty-state">
-                    <p className="empty-icon">📭</p>
-                    <p className="empty-text">No student feedbacks yet</p>
-                    <p className="empty-subtext">Feedbacks will appear here once students submit</p>
+            <div className="slide-empty">
+                <div className="empty-card">
+                    <p>📭 {error || "No feedbacks available yet."}</p>
+                    <button onClick={fetchFeedbacks} className="retry-btn">Try Again</button>
                 </div>
             </div>
         );
     }
 
     const currentFeedback = feedbacks[currentIndex];
-    const progressPercent = ((currentIndex + 1) / feedbacks.length) * 100;
 
     return (
-        <div className="slide-container">
+        <div className="slide-master-container">
             <div className="slide-header">
-                <h2>💬 Student Feedback Responses</h2>
-                <p className="slide-subtitle">See what our students are saying</p>
+                <h2 className="title"><FaQuoteLeft className="quote-icon" /> Testimonials</h2>
+                <div className="title-underline"></div>
             </div>
 
-            <div className="slide-wrapper">
-                <div className="slide-content">
-                    {/* Feedback Card */}
-                    <div className="feedback-card-slide">
-                        <div className="card-header">
-                            <div className="header-layout">
-                                <div className="student-info">
-                                    <h3 className="student-name">{currentFeedback.studentName}</h3>
+            <div className="slider-box">
+                {/* Previous Button */}
+                <button className="nav-arrow left" onClick={prevSlide}><FaChevronLeft /></button>
+
+                <div className="slide-card-wrapper">
+                    <div className="feedback-slide-card active">
+                        <div className="card-top">
+                            <div className="student-profile">
+                                <div className="avatar">{currentFeedback.studentName.charAt(0)}</div>
+                                <div className="name-box">
+                                    <h3>{currentFeedback.studentName}</h3>
+                                    <span>Student ID: {currentFeedback.studentId}</span>
                                 </div>
-                                <div className="date-info">
-                                    <span className="feedback-date">📅 {formatDate(currentFeedback.createdAt)}</span>
-                                </div>
+                            </div>
+                            <div className="date-tag">
+                                <FaCalendarAlt /> {formatDate(currentFeedback.createdAt)}
                             </div>
                         </div>
 
-                        {/* Good Points - Show only first 3 */}
-                        <div className="points-section good-section">
-                            <h4 className="points-title">👍 What's Good</h4>
-                            <ul className="points-list">
-                                {currentFeedback.goodPoints && currentFeedback.goodPoints.slice(0, 3).map((point, idx) => (
-                                    <li key={idx} className="point-item good-point">
-                                        <span className="point-icon">✓</span>
-                                        {point}
-                                    </li>
-                                ))}
-                            </ul>
+                        <div className="points-grid">
+                            <div className="point-column success">
+                                <h4>✨ Highlights</h4>
+                                <ul>
+                                    {currentFeedback.goodPoints?.slice(0, 4).map((p, i) => (
+                                        <li key={i}>✅ {p}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                            <div className="point-column warning">
+                                <h4>🛠️ Suggestions</h4>
+                                <ul>
+                                    {currentFeedback.badPoints?.slice(0, 4).map((p, i) => (
+                                        <li key={i}>⚠️ {p}</li>
+                                    ))}
+                                </ul>
+                            </div>
                         </div>
 
-                        {/* Bad Points - Show only first 3 */}
-                        <div className="points-section bad-section">
-                            <h4 className="points-title">👎 Needs Improvement</h4>
-                            <ul className="points-list">
-                                {currentFeedback.badPoints && currentFeedback.badPoints.slice(0, 3).map((point, idx) => (
-                                    <li key={idx} className="point-item bad-point">
-                                        <span className="point-icon">!</span>
-                                        {point}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+                        {currentFeedback.comment && (
+                            <div className="comment-bubble">
+                                <p>"{currentFeedback.comment}"</p>
+                            </div>
+                        )}
                     </div>
-
-                    {/* Navigation Buttons */}
-                    <button 
-                        className="slide-btn prev-btn"
-                        onClick={handlePrev}
-                        aria-label="Previous feedback"
-                    >
-                        ❮
-                    </button>
-
-                    <button 
-                        className="slide-btn next-btn"
-                        onClick={handleNext}
-                        aria-label="Next feedback"
-                    >
-                        ❯
-                    </button>
                 </div>
 
-                {/* Progress Bar */}
-                <div className="progress-bar">
-                    <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
-                </div>
+                {/* Next Button */}
+                <button className="nav-arrow right" onClick={() => { nextSlide(); setAutoplay(false); }}>
+                    <FaChevronRight />
+                </button>
+            </div>
 
-                {/* Autoplay Toggle */}
-                <div className="autoplay-control">
-                    <button
-                        className={`autoplay-btn ${autoplay ? 'active' : ''}`}
-                        onClick={() => setAutoplay(!autoplay)}
-                        title={autoplay ? 'Pause autoplay' : 'Resume autoplay'}
-                    >
-                        {autoplay ? '⏸ Pause' : '▶ Play'}
-                    </button>
-                </div>
-
-                {/* Dot Indicators */}
-                <div className="slide-dots">
-                    {feedbacks.map((_, index) => (
-                        <button
-                            key={index}
-                            className={`dot ${index === currentIndex ? 'active' : ''}`}
-                            onClick={() => handleDotClick(index)}
-                            aria-label={`Go to feedback ${index + 1}`}
-                        />
+            {/* Bottom Controls */}
+            <div className="slider-footer">
+                <div className="dots-container">
+                    {feedbacks.map((_, i) => (
+                        <span 
+                            key={i} 
+                            className={`dot-indicator ${i === currentIndex ? 'active' : ''}`}
+                            onClick={() => { setCurrentIndex(i); setAutoplay(false); }}
+                        ></span>
                     ))}
                 </div>
 
-                {/* Slide Counter */}
-                <div className="slide-counter">
-                    <span>{currentIndex + 1}</span>
-                    <span className="divider">/</span>
-                    <span>{feedbacks.length}</span>
+                <div className="action-row">
+                    <button className={`auto-toggle ${autoplay ? 'on' : 'off'}`} onClick={() => setAutoplay(!autoplay)}>
+                        {autoplay ? '⏸ Pause' : '▶ Play'}
+                    </button>
+                    <button className="refresh-btn" onClick={fetchFeedbacks}>
+                        <FaSyncAlt /> Refresh
+                    </button>
                 </div>
-            </div>
-
-            {/* Refresh Button */}
-            <div className="refresh-section">
-                <button 
-                    className="refresh-btn"
-                    onClick={fetchFeedbacks}
-                >
-                    🔄 Refresh Feedbacks
-                </button>
             </div>
         </div>
     );
