@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { FaCheckCircle, FaTimesCircle, FaTrophy, FaClock, FaForward } from 'react-icons/fa';
+import { FaCheckCircle, FaTimesCircle, FaTrophy, FaClock, FaForward, FaEye } from 'react-icons/fa';
+// import confetti from 'canvas-confetti'; // Optional: install via npm
 import './MockTestResults.css';
 
 const PASS_MARKS = { 25: 12, 50: 23 };
@@ -8,8 +9,25 @@ const PASS_MARKS = { 25: 12, 50: 23 };
 const MockTestResults = () => {
     const location = useLocation();
     const navigate = useNavigate();
+    const [animatedWidth, setAnimatedWidth] = useState(0);
 
     const { studentInfo, resultData } = location.state || {};
+
+    // Animation Effect for Progress Bar
+    useEffect(() => {
+        if (resultData?.percentage) {
+            const timer = setTimeout(() => {
+                setAnimatedWidth(resultData.percentage);
+            }, 300);
+            
+            // Trigger confetti if passed
+            // if (resultData.correctAnswers >= (PASS_MARKS[resultData.totalQuestions] || 23)) {
+            //     confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            // }
+            
+            return () => clearTimeout(timer);
+        }
+    }, [resultData]);
 
     if (!studentInfo || !resultData) {
         return (
@@ -18,29 +36,7 @@ const MockTestResults = () => {
                     <div className="error-card">
                         <h2>⚠️ No Data Found</h2>
                         <p>Please search for a student first.</p>
-                        <button
-                            onClick={() => navigate('/AfterLogin/Students')}
-                            className="back-btn"
-                        >
-                            Go Back to Check
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    if (!resultData.totalQuestions || resultData.correctAnswers === undefined || resultData.percentage === undefined) {
-        return (
-            <div className="results-page">
-                <div className="results-container">
-                    <div className="error-card">
-                        <h2>⚠️ Invalid Data</h2>
-                        <p>The result data appears to be incomplete.</p>
-                        <button
-                            onClick={() => navigate('/AfterLogin/Students')}
-                            className="back-btn"
-                        >
+                        <button onClick={() => navigate('/AfterLogin/Students')} className="back-btn">
                             Go Back to Check
                         </button>
                     </div>
@@ -61,183 +57,84 @@ const MockTestResults = () => {
         return `${mins}m ${secs}s`;
     };
 
-    // ✅ Reattempt — Direct modal (Choose Question Count) screen par jump
-    const handleReattempt = () => {
-        navigate('/AfterLogin/MockTest', {
-            state: {
-                studentInfo: studentInfo
-            }
-        });
-    };
-
-    // ✅ Back to Check — Students page par jao
-    const handleBackToCheck = () => {
-        navigate('/AfterLogin/Students');
-    };
-
     return (
         <div className="results-page">
             <div className="results-container">
-
                 {/* Header */}
                 <div className="results-header">
-                    <button onClick={() => navigate(-1)} className="back-button">
-                        ← Back
-                    </button>
+                    <button onClick={() => navigate(-1)} className="back-button">← Back</button>
                     <h1>Mock Test Results</h1>
+                    <button onClick={() => window.print()} className="print-btn-icon">🖨️</button>
                 </div>
 
                 {/* Result Card */}
-                <div className="result-card">
-                    <div className={`result-header ${passed ? 'passed' : 'failed'}`}>
-                        {passed ? (
-                            <>
-                                <FaTrophy className="result-icon" />
-                                <h1>Congratulations! 🎉</h1>
-                                <p>You have Passed</p>
-                            </>
-                        ) : (
-                            <>
-                                <FaTimesCircle className="result-icon" />
-                                <h1>Not Qualified</h1>
-                                <p>Better luck next time</p>
-                            </>
-                        )}
+                <div className={`result-card-outer ${passed ? 'passed-border' : 'failed-border'}`}>
+                    <div className={`result-header-box ${passed ? 'passed-bg' : 'failed-bg'}`}>
+                        {passed ? <FaTrophy className="main-icon bounce" /> : <FaTimesCircle className="main-icon shake" />}
+                        <h1>{passed ? 'Congratulations! 🎉' : 'Not Qualified'}</h1>
+                        <p>{passed ? 'Excellent Work!' : 'Keep practicing for a better score'}</p>
                     </div>
 
                     <div className="result-body">
-
-                        {/* Student Info */}
-                        <div className="result-info">
-                            <div className="info-row">
-                                <span>Student</span>
-                                <span>{studentInfo.studentName}</span>
-                            </div>
-                            <div className="info-row">
-                                <span>ID</span>
-                                <span>{studentInfo.studentId}</span>
-                            </div>
-                            <div className="info-row">
-                                <span>Class</span>
-                                <span>{studentInfo.applyClass}</span>
-                            </div>
-                            <div className="info-row">
-                                <span>Medium</span>
-                                <span>{studentInfo.language}</span>
-                            </div>
-                            <div className="info-row">
-                                <span>Pass Marks</span>
-                                <span>{passMarks}/{resultData.totalQuestions}</span>
-                            </div>
+                        {/* Student Badge */}
+                        <div className="student-badge">
+                            <span className="name">{studentInfo.studentName}</span>
+                            <span className="details">{studentInfo.applyClass} | {studentInfo.language}</span>
                         </div>
 
                         {/* Stats Grid */}
-                        <div className="result-stats">
-                            <div className="stat total-stat">
-                                <div className="stat-icon">📝</div>
-                                <div className="value">{resultData.totalQuestions}</div>
-                                <div className="label">Total</div>
+                        <div className="stats-grid-container">
+                            <div className="stat-box">
+                                <span className="label">Total Qs</span>
+                                <span className="value">{resultData.totalQuestions}</span>
                             </div>
-                            <div className="stat correct">
+                            <div className="stat-box correct">
                                 <FaCheckCircle />
-                                <div className="value">{resultData.correctAnswers}</div>
-                                <div className="label">Correct</div>
+                                <span className="value">{resultData.correctAnswers}</span>
+                                <span className="label">Correct</span>
                             </div>
-                            <div className="stat wrong">
+                            <div className="stat-box wrong">
                                 <FaTimesCircle />
-                                <div className="value">{safeWrongAnswers}</div>
-                                <div className="label">Wrong</div>
+                                <span className="value">{safeWrongAnswers}</span>
+                                <span className="label">Wrong</span>
                             </div>
-                            <div className="stat skipped">
-                                <FaForward />
-                                <div className="value">{safeSkippedAnswers}</div>
-                                <div className="label">Skipped</div>
-                            </div>
-                        </div>
-
-                        {/* Percentage Bar */}
-                        <div className="percent-bar-wrap">
-                            <div className="percent-label">
-                                <span>Score</span>
-                                <span className="pct-val">{resultData.percentage.toFixed(1)}%</span>
-                            </div>
-                            <div className="percent-bar">
-                                <div className="percent-fill" style={{
-                                    width: `${resultData.percentage}%`,
-                                    background: passed
-                                        ? 'linear-gradient(90deg,#22c55e,#16a34a)'
-                                        : 'linear-gradient(90deg,#ef4444,#dc2626)'
-                                }} />
+                            <div className="stat-box time">
+                                <FaClock />
+                                <span className="value">{formatTime(safeTimeTaken)}</span>
+                                <span className="label">Time</span>
                             </div>
                         </div>
 
-                        {/* Time Taken */}
-                        <div className="time-section">
-                            <div className="time-item">
-                                <FaClock className="time-icon" />
-                                <div>
-                                    <div className="time-label">Time Taken</div>
-                                    <div className="time-value">{formatTime(safeTimeTaken)}</div>
-                                </div>
+                        {/* Percentage Bar with Animation */}
+                        <div className="percentage-section">
+                            <div className="percent-label-row">
+                                <span>Final Score</span>
+                                <span className="percent-number">{resultData.percentage.toFixed(1)}%</span>
                             </div>
+                            <div className="progress-track">
+                                <div 
+                                    className={`progress-fill ${passed ? 'success' : 'danger'}`} 
+                                    style={{ width: `${animatedWidth}%` }}
+                                ></div>
+                            </div>
+                            <p className="pass-mark-info">Minimum required: {passMarks} correct answers</p>
                         </div>
 
-                        {/* Feedback */}
-                        {!passed && (
-                            <div className="retry-msg">
-                                <p>📚 Study harder and try again!</p>
-                                <p>💪 Need {passMarks - resultData.correctAnswers} more correct answers to pass</p>
-                            </div>
-                        )}
-                        {passed && (
-                            <div className="success-msg">
-                                <p>🌟 Great effort! You performed well!</p>
-                                <p>Keep up the good work in your next attempt!</p>
-                            </div>
-                        )}
-
-                        {/* ✅ Action Buttons — Design same, logic changed */}
-                        <div className="action-buttons">
-                            <button onClick={handleReattempt} className="retry-btn">
-                                🔄 Reattempt Test
+                        {/* Action Buttons */}
+                        <div className="button-group">
+                            <button onClick={() => navigate('/AfterLogin/MockTest', { state: { studentInfo } })} className="primary-btn">
+                                🔄 Try Again
                             </button>
-                            <button onClick={handleBackToCheck} className="secondary-btn">
-                                📋 Back to Check
+                            <button onClick={() => navigate('/AfterLogin/Students')} className="outline-btn">
+                                📋 Dashboard
                             </button>
-                        </div>
-
-                    </div>
-                </div>
-
-                {/* Performance Summary */}
-                <div className="summary-card">
-                    <h3>📈 Performance Summary</h3>
-                    <div className="summary-grid">
-                        <div className="summary-item">
-                            <div className="summary-label">Accuracy</div>
-                            <div className="summary-value">
-                                {resultData.totalQuestions > 0
-                                    ? `${((resultData.correctAnswers / resultData.totalQuestions) * 100).toFixed(1)}%`
-                                    : '0%'}
-                            </div>
-                        </div>
-                        <div className="summary-item">
-                            <div className="summary-label">Attempted</div>
-                            <div className="summary-value">
-                                {resultData.totalQuestions - safeSkippedAnswers}
-                            </div>
-                        </div>
-                        <div className="summary-item">
-                            <div className="summary-label">Efficiency</div>
-                            <div className="summary-value">
-                                {resultData.totalQuestions > 0
-                                    ? `${(safeTimeTaken / resultData.totalQuestions).toFixed(1)}s/Q`
-                                    : '0s/Q'}
-                            </div>
+                            {/* Optional: Add Review Button */}
+                            <button className="text-btn">
+                                <FaEye /> Review Answers
+                            </button>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     );
