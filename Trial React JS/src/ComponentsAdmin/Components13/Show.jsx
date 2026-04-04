@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import './Show.css';
 import axios from 'axios';
 
-// ✅ Create axios instance with baseURL
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:5000',
+    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000',
     timeout: 10000
 });
 
