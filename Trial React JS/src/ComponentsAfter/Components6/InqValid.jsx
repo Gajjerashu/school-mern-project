@@ -108,7 +108,7 @@ const InqValid = () => {
                 {isLoggedIn && !inquiry && (
                     <form className="inqvalid-form" onSubmit={handleSubmit}>
                         <div className="form-group">
-                            <label>Student Full Name</label>
+                             <label>👤 STUDENT FULL NAME</label>
                             <input
                                 name="studentName"
                                 type="text"
@@ -120,7 +120,7 @@ const InqValid = () => {
                         </div>
 
                         <div className="form-group">
-                            <label>Parent Email ID</label>
+                            <label>📧 PARENT EMAIL ID</label>
                             <input
                                 name="parentEmail"
                                 type="email"
