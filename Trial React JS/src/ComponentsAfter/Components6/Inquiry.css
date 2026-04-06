@@ -14,7 +14,7 @@
 /* ── Section ── */
 .inquiry-section {
   min-height: 100vh;
-  background: #f0fdf4;
+  background: #ffffff; /* ✅ #f0fdf4 thi #ffffff karyo */
   display: flex;
   align-items: flex-start;
   justify-content: center;
