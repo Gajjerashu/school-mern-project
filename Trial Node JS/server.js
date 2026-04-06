@@ -11,17 +11,23 @@ const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/schoolDB";
 
 // ---------- Middleware & CORS Fix ----------
-// Aa list ma tamari badhi frontend URLs hovi joie
 const allowedOrigins = [
-    "http://localhost:5173", 
-    "https://school-mern-project.vercel.app" // ✅ Vercel URL added to fix CORS
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://school-mern-project.vercel.app",
+    // ✅ Vercel preview deployments maate
+    /https:\/\/school-mern-project.*\.vercel\.app/
 ];
 
 app.use(cors({
     origin: function (origin, callback) {
-        // origin vagar ni request (jem ke Postman) ne allow karva mate
         if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) === -1) {
+        // ✅ Regex check pan add karyo
+        const isAllowed = allowedOrigins.some(allowed => {
+            if (allowed instanceof RegExp) return allowed.test(origin);
+            return allowed === origin;
+        });
+        if (!isAllowed) {
             return callback(new Error('CORS policy: This origin is not allowed'), false);
         }
         return callback(null, true);
