@@ -132,7 +132,7 @@ const Inquiry = () => {
                     <form className="inquiry-form" onSubmit={handleSubmit} noValidate>
                         <div className="form-row">
                             <div className="form-group">
-                                <label>Student Full Name</label>
+                                <label>👤 STUDENT FULL NAME</label>
                                 <input
                                     name="studentName"
                                     placeholder="Enter full name"
@@ -144,7 +144,7 @@ const Inquiry = () => {
                             </div>
 
                             <div className="form-group">
-                                <label>Parent/Guardian Name</label>
+                                <label>👨‍👩‍👦 PARENT/GUARDIAN NAME</label>
                                 <input
                                     name="parentName"
                                     placeholder="Enter parent name"
@@ -158,7 +158,7 @@ const Inquiry = () => {
 
                         <div className="form-row">
                             <div className="form-group">
-                                <label>Phone Number</label>
+                                <label>📱 PHONE NUMBER</label>
                                 <input
                                     type="tel"
                                     name="parentPhone"
@@ -171,7 +171,7 @@ const Inquiry = () => {
                             </div>
 
                             <div className="form-group">
-                                <label>Email Address</label>
+                               <label>📧 EMAIL ADDRESS</label>
                                 <input
                                     type="email"
                                     name="parentEmail"
@@ -186,7 +186,7 @@ const Inquiry = () => {
 
                         <div className="form-row">
                             <div className="form-group">
-                                <label>Standard/Class</label>
+                                <label>🎓 STANDARD/CLASS</label>
                                 <select name="applyClass" value={formData.applyClass} onChange={handleChange} className={errors.applyClass ? "input-error" : ""}>
                                     <option value="">Select Class</option>
                                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => <option key={n} value={`${n}th`}>{n}th Standard</option>)}
@@ -199,7 +199,7 @@ const Inquiry = () => {
                             </div>
 
                             <div className="form-group">
-                                <label>Medium of Instruction</label>
+                                <label>🌐 MEDIUM OF INSTRUCTION</label>
                                 <select name="language" value={formData.language} onChange={handleChange} className={errors.language ? "input-error" : ""}>
                                     <option value="">Select Medium</option>
                                     <option value="English">English</option>
@@ -210,7 +210,7 @@ const Inquiry = () => {
                         </div>
 
                         <div className="form-group">
-                            <label>Previous School Name</label>
+                            <label>🏫 PREVIOUS SCHOOL NAME</label>
                             <input
                                 name="previousSchool"
                                 placeholder="Where did the student study before?"
@@ -220,7 +220,7 @@ const Inquiry = () => {
                         </div>
 
                         <div className="form-group">
-                            <label>Additional Message</label>
+                            <label>💬 ADDITIONAL MESSAGE</label>
                             <textarea
                                 ref={textareaRef}
                                 name="message"
