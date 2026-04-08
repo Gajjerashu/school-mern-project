@@ -15,7 +15,6 @@ const Check = () => {
     const [error, setError] = useState("");
     const [successMsg, setSuccessMsg] = useState("");
 
-    // Clear messages when switching type
     useEffect(() => {
         setError("");
         setSuccessMsg("");
@@ -66,7 +65,7 @@ const Check = () => {
                         });
                     }, 1000);
                 } else {
-                    setError(result.error || "No records found for this student.");
+                    setError(result.error || "No records found.");
                 }
             } else {
                 // Mock Test
@@ -83,7 +82,7 @@ const Check = () => {
                     const resultData = await resultRes.json();
 
                     if (resultRes.ok && resultData.success) {
-                        setSuccessMsg("✅ Results found! Opening...");
+                        setSuccessMsg("✅ Results found! Redirecting...");
                         setTimeout(() => {
                             navigate("/MockTestResults", {
                                 state: {
@@ -100,7 +99,6 @@ const Check = () => {
                 }
             }
         } catch (err) {
-            console.error(err);
             setError("Server connection failed. Is the backend running?");
         } finally {
             setLoading(false);
@@ -111,14 +109,14 @@ const Check = () => {
         <div className="unified-check-section">
             <div className="unified-check-container">
 
-                {/* Header */}
+                {/* Header - Exact as screenshot */}
                 <div className="check-header">
                     <div className="header-icon">💰</div>
                     <h1>Check Fee Status</h1>
                     <p>Enter your details to view fee information</p>
                 </div>
 
-                {/* Search Card */}
+                {/* Main Form Card */}
                 <div className="search-card">
                     <div className="selector-bar">
                         <span className="selector-label">CHECK TYPE:</span>
@@ -177,7 +175,7 @@ const Check = () => {
                     </form>
                 </div>
 
-                {/* Info Cards */}
+                {/* Three Info Cards - Exact as screenshot */}
                 <div className="info-cards">
                     <div className="info-card">
                         <div className="info-icon">💡</div>
@@ -195,6 +193,7 @@ const Check = () => {
                         <p>Get immediate access to your data without any delays or waiting time</p>
                     </div>
                 </div>
+
             </div>
         </div>
     );
