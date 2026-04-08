@@ -1,11 +1,46 @@
-// Routes/admissionShow.js - Admission Dashboard Route
-
+// Routes/admissionShow.js - FIXED & OPTIMIZED
 const express = require("express");
 const router = express.Router();
 const Admission = require("../Models/Admission");
 
 // ==========================================
-// 1. GET ALL ADMISSIONS WITH FILTERS
+// 1. GET ADMISSION STATISTICS
+// ==========================================
+router.get("/stats", async (req, res) => {
+    try {
+        const total = await Admission.countDocuments();
+
+        const primaryCount = await Admission.countDocuments({
+            applyClass: { $in: ["1th", "2th", "3th", "4th", "5th"] }
+        });
+
+        const middleCount = await Admission.countDocuments({
+            applyClass: { $in: ["6th", "7th", "8th"] }
+        });
+
+        const highCount = await Admission.countDocuments({
+            applyClass: { $in: ["9th", "10th", "11th Science", "11th Commerce", "12th Science", "12th Commerce"] }
+        });
+
+        res.status(200).json({
+            success: true,
+            statistics: {
+                total,
+                sections: {
+                    primary: primaryCount,
+                    middle: middleCount,
+                    high: highCount
+                }
+            }
+        });
+    } catch (err) {
+        console.error("❌ Stats Error:", err);
+        res.status(500).json({ success: false, error: "Failed to fetch statistics" });
+    }
+});
+
+// ==========================================
+// 2. GET ALL ADMISSIONS WITH FILTERS
 // ==========================================
 router.get("/", async (req, res) => {
     try {
@@ -18,7 +53,8 @@ router.get("/", async (req, res) => {
             query.$or = [
                 { studentId: { $regex: search, $options: "i" } },
                 { studentName: { $regex: search, $options: "i" } },
-                { parentPhone: { $regex: search, $options: "i" } }
+                { parentPhone: { $regex: search, $options: "i" } },
+                { fatherName: { $regex: search, $options: "i" } }
             ];
         }
 
@@ -32,184 +68,54 @@ router.get("/", async (req, res) => {
             query.language = language;
         }
 
-        // Section filter (Primary/Middle/High)
+        // Section filter (Primary / Middle / High)
         if (section && section !== "all") {
-            const sectionClasses = {
+            const sectionMap = {
                 primary: ["1th", "2th", "3th", "4th", "5th"],
                 middle: ["6th", "7th", "8th"],
                 high: ["9th", "10th", "11th Science", "11th Commerce", "12th Science", "12th Commerce"]
             };
 
-            if (sectionClasses[section]) {
-                query.applyClass = { $in: sectionClasses[section] };
+            if (sectionMap[section]) {
+                query.applyClass = { $in: sectionMap[section] };
             }
         }
 
-        const admissions = await Admission.find(query).sort({ createdAt: -1 });
+        const admissions = await Admission.find(query)
+            .sort({ createdAt: -1 })
+            .lean();   // .lean() makes it faster
 
         res.status(200).json({
             success: true,
             count: admissions.length,
             admissions
         });
-
     } catch (err) {
         console.error("❌ Admission Fetch Error:", err);
-        res.status(500).json({ success: false, error: err.message });
-    }
-});
-
-// ==========================================
-// 2. GET ADMISSION STATISTICS
-// ==========================================
-router.get("/stats", async (req, res) => {
-    try {
-        // Total admissions
-        const totalAdmissions = await Admission.countDocuments();
-
-        // Section-wise count
-        const primaryClasses = ["1th", "2th", "3th", "4th", "5th"];
-        const middleClasses = ["6th", "7th", "8th"];
-        const highClasses = ["9th", "10th", "11th Science", "11th Commerce", "12th Science", "12th Commerce"];
-
-        const primaryCount = await Admission.countDocuments({ applyClass: { $in: primaryClasses } });
-        const middleCount = await Admission.countDocuments({ applyClass: { $in: middleClasses } });
-        const highCount = await Admission.countDocuments({ applyClass: { $in: highClasses } });
-
-        // Language-wise breakdown
-        const languageStats = await Admission.aggregate([
-            {
-                $group: {
-                    _id: "$language",
-                    count: { $sum: 1 }
-                }
-            }
-        ]);
-
-        // Class-wise breakdown
-        const classStats = await Admission.aggregate([
-            {
-                $group: {
-                    _id: "$applyClass",
-                    count: { $sum: 1 }
-                }
-            },
-            { $sort: { _id: 1 } }
-        ]);
-
-        // Gender-wise breakdown
-        const genderStats = await Admission.aggregate([
-            {
-                $group: {
-                    _id: "$gender",
-                    count: { $sum: 1 }
-                }
-            }
-        ]);
-
-        res.status(200).json({
-            success: true,
-            statistics: {
-                total: totalAdmissions,
-                sections: {
-                    primary: primaryCount,
-                    middle: middleCount,
-                    high: highCount
-                },
-                byLanguage: languageStats,
-                byClass: classStats,
-                byGender: genderStats
-            }
+        res.status(500).json({ 
+            success: false, 
+            error: "Failed to fetch admissions" 
         });
-
-    } catch (err) {
-        console.error("❌ Stats Error:", err);
-        res.status(500).json({ success: false, error: err.message });
     }
 });
 
 // ==========================================
-// 3. GET SINGLE ADMISSION DETAILS
+// 3. GET SINGLE STUDENT (Optional)
 // ==========================================
 router.get("/:studentId", async (req, res) => {
     try {
-        const { studentId } = req.params;
-
-        const admission = await Admission.findOne({ studentId });
-
+        const admission = await Admission.findOne({ studentId: req.params.studentId });
         if (!admission) {
             return res.status(404).json({
                 success: false,
                 error: "Student not found"
             });
         }
-
         res.status(200).json({
             success: true,
             admission
         });
-
     } catch (err) {
-        console.error("❌ Get Admission Error:", err);
-        res.status(500).json({ success: false, error: err.message });
-    }
-});
-
-// ==========================================
-// 4. UPDATE ADMISSION
-// ==========================================
-router.put("/:studentId", async (req, res) => {
-    try {
-        const { studentId } = req.params;
-
-        const admission = await Admission.findOneAndUpdate(
-            { studentId },
-            req.body,
-            { new: true, runValidators: true }
-        );
-
-        if (!admission) {
-            return res.status(404).json({
-                success: false,
-                error: "Student not found"
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            message: "Admission updated successfully",
-            admission
-        });
-
-    } catch (err) {
-        console.error("❌ Update Error:", err);
-        res.status(500).json({ success: false, error: err.message });
-    }
-});
-
-// ==========================================
-// 5. DELETE ADMISSION
-// ==========================================
-router.delete("/:studentId", async (req, res) => {
-    try {
-        const { studentId } = req.params;
-
-        const admission = await Admission.findOneAndDelete({ studentId });
-
-        if (!admission) {
-            return res.status(404).json({
-                success: false,
-                error: "Student not found"
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            message: "Admission deleted successfully"
-        });
-
-    } catch (err) {
-        console.error("❌ Delete Error:", err);
         res.status(500).json({ success: false, error: err.message });
     }
 });
