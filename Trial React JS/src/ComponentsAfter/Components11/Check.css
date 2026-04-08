@@ -1,15 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-body {
-  background: #f8fafc;
-  font-family: "Poppins", sans-serif;
-}
+body { background: #f8fafc; font-family: "Poppins", sans-serif; }
 
 .unified-check-section {
   min-height: 100vh;
@@ -19,16 +12,10 @@ body {
   align-items: flex-start;
 }
 
-.unified-check-container {
-  max-width: 680px;
-  width: 100%;
-}
+.unified-check-container { max-width: 680px; width: 100%; }
 
 /* Header */
-.check-header {
-  text-align: center;
-  margin-bottom: 32px;
-}
+.check-header { text-align: center; margin-bottom: 32px; }
 
 .header-icon {
   width: 80px;
@@ -60,7 +47,7 @@ body {
   background: white;
   border-radius: 16px;
   padding: 32px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
   border: 1px solid #e2e8f0;
   margin-bottom: 32px;
 }
@@ -79,10 +66,7 @@ body {
   font-size: 0.85rem;
 }
 
-.selector-options {
-  display: flex;
-  gap: 8px;
-}
+.selector-options { display: flex; gap: 8px; }
 
 .selector-btn {
   padding: 10px 20px;
@@ -91,7 +75,6 @@ body {
   background: white;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
 }
 
 .selector-btn.active {
@@ -142,7 +125,6 @@ body {
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-top: 8px;
 }
 
 .search-btn:hover {
@@ -158,7 +140,6 @@ body {
   border-radius: 10px;
   text-align: center;
   margin: 16px 0;
-  font-weight: 500;
 }
 
 .success-message {
@@ -168,7 +149,6 @@ body {
   border-radius: 10px;
   text-align: center;
   margin: 16px 0;
-  font-weight: 500;
 }
 
 /* Info Cards */
@@ -185,7 +165,6 @@ body {
   text-align: center;
   box-shadow: 0 4px 15px rgba(0,0,0,0.06);
   border: 1px solid #e5e7eb;
-  transition: all 0.3s ease;
 }
 
 .info-card:hover {
@@ -213,10 +192,6 @@ body {
 
 /* Responsive */
 @media (max-width: 768px) {
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-  .info-cards {
-    grid-template-columns: 1fr;
-  }
+  .form-grid { grid-template-columns: 1fr; }
+  .info-cards { grid-template-columns: 1fr; }
 }
