@@ -1,78 +1,349 @@
-/* Slide.css - Professional Slider */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Master Container ── */
 .slide-master-container {
-  padding: 60px 20px;
-  background: #ffffff;
-  text-align: center;
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 40px 20px 60px;
+  font-family: 'Poppins', sans-serif;
 }
 
-.slider-box {
+/* ── Header ── */
+.slide-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.slide-header .title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #111827;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
-  max-width: 800px;
-  margin: 0 auto;
+  gap: 10px;
 }
 
+.quote-icon {
+  color: #16a34a;
+  font-size: 1.4rem;
+}
+
+.title-underline {
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  border-radius: 10px;
+  margin: 10px auto 0;
+}
+
+/* ── Slider Box ── */
+.slider-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+/* ── Nav Arrows ── */
+.nav-arrow {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #16a34a;
+  background: #fff;
+  color: #16a34a;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.nav-arrow:hover {
+  background: #16a34a;
+  color: #fff;
+}
+
+/* ── Slide Card Wrapper ── */
+.slide-card-wrapper {
+  flex: 1;
+}
+
+/* ── Feedback Slide Card ── */
 .feedback-slide-card {
   background: #fff;
-  border: 1px solid #eee;
-  border-radius: 20px;
-  padding: 30px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-  min-height: 350px;
-  width: 100%;
+  border-radius: 16px;
+  border: 1.5px solid #bbf7d0;
+  box-shadow: 0 4px 20px rgba(22, 163, 74, 0.08);
+  overflow: hidden;
+}
+
+/* ── Card Top ── */
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .student-profile {
   display: flex;
   align-items: center;
-  gap: 15px;
-  margin-bottom: 20px;
+  gap: 12px;
 }
 
 .avatar {
-  width: 50px;
-  height: 50px;
-  background: #e74c3c;
-  color: white;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  color: #fff;
   font-size: 1.2rem;
-}
-
-.comment-bubble {
-  background: #f9f9f9;
-  padding: 20px;
-  border-radius: 15px;
-  font-style: italic;
-  position: relative;
-  margin-top: 20px;
-}
-
-.nav-arrow {
-  background: none;
-  border: 1px solid #ddd;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: 0.3s;
 }
 
-.nav-arrow:hover {
-  background: #e74c3c;
-  color: white;
-  border-color: #e74c3c;
+.name-box h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.name-box span {
+  font-size: 0.78rem;
+  color: #6b7280;
+}
+
+.date-tag {
+  font-size: 0.78rem;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ── Points Grid ── */
+.feedback-slide-card .points-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.point-column {
+  padding: 16px 20px;
+}
+
+.point-column.success {
+  border-right: 1px solid #e5e7eb;
+  background: #f0fdf4;
+}
+
+.point-column.warning {
+  background: #fffbeb;
+}
+
+.point-column h4 {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.point-column.success h4 {
+  color: #15803d;
+}
+
+.point-column.warning h4 {
+  color: #92400e;
+}
+
+.point-column ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.point-column ul li {
+  font-size: 0.82rem;
+  color: #374151;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  line-height: 1.4;
+}
+
+/* ── Comment Bubble ── */
+.comment-bubble {
+  padding: 14px 20px;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+}
+
+.comment-bubble p {
+  font-size: 0.875rem;
+  color: #4b5563;
+  font-style: italic;
+  line-height: 1.6;
+}
+
+/* ── Slider Footer ── */
+.slider-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* ── Dots ── */
+.dots-container {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.dot-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #d1d5db;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
 .dot-indicator.active {
-  background: #e74c3c;
-  width: 25px;
+  background: #16a34a;
+  width: 20px;
+  border-radius: 10px;
+}
+
+/* ── Action Row ── */
+.action-row {
+  display: flex;
+  gap: 10px;
+}
+
+.auto-toggle,
+.refresh-btn {
+  padding: 9px 20px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  border: none;
+}
+
+.auto-toggle.on {
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  color: #fff;
+}
+
+.auto-toggle.off {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.refresh-btn {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1.5px solid #bbf7d0;
+}
+
+.refresh-btn:hover {
+  background: #dcfce7;
+}
+
+/* ── Loader ── */
+.slide-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  gap: 16px;
+  color: #6b7280;
+  font-family: 'Poppins', sans-serif;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e5e7eb;
+  border-top-color: #16a34a;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Empty State ── */
+.slide-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.empty-card {
+  text-align: center;
+  padding: 32px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: #6b7280;
+}
+
+.retry-btn {
+  padding: 9px 22px;
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ── Responsive ── */
+@media (max-width: 560px) {
+  .feedback-slide-card .points-grid {
+    grid-template-columns: 1fr;
+  }
+  .point-column.success {
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .card-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .slide-master-container {
+    padding: 24px 12px 40px;
+  }
 }
