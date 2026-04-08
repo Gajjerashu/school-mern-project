@@ -10,7 +10,7 @@ const Check = () => {
         studentId: ""
     });
 
-    const [checkType, setCheckType] = useState("fees"); // "fees" or "mocktest"
+    const [checkType, setCheckType] = useState("mocktest"); // Default to Mock Test as per screenshot
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [successMsg, setSuccessMsg] = useState("");
@@ -50,20 +50,11 @@ const Check = () => {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(formData)
                 });
-
                 const result = await response.json();
 
                 if (response.ok && result.success) {
                     setSuccessMsg("✅ Records found! Redirecting...");
-                    setTimeout(() => {
-                        navigate("/AfterLogin/Info", { 
-                            state: { 
-                                studentInfo: result.studentInfo,
-                                feeDetails: result.feeDetails,
-                                paymentHistory: result.paymentHistory 
-                            } 
-                        });
-                    }, 1000);
+                    setTimeout(() => navigate("/AfterLogin/Info", { state: result }), 800);
                 } else {
                     setError(result.error || "No records found.");
                 }
@@ -74,7 +65,6 @@ const Check = () => {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(formData)
                 });
-
                 const result = await response.json();
 
                 if (response.ok && result.success) {
@@ -90,7 +80,7 @@ const Check = () => {
                                     resultData: resultData.data
                                 }
                             });
-                        }, 1000);
+                        }, 800);
                     } else {
                         setError("No test results found for this student.");
                     }
@@ -111,12 +101,12 @@ const Check = () => {
 
                 {/* Header - Exact as screenshot */}
                 <div className="check-header">
-                    <div className="header-icon">💰</div>
-                    <h1>Check Fee Status</h1>
-                    <p>Enter your details to view fee information</p>
+                    <div className="header-icon">📄</div>
+                    <h1>Check Mock Test Results</h1>
+                    <p>Enter your details to view mock test results</p>
                 </div>
 
-                {/* Main Form Card */}
+                {/* Form Card */}
                 <div className="search-card">
                     <div className="selector-bar">
                         <span className="selector-label">CHECK TYPE:</span>
@@ -169,7 +159,7 @@ const Check = () => {
 
                         <div className="search-btn-container">
                             <button type="submit" className="search-btn" disabled={loading}>
-                                {loading ? "Checking..." : "CHECK FEE STATUS"}
+                                {loading ? "Checking..." : "CHECK RESULTS"}
                             </button>
                         </div>
                     </form>
@@ -179,8 +169,8 @@ const Check = () => {
                 <div className="info-cards">
                     <div className="info-card">
                         <div className="info-icon">💡</div>
-                        <h3>Fee Information</h3>
-                        <p>View your total fees, paid amount, and pending balance</p>
+                        <h3>Test Results</h3>
+                        <p>Check your mock test scores, correct answers, and performance</p>
                     </div>
                     <div className="info-card">
                         <div className="info-icon">🔒</div>
