@@ -5,19 +5,17 @@ import "./Check.css";
 const Check = () => {
     const navigate = useNavigate();
 
-    // ✅ Best Practice: Use relative path with Vercel proxy
-    const API_BASE_URL = "/api";
-
     const [formData, setFormData] = useState({
         studentName: "",
         studentId: ""
     });
-    const [checkType, setCheckType] = useState("fees");
+
+    const [checkType, setCheckType] = useState("fees"); // "fees" or "mocktest"
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [successMsg, setSuccessMsg] = useState("");
 
-    // Cleanup messages when switching between Fees and Mock Test
+    // Clear messages when switching type
     useEffect(() => {
         setError("");
         setSuccessMsg("");
@@ -29,7 +27,7 @@ const Check = () => {
         if (error) setError("");
     };
 
-    const handleCheckTypeChange = (type) => {
+    const handleTypeChange = (type) => {
         setCheckType(type);
         setFormData({ studentName: "", studentId: "" });
     };
@@ -46,17 +44,12 @@ const Check = () => {
         setError("");
         setSuccessMsg("");
 
-        const payload = {
-            studentName: formData.studentName.trim(),
-            studentId: formData.studentId.trim().toUpperCase()
-        };
-
         try {
             if (checkType === "fees") {
-                const response = await fetch(`${API_BASE_URL}/check/student-fee`, {
+                const response = await fetch("/api/check/student-fee", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(formData)
                 });
 
                 const result = await response.json();
@@ -64,45 +57,51 @@ const Check = () => {
                 if (response.ok && result.success) {
                     setSuccessMsg("✅ Records found! Redirecting...");
                     setTimeout(() => {
-                        navigate("/AfterLogin/Info", { state: { ...result } });
-                    }, 1200);
+                        navigate("/AfterLogin/Info", { 
+                            state: { 
+                                studentInfo: result.studentInfo,
+                                feeDetails: result.feeDetails,
+                                paymentHistory: result.paymentHistory 
+                            } 
+                        });
+                    }, 1000);
                 } else {
-                    setError(result.error || "No fee records found for this student.");
+                    setError(result.error || "No records found for this student.");
                 }
             } else {
-                // Mock Test Logic
-                const response = await fetch(`${API_BASE_URL}/mocktest/verify`, {
+                // Mock Test
+                const response = await fetch("/api/mocktest/verify", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(formData)
                 });
 
                 const result = await response.json();
 
                 if (response.ok && result.success) {
-                    const resultRes = await fetch(`${API_BASE_URL}/mocktest/results/${payload.studentId}/latest`);
+                    const resultRes = await fetch(`/api/mocktest/results/${formData.studentId}/latest`);
                     const resultData = await resultRes.json();
 
-                    if (resultRes.ok && resultData.success && resultData.data) {
-                        setSuccessMsg("✅ Results found! Opening dashboard...");
+                    if (resultRes.ok && resultData.success) {
+                        setSuccessMsg("✅ Results found! Opening...");
                         setTimeout(() => {
                             navigate("/MockTestResults", {
-                                state: { 
-                                    studentInfo: result.student, 
-                                    resultData: resultData.data 
+                                state: {
+                                    studentInfo: result.student,
+                                    resultData: resultData.data
                                 }
                             });
-                        }, 1200);
+                        }, 1000);
                     } else {
-                        setError("Identity verified, but no test results found.");
+                        setError("No test results found for this student.");
                     }
                 } else {
-                    setError(result.message || "Student identity not verified.");
+                    setError(result.message || "Student not found.");
                 }
             }
         } catch (err) {
-            console.error("Fetch Error:", err);
-            setError("Server connection failed. Please check if backend is running.");
+            console.error(err);
+            setError("Server connection failed. Is the backend running?");
         } finally {
             setLoading(false);
         }
@@ -111,31 +110,32 @@ const Check = () => {
     return (
         <div className="unified-check-section">
             <div className="unified-check-container">
+
+                {/* Header */}
                 <div className="check-header">
-                    <div className="header-icon">
-                        {checkType === "fees" ? "💰" : "📝"}
-                    </div>
-                    <h1>{checkType === "fees" ? "Fee Portal" : "Assessment Center"}</h1>
-                    <p>Enter Student Credentials to proceed</p>
+                    <div className="header-icon">💰</div>
+                    <h1>Check Fee Status</h1>
+                    <p>Enter your details to view fee information</p>
                 </div>
 
+                {/* Search Card */}
                 <div className="search-card">
                     <div className="selector-bar">
-                        <span className="selector-label">I want to check:</span>
+                        <span className="selector-label">CHECK TYPE:</span>
                         <div className="selector-options">
                             <button
                                 type="button"
                                 className={`selector-btn ${checkType === "fees" ? "active" : ""}`}
-                                onClick={() => handleCheckTypeChange("fees")}
+                                onClick={() => handleTypeChange("fees")}
                             >
-                                Fees
+                                Fee Status
                             </button>
                             <button
                                 type="button"
                                 className={`selector-btn ${checkType === "mocktest" ? "active" : ""}`}
-                                onClick={() => handleCheckTypeChange("mocktest")}
+                                onClick={() => handleTypeChange("mocktest")}
                             >
-                                Mock Test
+                                Mock Test Results
                             </button>
                         </div>
                     </div>
@@ -143,46 +143,57 @@ const Check = () => {
                     <form onSubmit={handleSubmit} className="search-form">
                         <div className="form-grid">
                             <div className="form-group">
-                                <label>👤 Full Name</label>
+                                <label>👤 STUDENT NAME</label>
                                 <input
                                     type="text"
                                     name="studentName"
                                     value={formData.studentName}
                                     onChange={handleChange}
-                                    placeholder="e.g. Mistry Ashish"
-                                    autoComplete="off"
+                                    placeholder="Enter Student Name"
+                                    disabled={loading}
                                 />
                             </div>
                             <div className="form-group">
-                                <label>🆔 Student ID</label>
+                                <label>🆔 STUDENT ID</label>
                                 <input
                                     type="text"
                                     name="studentId"
                                     value={formData.studentId}
                                     onChange={handleChange}
-                                    placeholder="e.g. STU20260002"
-                                    style={{ textTransform: 'uppercase' }}
+                                    placeholder="Enter Student ID"
+                                    disabled={loading}
                                 />
                             </div>
                         </div>
 
-                        {error && <div className="status-box error-box">⚠️ {error}</div>}
-                        {successMsg && <div className="status-box success-box">{successMsg}</div>}
+                        {error && <div className="error-message">⚠️ {error}</div>}
+                        {successMsg && <div className="success-message">{successMsg}</div>}
 
                         <div className="search-btn-container">
-                            <button 
-                                type="submit" 
-                                className={`search-btn ${loading ? 'loading' : ''}`} 
-                                disabled={loading}
-                            >
-                                {loading ? (
-                                    <span className="spinner"></span>
-                                ) : (
-                                    `Check ${checkType === "fees" ? "Status" : "Results"}`
-                                )}
+                            <button type="submit" className="search-btn" disabled={loading}>
+                                {loading ? "Checking..." : "CHECK FEE STATUS"}
                             </button>
                         </div>
                     </form>
+                </div>
+
+                {/* Info Cards */}
+                <div className="info-cards">
+                    <div className="info-card">
+                        <div className="info-icon">💡</div>
+                        <h3>Fee Information</h3>
+                        <p>View your total fees, paid amount, and pending balance</p>
+                    </div>
+                    <div className="info-card">
+                        <div className="info-icon">🔒</div>
+                        <h3>Secure Access</h3>
+                        <p>Your information is encrypted and protected with secure authentication</p>
+                    </div>
+                    <div className="info-card">
+                        <div className="info-icon">⚡</div>
+                        <h3>Instant Results</h3>
+                        <p>Get immediate access to your data without any delays or waiting time</p>
+                    </div>
                 </div>
             </div>
         </div>
