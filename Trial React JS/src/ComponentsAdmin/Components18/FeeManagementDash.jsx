@@ -15,7 +15,8 @@ const FeeManagementDash = () => {
         sortBy: "newest"
     });
 
-    const API_BASE_URL = "/api/fee-management";   // Use this for production
+    // Use relative path (best for Vercel + Render)
+    const API_BASE_URL = "/api/fee-management";
 
     useEffect(() => {
         fetchPayments();
@@ -34,10 +35,11 @@ const FeeManagementDash = () => {
 
             if (data.success) {
                 setPayments(data.payments || []);
+                setFilteredPayments(data.payments || []);
             }
         } catch (err) {
-            console.error("Error fetching payments:", err);
-            setError("Failed to load payment records");
+            console.error("Fetch error:", err);
+            setError("Failed to load payments");
         } finally {
             setLoading(false);
         }
@@ -47,9 +49,7 @@ const FeeManagementDash = () => {
         try {
             const res = await fetch(`${API_BASE_URL}/stats`);
             const data = await res.json();
-            if (data.success) {
-                setStats(data.statistics);
-            }
+            if (data.success) setStats(data.statistics);
         } catch (err) {
             console.error("Stats error:", err);
         }
@@ -75,11 +75,15 @@ const FeeManagementDash = () => {
             result = result.filter(p => p.paymentType === filters.paymentType);
         }
 
-        // Sorting
-        if (filters.sortBy === "newest") result.sort((a, b) => new Date(b.paidAt) - new Date(a.paidAt));
-        if (filters.sortBy === "oldest") result.sort((a, b) => new Date(a.paidAt) - new Date(b.paidAt));
-        if (filters.sortBy === "amount_high") result.sort((a, b) => (b.paidAmount || 0) - (a.paidAmount || 0));
-        if (filters.sortBy === "amount_low") result.sort((a, b) => (a.paidAmount || 0) - (b.paidAmount || 0));
+        if (filters.sortBy === "newest") {
+            result.sort((a, b) => new Date(b.paidAt) - new Date(a.paidAt));
+        } else if (filters.sortBy === "oldest") {
+            result.sort((a, b) => new Date(a.paidAt) - new Date(b.paidAt));
+        } else if (filters.sortBy === "amount_high") {
+            result.sort((a, b) => (b.paidAmount || 0) - (a.paidAmount || 0));
+        } else if (filters.sortBy === "amount_low") {
+            result.sort((a, b) => (a.paidAmount || 0) - (b.paidAmount || 0));
+        }
 
         setFilteredPayments(result);
     };
@@ -102,19 +106,24 @@ const FeeManagementDash = () => {
         return "status-pending";
     };
 
-    if (loading) return <div className="loading">Loading Fee Dashboard...</div>;
+    if (loading) {
+        return <div className="loading-spinner">Loading Fee Dashboard...</div>;
+    }
 
     return (
         <div className="admin-fee-dashboard">
+            {/* Header */}
             <div className="dashboard-header">
-                <div className="header-icon">💰</div>
-                <div>
-                    <h1>Fee Management Dashboard</h1>
-                    <p>Monitor and manage all student fee payments</p>
+                <div className="header-left">
+                    <div className="header-icon">💰</div>
+                    <div>
+                        <h1>Fee Management Dashboard</h1>
+                        <p>Monitor and manage all student fee payments</p>
+                    </div>
                 </div>
             </div>
 
-            {/* Statistics Cards */}
+            {/* Stats Cards */}
             {stats && (
                 <div className="stats-grid">
                     <div className="stat-card total-collected">
@@ -185,13 +194,13 @@ const FeeManagementDash = () => {
                     <select value={filters.sortBy} onChange={(e) => handleFilterChange("sortBy", e.target.value)}>
                         <option value="newest">Newest First</option>
                         <option value="oldest">Oldest First</option>
-                        <option value="amount_high">Amount High to Low</option>
-                        <option value="amount_low">Amount Low to High</option>
+                        <option value="amount_high">Amount High → Low</option>
+                        <option value="amount_low">Amount Low → High</option>
                     </select>
                 </div>
             </div>
 
-            {/* Payment Records Table */}
+            {/* Table */}
             <div className="table-container">
                 <div className="table-header">
                     <h3>PAYMENT RECORDS ({filteredPayments.length})</h3>
