@@ -7,13 +7,12 @@
 }
 
 body {
-  background: #ffffff;
+  background: #f8fafc;
   font-family: "Poppins", sans-serif;
 }
 
 .unified-check-section {
   min-height: 100vh;
-  background: #f8fafc;
   padding: 40px 20px;
   display: flex;
   justify-content: center;
@@ -78,7 +77,6 @@ body {
   font-weight: 700;
   color: #334155;
   font-size: 0.85rem;
-  white-space: nowrap;
 }
 
 .selector-options {
@@ -124,7 +122,6 @@ body {
   border: 2px solid #e2e8f0;
   border-radius: 10px;
   font-size: 1rem;
-  transition: all 0.3s ease;
 }
 
 .form-group input:focus {
@@ -219,7 +216,6 @@ body {
   .form-grid {
     grid-template-columns: 1fr;
   }
-
   .info-cards {
     grid-template-columns: 1fr;
   }
