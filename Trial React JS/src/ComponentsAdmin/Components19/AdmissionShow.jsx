@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./AdmissionShow.css";
 
-const API_BASE_URL = "http://localhost:5000/api";
-
 const AdmissionShow = () => {
     const [activeSection, setActiveSection] = useState("all");
     const [activeClass, setActiveClass] = useState("all");
@@ -19,6 +17,9 @@ const AdmissionShow = () => {
         high: { name: "High School", classes: ["9th", "10th", "11th Science", "11th Commerce", "12th Science", "12th Commerce"], icon: "🎓" }
     };
 
+    // ✅ Use relative path (works on Vercel with vercel.json)
+    const API_BASE_URL = "/api/admission-dash";
+
     useEffect(() => {
         fetchStats();
         fetchAdmissions();
@@ -26,7 +27,7 @@ const AdmissionShow = () => {
 
     const fetchStats = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/admission-dash/stats`);
+            const response = await fetch(`${API_BASE_URL}/stats`);
             const data = await response.json();
             if (data.success) setStats(data.statistics);
         } catch (error) {
@@ -39,16 +40,17 @@ const AdmissionShow = () => {
         try {
             const params = new URLSearchParams({
                 section: activeSection,
-                applyClass: activeClass,
-                language: activeLanguage,
+                applyClass: activeClass === "all" ? "" : activeClass,
+                language: activeLanguage === "all" ? "" : activeLanguage,
                 search: searchTerm
             });
-            const response = await fetch(`${API_BASE_URL}/admission-dash?${params.toString()}`);
-            
-            // ✅ FIXED: Removed double declaration of 'data'
+
+            const response = await fetch(`${API_BASE_URL}?${params.toString()}`);
             const data = await response.json();
-            
-            if (data.success) setAdmissions(data.admissions);
+
+            if (data.success) {
+                setAdmissions(data.admissions || []);
+            }
         } catch (error) {
             console.error("Error fetching admissions:", error);
         } finally {
@@ -72,7 +74,7 @@ const AdmissionShow = () => {
 
     const getClassesForSection = () => {
         if (activeSection === "all") return [];
-        return sections[activeSection].classes;
+        return sections[activeSection]?.classes || [];
     };
 
     return (
@@ -82,10 +84,6 @@ const AdmissionShow = () => {
                 <div className="admission-show-header">
                     <div className="admission-show-header-inner">
                         <div className="admission-show-school-badge">
-                            <svg width="24" height="24" viewBox="0 0 32 32" fill="white">
-                                <path d="M16 2L4 8v12c0 7.5 5.2 14.5 12 16 6.8-1.5 12-8.5 12-16V8L16 2zm0 3.2l9 5.1v9.2c0 6-4.2 11.5-9 12.8-4.8-1.3-9-6.8-9-12.8v-9.2l9-5.1z"/>
-                                <path d="M12 16l3 3 6-6-1.5-1.5L15 16l-1.5-1.5L12 16z"/>
-                            </svg>
                             <span>InspireEdge School</span>
                         </div>
                         <h1 className="admission-show-title">📊 Admission Dashboard</h1>
@@ -93,34 +91,34 @@ const AdmissionShow = () => {
                     </div>
                 </div>
 
-                {/* Statistics */}
+                {/* Statistics Cards */}
                 {stats && (
                     <div className="admission-show-stats">
                         <div className="admission-stat-box admission-stat-total">
                             <div className="admission-stat-icon-box">👥</div>
                             <div className="admission-stat-info">
-                                <h3>{stats.total}</h3>
+                                <h3>{stats.total || 0}</h3>
                                 <p>Total Students</p>
                             </div>
                         </div>
                         <div className="admission-stat-box admission-stat-primary">
                             <div className="admission-stat-icon-box">🎒</div>
                             <div className="admission-stat-info">
-                                <h3>{stats.sections.primary}</h3>
+                                <h3>{stats.sections?.primary || 0}</h3>
                                 <p>Primary School</p>
                             </div>
                         </div>
                         <div className="admission-stat-box admission-stat-middle">
                             <div className="admission-stat-icon-box">📚</div>
                             <div className="admission-stat-info">
-                                <h3>{stats.sections.middle}</h3>
+                                <h3>{stats.sections?.middle || 0}</h3>
                                 <p>Middle School</p>
                             </div>
                         </div>
                         <div className="admission-stat-box admission-stat-high">
                             <div className="admission-stat-icon-box">🎓</div>
                             <div className="admission-stat-info">
-                                <h3>{stats.sections.high}</h3>
+                                <h3>{stats.sections?.high || 0}</h3>
                                 <p>High School</p>
                             </div>
                         </div>
@@ -133,8 +131,7 @@ const AdmissionShow = () => {
                         className={`admission-tab-button ${activeSection === "all" ? "admission-tab-active" : ""}`}
                         onClick={() => handleSectionChange("all")}
                     >
-                        <span className="admission-tab-emoji">🏫</span>
-                        All Sections
+                        🏫 All Sections
                     </button>
                     {Object.entries(sections).map(([key, section]) => (
                         <button
@@ -142,8 +139,7 @@ const AdmissionShow = () => {
                             className={`admission-tab-button ${activeSection === key ? "admission-tab-active" : ""}`}
                             onClick={() => handleSectionChange(key)}
                         >
-                            <span className="admission-tab-emoji">{section.icon}</span>
-                            {section.name}
+                            {section.icon} {section.name}
                         </button>
                     ))}
                 </div>
@@ -159,6 +155,7 @@ const AdmissionShow = () => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
+
                     <div className="admission-filter-controls">
                         {activeSection !== "all" && getClassesForSection().length > 0 && (
                             <select
@@ -167,28 +164,29 @@ const AdmissionShow = () => {
                                 className="admission-select-box"
                             >
                                 <option value="all">All Classes</option>
-                                {getClassesForSection().map((cls) => (
+                                {getClassesForSection().map(cls => (
                                     <option key={cls} value={cls}>{cls}</option>
                                 ))}
                             </select>
                         )}
+
                         <select
                             value={activeLanguage}
                             onChange={(e) => setActiveLanguage(e.target.value)}
                             className="admission-select-box"
                         >
                             <option value="all">All Languages</option>
-                            <option value="English">English Medium</option>
-                            <option value="Gujarati">Gujarati Medium</option>
+                            <option value="English">English</option>
+                            <option value="Gujarati">Gujarati</option>
                         </select>
                     </div>
                 </div>
 
-                {/* Students Section */}
+                {/* Students Grid */}
                 <div className="admission-students-section">
                     <div className="admission-students-header">
                         <h2>
-                            {activeSection === "all" ? "All Students" : sections[activeSection].name}
+                            {activeSection === "all" ? "All Students" : sections[activeSection]?.name}
                         </h2>
                         <span className="admission-count-pill">{admissions.length} Students</span>
                     </div>
@@ -213,7 +211,7 @@ const AdmissionShow = () => {
                                             {student.gender === "Male" ? "👦" : "👧"}
                                         </div>
                                         <div className="admission-id-badge">
-                                            <span className="admission-id-label">ID:</span>
+                                            <span className="admission-id-label">ID</span>
                                             <span className="admission-id-number">{student.studentId}</span>
                                         </div>
                                     </div>
@@ -223,40 +221,32 @@ const AdmissionShow = () => {
 
                                         <div className="admission-detail-row">
                                             <span className="admission-detail-icon">🎓</span>
-                                            <span className="admission-detail-text">
-                                                Class: <strong>{student.applyClass}</strong>
-                                            </span>
+                                            <span>Class: <strong>{student.applyClass}</strong></span>
                                         </div>
 
                                         <div className="admission-detail-row">
                                             <span className="admission-detail-icon">🗣️</span>
-                                            <span className="admission-detail-text">
-                                                Medium: <strong>{student.language}</strong>
-                                            </span>
+                                            <span>Medium: <strong>{student.language}</strong></span>
                                         </div>
 
                                         <div className="admission-detail-row">
-                                            <span className="admission-detail-icon">👨‍👩‍👦</span>
-                                            <span className="admission-detail-text">
-                                                Father: <strong>{student.fatherName}</strong>
-                                            </span>
+                                            <span className="admission-detail-icon">👨</span>
+                                            <span>Father: <strong>{student.fatherName}</strong></span>
                                         </div>
 
                                         <div className="admission-detail-row">
                                             <span className="admission-detail-icon">📞</span>
-                                            <span className="admission-detail-text">{student.parentPhone}</span>
+                                            <span>{student.parentPhone}</span>
                                         </div>
 
                                         <div className="admission-detail-row">
                                             <span className="admission-detail-icon">📧</span>
-                                            <span className="admission-detail-text admission-email">{student.parentEmail}</span>
+                                            <span className="admission-email">{student.parentEmail}</span>
                                         </div>
 
                                         <div className="admission-detail-row">
                                             <span className="admission-detail-icon">📅</span>
-                                            <span className="admission-detail-text">
-                                                Admitted: {formatDate(student.createdAt)}
-                                            </span>
+                                            <span>Admitted: {formatDate(student.createdAt)}</span>
                                         </div>
                                     </div>
 
@@ -265,8 +255,7 @@ const AdmissionShow = () => {
                                             className="admission-view-button"
                                             onClick={() => setSelectedStudent(student)}
                                         >
-                                            <span>View Details</span>
-                                            <span>→</span>
+                                            View Details →
                                         </button>
                                     </div>
                                 </div>
@@ -276,10 +265,10 @@ const AdmissionShow = () => {
                 </div>
             </div>
 
-            {/* Modal */}
+            {/* Student Detail Modal */}
             {selectedStudent && (
                 <div className="admission-modal-backdrop" onClick={() => setSelectedStudent(null)}>
-                    <div className="admission-modal-box" onClick={(e) => e.stopPropagation()}>
+                    <div className="admission-modal-box" onClick={e => e.stopPropagation()}>
                         <div className="admission-modal-top">
                             <h2>Student Details</h2>
                             <button className="admission-modal-close" onClick={() => setSelectedStudent(null)}>✕</button>
@@ -331,14 +320,6 @@ const AdmissionShow = () => {
                                     <span className="admission-detail-val">
                                         {selectedStudent.address}, {selectedStudent.city}, {selectedStudent.state} - {selectedStudent.pincode}
                                     </span>
-                                </div>
-                                <div className="admission-detail-item">
-                                    <span className="admission-detail-key">Aadhar Number</span>
-                                    <span className="admission-detail-val">{selectedStudent.aadharNumber}</span>
-                                </div>
-                                <div className="admission-detail-item">
-                                    <span className="admission-detail-key">Inquiry ID</span>
-                                    <span className="admission-detail-val">{selectedStudent.inquiryId}</span>
                                 </div>
                             </div>
                         </div>
