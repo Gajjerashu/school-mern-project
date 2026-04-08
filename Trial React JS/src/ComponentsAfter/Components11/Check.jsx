@@ -10,7 +10,7 @@ const Check = () => {
         studentId: ""
     });
 
-    const [checkType, setCheckType] = useState("mocktest"); // Default to Mock Test as per screenshot
+    const [checkType, setCheckType] = useState("mocktest"); // Default to Mock Test
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [successMsg, setSuccessMsg] = useState("");
@@ -99,7 +99,7 @@ const Check = () => {
         <div className="unified-check-section">
             <div className="unified-check-container">
 
-                {/* Header - Exact as screenshot */}
+                {/* Header - Exact as your screenshot */}
                 <div className="check-header">
                     <div className="header-icon">📄</div>
                     <h1>Check Mock Test Results</h1>
