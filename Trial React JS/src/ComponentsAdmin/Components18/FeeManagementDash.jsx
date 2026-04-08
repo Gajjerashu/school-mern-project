@@ -1,13 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import "./FeeManagementDash.css";
 
 const FeeManagementDash = () => {
-    const navigate = useNavigate();
-
-    // ✅ FIXED: Use relative /api path (works with vercel.json proxy)
-    const API_BASE_URL = "/api/fee-management";
-
     const [payments, setPayments] = useState([]);
     const [filteredPayments, setFilteredPayments] = useState([]);
     const [stats, setStats] = useState(null);
@@ -21,9 +15,11 @@ const FeeManagementDash = () => {
         sortBy: "newest"
     });
 
+    const API_BASE_URL = "/api/fee-management";   // Use this for production
+
     useEffect(() => {
-        fetchStatistics();
         fetchPayments();
+        fetchStatistics();
     }, []);
 
     useEffect(() => {
@@ -33,25 +29,15 @@ const FeeManagementDash = () => {
     const fetchPayments = async () => {
         try {
             setLoading(true);
-            setError("");
-
-            const res = await fetch(API_BASE_URL);   // ← Fixed here
-
-            if (!res.ok) {
-                throw new Error(`HTTP error! Status: ${res.status}`);
-            }
-
+            const res = await fetch(API_BASE_URL);
             const data = await res.json();
 
             if (data.success) {
                 setPayments(data.payments || []);
-                setFilteredPayments(data.payments || []);
-            } else {
-                setError(data.error || "Failed to load payments");
             }
         } catch (err) {
-            console.error("Fetch Payments Error:", err);
-            setError("Failed to connect to server. Is backend running?");
+            console.error("Error fetching payments:", err);
+            setError("Failed to load payment records");
         } finally {
             setLoading(false);
         }
@@ -59,13 +45,13 @@ const FeeManagementDash = () => {
 
     const fetchStatistics = async () => {
         try {
-            const res = await fetch(`${API_BASE_URL}/stats`);   // ← Fixed here
+            const res = await fetch(`${API_BASE_URL}/stats`);
             const data = await res.json();
             if (data.success) {
                 setStats(data.statistics);
             }
         } catch (err) {
-            console.error("Stats Error:", err);
+            console.error("Stats error:", err);
         }
     };
 
@@ -75,8 +61,8 @@ const FeeManagementDash = () => {
         if (filters.search) {
             const term = filters.search.toLowerCase();
             result = result.filter(p =>
-                p.studentId?.toLowerCase().includes(term) ||
                 p.studentName?.toLowerCase().includes(term) ||
+                p.studentId?.toLowerCase().includes(term) ||
                 p.transactionId?.toLowerCase().includes(term)
             );
         }
@@ -90,15 +76,10 @@ const FeeManagementDash = () => {
         }
 
         // Sorting
-        if (filters.sortBy === "newest") {
-            result.sort((a, b) => new Date(b.paidAt) - new Date(a.paidAt));
-        } else if (filters.sortBy === "oldest") {
-            result.sort((a, b) => new Date(a.paidAt) - new Date(b.paidAt));
-        } else if (filters.sortBy === "amount_high") {
-            result.sort((a, b) => (b.paidAmount || 0) - (a.paidAmount || 0));
-        } else if (filters.sortBy === "amount_low") {
-            result.sort((a, b) => (a.paidAmount || 0) - (b.paidAmount || 0));
-        }
+        if (filters.sortBy === "newest") result.sort((a, b) => new Date(b.paidAt) - new Date(a.paidAt));
+        if (filters.sortBy === "oldest") result.sort((a, b) => new Date(a.paidAt) - new Date(b.paidAt));
+        if (filters.sortBy === "amount_high") result.sort((a, b) => (b.paidAmount || 0) - (a.paidAmount || 0));
+        if (filters.sortBy === "amount_low") result.sort((a, b) => (a.paidAmount || 0) - (b.paidAmount || 0));
 
         setFilteredPayments(result);
     };
@@ -108,103 +89,154 @@ const FeeManagementDash = () => {
     };
 
     const formatDate = (date) => {
-        return new Date(date).toLocaleDateString("en-IN", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric"
+        return new Date(date).toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
         });
     };
 
-    const getStatusColor = (status) => {
-        switch (status) {
-            case "Paid": return "status-paid";
-            case "Partial": return "status-partial";
-            case "Pending": return "status-pending";
-            default: return "";
-        }
+    const getStatusClass = (status) => {
+        if (status === "Paid") return "status-paid";
+        if (status === "Partial") return "status-partial";
+        return "status-pending";
     };
 
-    if (loading) {
-        return <div className="admin-fee-dashboard"><div className="loading-spinner">⏳ Loading payment records...</div></div>;
-    }
+    if (loading) return <div className="loading">Loading Fee Dashboard...</div>;
 
     return (
         <div className="admin-fee-dashboard">
             <div className="dashboard-header">
-                <div className="header-left">
-                    <div className="header-icon">💰</div>
-                    <div>
-                        <h1>Fee Management Dashboard</h1>
-                        <p>Monitor and manage all student fee payments</p>
-                    </div>
+                <div className="header-icon">💰</div>
+                <div>
+                    <h1>Fee Management Dashboard</h1>
+                    <p>Monitor and manage all student fee payments</p>
                 </div>
             </div>
 
-            {/* Error Message */}
-            {error && <div className="error-message">⚠️ {error}</div>}
-
-            {/* Statistics Cards - remains same */}
+            {/* Statistics Cards */}
             {stats && (
                 <div className="stats-grid">
-                    {/* ... your existing stats cards ... */}
+                    <div className="stat-card total-collected">
+                        <div className="stat-icon">💵</div>
+                        <div className="stat-content">
+                            <p className="stat-label">TOTAL COLLECTED</p>
+                            <h2>₹{(stats.total?.totalCollected || 0).toLocaleString("en-IN")}</h2>
+                            <p className="stat-detail">{stats.total?.count || 0} payments</p>
+                        </div>
+                    </div>
+
+                    <div className="stat-card total-pending">
+                        <div className="stat-icon">⏳</div>
+                        <div className="stat-content">
+                            <p className="stat-label">TOTAL PENDING</p>
+                            <h2>₹{(stats.total?.totalPending || 0).toLocaleString("en-IN")}</h2>
+                            <p className="stat-detail">Outstanding balance</p>
+                        </div>
+                    </div>
+
+                    <div className="stat-card fully-paid">
+                        <div className="stat-icon">✅</div>
+                        <div className="stat-content">
+                            <p className="stat-label">FULLY PAID</p>
+                            <h2>{stats.byStatus?.find(s => s._id === "Paid")?.count || 0}</h2>
+                            <p className="stat-detail">Complete payments</p>
+                        </div>
+                    </div>
+
+                    <div className="stat-card partial-paid">
+                        <div className="stat-icon">⚠️</div>
+                        <div className="stat-content">
+                            <p className="stat-label">PARTIAL PAID</p>
+                            <h2>{stats.byStatus?.find(s => s._id === "Partial")?.count || 0}</h2>
+                            <p className="stat-detail">Incomplete payments</p>
+                        </div>
+                    </div>
                 </div>
             )}
 
-            {/* Filters Section - remains same */}
+            {/* Filters */}
             <div className="filters-section">
-                {/* ... your existing filters ... */}
+                <div className="search-box">
+                    <input
+                        type="text"
+                        placeholder="Search by Student ID, Name, or Transaction ID..."
+                        value={filters.search}
+                        onChange={(e) => handleFilterChange("search", e.target.value)}
+                    />
+                </div>
+
+                <div className="filter-controls">
+                    <select value={filters.status} onChange={(e) => handleFilterChange("status", e.target.value)}>
+                        <option value="all">All Status</option>
+                        <option value="Paid">Paid</option>
+                        <option value="Partial">Partial</option>
+                        <option value="Pending">Pending</option>
+                    </select>
+
+                    <select value={filters.paymentType} onChange={(e) => handleFilterChange("paymentType", e.target.value)}>
+                        <option value="all">All Payment Methods</option>
+                        <option value="GPay">GPay</option>
+                        <option value="PhonePe">PhonePe</option>
+                        <option value="Net Banking">Net Banking</option>
+                        <option value="Credit Card">Credit Card</option>
+                    </select>
+
+                    <select value={filters.sortBy} onChange={(e) => handleFilterChange("sortBy", e.target.value)}>
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="amount_high">Amount High to Low</option>
+                        <option value="amount_low">Amount Low to High</option>
+                    </select>
+                </div>
             </div>
 
-            {/* Table */}
+            {/* Payment Records Table */}
             <div className="table-container">
                 <div className="table-header">
-                    <h3>💳 Payment Records ({filteredPayments.length})</h3>
+                    <h3>PAYMENT RECORDS ({filteredPayments.length})</h3>
                 </div>
 
                 <table className="payments-table">
                     <thead>
                         <tr>
-                            <th>🆔 Transaction ID</th>
-                            <th>👤 Student Details</th>
-                            <th>🎓 Class</th>
-                            <th>💰 Fees Breakdown</th>
-                            <th>💳 Payment Info</th>
-                            <th>📅 Date</th>
-                            <th>✓ Status</th>
+                            <th>Transaction ID</th>
+                            <th>Student Details</th>
+                            <th>Class</th>
+                            <th>Fees Breakdown</th>
+                            <th>Payment Info</th>
+                            <th>Date</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         {filteredPayments.length === 0 ? (
                             <tr>
-                                <td colSpan="7" className="no-data">
-                                    <div className="no-data-content">
-                                        <span className="no-data-icon">📭</span>
-                                        <p>No payment records found</p>
-                                        <small>Try changing filters or check if payments exist in database</small>
-                                    </div>
-                                </td>
+                                <td colSpan="7" className="no-data">No payment records found</td>
                             </tr>
                         ) : (
                             filteredPayments.map((payment) => (
-                                <tr key={payment._id || payment.transactionId}>
-                                    <td><strong>{payment.transactionId}</strong></td>
+                                <tr key={payment._id}>
+                                    <td className="txn-id">{payment.transactionId}</td>
                                     <td>
                                         <strong>{payment.studentName}</strong><br />
-                                        <small>🆔 {payment.studentId}</small><br />
-                                        <small>📧 {payment.email}</small>
+                                        <small>{payment.studentId}</small><br />
+                                        <small>{payment.email}</small>
                                     </td>
-                                    <td><span className="class-badge">{payment.applyClass}</span></td>
+                                    <td>
+                                        <span className="class-badge">{payment.applyClass}</span>
+                                    </td>
                                     <td>
                                         <div className="fee-breakdown">
-                                            <div>Total: ₹{Number(payment.totalFees || 0).toLocaleString("en-IN")}</div>
-                                            <div className="paid">Paid: ₹{Number(payment.paidAmount || 0).toLocaleString("en-IN")}</div>
-                                            <div className="pending">Pending: ₹{Number(payment.pendingAmount || 0).toLocaleString("en-IN")}</div>
+                                            <div><span>Total:</span> ₹{Number(payment.totalFees || 0).toLocaleString("en-IN")}</div>
+                                            <div className="paid"><span>Paid:</span> ₹{Number(payment.paidAmount || 0).toLocaleString("en-IN")}</div>
+                                            <div className="pending"><span>Pending:</span> ₹{Number(payment.pendingAmount || 0).toLocaleString("en-IN")}</div>
                                         </div>
                                     </td>
-                                    <td><span className="payment-method">{payment.paymentType || payment.paymentMethod}</span></td>
+                                    <td>{payment.paymentType || payment.paymentMethod}</td>
                                     <td>{formatDate(payment.paidAt)}</td>
                                     <td>
-                                        <span className={`status-badge ${getStatusColor(payment.status)}`}>
+                                        <span className={`status-badge ${getStatusClass(payment.status)}`}>
                                             {payment.status}
                                         </span>
                                     </td>
