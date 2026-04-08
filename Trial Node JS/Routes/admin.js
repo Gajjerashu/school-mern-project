@@ -3,6 +3,30 @@ const express = require("express");
 const router = express.Router();
 const Inquiry = require("../Models/Inquiry");
 
+// Routes/admin.js ma aa add karo
+router.post("/login", async (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        // Simple admin check
+        if (username === "Admin" && password === "Admin123") {
+            return res.status(200).json({
+                success: true,
+                message: "Login successful",
+                token: "admin-token-" + Date.now()
+            });
+        }
+
+        return res.status(401).json({
+            success: false,
+            message: "Invalid username or password"
+        });
+
+    } catch (err) {
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
 // ✅ GET: Fetch all inquiries with optional search
 router.get("/", async (req, res) => {
     try {
