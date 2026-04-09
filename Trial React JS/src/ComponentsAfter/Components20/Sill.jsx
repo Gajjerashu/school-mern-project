@@ -142,9 +142,7 @@ const Sill = () => {
                     </button>
                 </form>
 
-                <div className="sill-footer">
-                    <p>Facing issues? <a href="#">Contact Support</a></p>
-                </div>
+
             </div>
         </div>
     );
