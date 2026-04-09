@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Check.css";
 
@@ -10,25 +10,23 @@ const Check = () => {
         studentId: ""
     });
 
-    const [checkType, setCheckType] = useState("mocktest"); // Default to Mock Test
+    const [checkType, setCheckType] = useState("fees");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [successMsg, setSuccessMsg] = useState("");
 
-    useEffect(() => {
-        setError("");
-        setSuccessMsg("");
-    }, [checkType]);
-
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
-        if (error) setError("");
+        setError("");
+        setSuccessMsg("");
     };
 
-    const handleTypeChange = (type) => {
-        setCheckType(type);
+    const handleCheckTypeChange = (e) => {
+        setCheckType(e.target.value);
         setFormData({ studentName: "", studentId: "" });
+        setError("");
+        setSuccessMsg("");
     };
 
     const handleSubmit = async (e) => {
@@ -50,28 +48,40 @@ const Check = () => {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(formData)
                 });
+
                 const result = await response.json();
 
                 if (response.ok && result.success) {
-                    setSuccessMsg("✅ Records found! Redirecting...");
-                    setTimeout(() => navigate("/AfterLogin/Info", { state: result }), 800);
+                    setSuccessMsg("✅ Student found! Redirecting...");
+                    setTimeout(() => {
+                        navigate("/AfterLogin/Info", {
+                            state: {
+                                studentInfo: result.studentInfo,
+                                feeDetails: result.feeDetails,
+                                paymentHistory: result.paymentHistory
+                            }
+                        });
+                    }, 800);
                 } else {
-                    setError(result.error || "No records found.");
+                    setError(result.error || "Student not found");
                 }
-            } else {
-                // Mock Test
+            } else if (checkType === "mocktest") {
                 const response = await fetch("/api/mocktest/verify", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(formData)
                 });
+
                 const result = await response.json();
 
                 if (response.ok && result.success) {
-                    const resultRes = await fetch(`/api/mocktest/results/${formData.studentId}/latest`);
-                    const resultData = await resultRes.json();
+                    const resultResponse = await fetch(
+                        `/api/mocktest/results/${formData.studentId}/latest`
+                    );
 
-                    if (resultRes.ok && resultData.success) {
+                    const resultData = await resultResponse.json();
+
+                    if (resultResponse.ok && resultData.success && resultData.data) {
                         setSuccessMsg("✅ Results found! Redirecting...");
                         setTimeout(() => {
                             navigate("/MockTestResults", {
@@ -82,56 +92,74 @@ const Check = () => {
                             });
                         }, 800);
                     } else {
-                        setError("No test results found for this student.");
+                        setError("No mock test results found for this student");
                     }
                 } else {
-                    setError(result.message || "Student not found.");
+                    setError(result.message || "Student not found");
                 }
             }
         } catch (err) {
-            setError("Server connection failed. Is the backend running?");
+            console.error("❌ Error:", err);
+            setError("Connection error. Please check if the server is running.");
         } finally {
             setLoading(false);
         }
     };
 
+    const isFeesMode = checkType === "fees";
+
     return (
         <div className="unified-check-section">
             <div className="unified-check-container">
-
-                {/* Header - Exact as your screenshot */}
+                {/* HEADER - Exact as local host */}
                 <div className="check-header">
-                    <div className="header-icon">📄</div>
-                    <h1>Check Mock Test Results</h1>
-                    <p>Enter your details to view mock test results</p>
+                    <div className="header-icon">
+                        {isFeesMode ? "💰" : "📄"}
+                    </div>
+                    <h1>{isFeesMode ? "Check Fee Status" : "Check Mock Test Results"}</h1>
+                    <p>
+                        {isFeesMode
+                            ? "Enter your details to view fee information"
+                            : "Enter your details to view mock test results"
+                        }
+                    </p>
                 </div>
 
-                {/* Form Card */}
+                {/* SEARCH CARD */}
                 <div className="search-card">
                     <div className="selector-bar">
-                        <span className="selector-label">CHECK TYPE:</span>
+                        <div className="selector-label">CHECK TYPE:</div>
                         <div className="selector-options">
-                            <button
-                                type="button"
-                                className={`selector-btn ${checkType === "fees" ? "active" : ""}`}
-                                onClick={() => handleTypeChange("fees")}
-                            >
-                                Fee Status
-                            </button>
-                            <button
-                                type="button"
-                                className={`selector-btn ${checkType === "mocktest" ? "active" : ""}`}
-                                onClick={() => handleTypeChange("mocktest")}
-                            >
-                                Mock Test Results
-                            </button>
+                            <label className={`selector-option ${checkType === "fees" ? "active" : ""}`}>
+                                <input
+                                    type="radio"
+                                    name="checkType"
+                                    value="fees"
+                                    checked={checkType === "fees"}
+                                    onChange={handleCheckTypeChange}
+                                />
+                                <span className="option-text">💰 Fee Status</span>
+                            </label>
+                            <label className={`selector-option ${checkType === "mocktest" ? "active" : ""}`}>
+                                <input
+                                    type="radio"
+                                    name="checkType"
+                                    value="mocktest"
+                                    checked={checkType === "mocktest"}
+                                    onChange={handleCheckTypeChange}
+                                />
+                                <span className="option-text">📝 Mock Test Results</span>
+                            </label>
                         </div>
                     </div>
 
                     <form onSubmit={handleSubmit} className="search-form">
                         <div className="form-grid">
                             <div className="form-group">
-                                <label>👤 STUDENT NAME</label>
+                                <label>
+                                    <span className="label-icon">👤</span>
+                                    STUDENT NAME
+                                </label>
                                 <input
                                     type="text"
                                     name="studentName"
@@ -141,8 +169,12 @@ const Check = () => {
                                     disabled={loading}
                                 />
                             </div>
+
                             <div className="form-group">
-                                <label>🆔 STUDENT ID</label>
+                                <label>
+                                    <span className="label-icon">🆔</span>
+                                    STUDENT ID
+                                </label>
                                 <input
                                     type="text"
                                     name="studentId"
@@ -159,18 +191,35 @@ const Check = () => {
 
                         <div className="search-btn-container">
                             <button type="submit" className="search-btn" disabled={loading}>
-                                {loading ? "Checking..." : "CHECK RESULTS"}
+                                {loading ? (
+                                    <>
+                                        <span className="btn-icon spinning">🔍</span>
+                                        <span>Searching...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span className="btn-icon">🔍</span>
+                                        <span>
+                                            {isFeesMode ? "CHECK FEE STATUS" : "CHECK RESULTS"}
+                                        </span>
+                                    </>
+                                )}
                             </button>
                         </div>
                     </form>
                 </div>
 
-                {/* Three Info Cards - Exact as screenshot */}
+                {/* INFO CARDS - Exact as local host */}
                 <div className="info-cards">
                     <div className="info-card">
                         <div className="info-icon">💡</div>
-                        <h3>Test Results</h3>
-                        <p>Check your mock test scores, correct answers, and performance</p>
+                        <h3>{isFeesMode ? "Fee Information" : "Test Results"}</h3>
+                        <p>
+                            {isFeesMode
+                                ? "View your total fees, paid amount, and pending balance"
+                                : "Check your mock test scores, correct answers, and performance"
+                            }
+                        </p>
                     </div>
                     <div className="info-card">
                         <div className="info-icon">🔒</div>
@@ -183,7 +232,6 @@ const Check = () => {
                         <p>Get immediate access to your data without any delays or waiting time</p>
                     </div>
                 </div>
-
             </div>
         </div>
     );
