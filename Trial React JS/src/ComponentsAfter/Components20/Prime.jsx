@@ -63,10 +63,10 @@ const Prime = () => {
                     params.stream = stream;
                 }
 
-                const res = await axios.get(`${API_BASE_URL}/api/syllabus-data`, {
-                    params,
-                    cancelToken: source.token
-                });
+                const res = await axios.get(`${API_BASE_URL}/syllabus-data`, {
+    params,
+    cancelToken: source.token
+});
 
                 if (res.data.success) {
                     setSyllabusData(res.data.data);
