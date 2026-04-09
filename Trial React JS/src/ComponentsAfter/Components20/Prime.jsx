@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Prime.css";
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_BASE_URL = "/api";
 
 const SUBJECT_COLORS = [
     "#16a34a", "#0284c7", "#7c3aed", "#dc2626", "#d97706",
