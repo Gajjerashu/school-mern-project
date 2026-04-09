@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import "./Sill.css";
-
-const API_BASE_URL = "/api";   // ✅ Use relative path for Vercel proxy
 
 const Sill = () => {
     const [studentName, setStudentName] = useState("");
@@ -12,35 +9,29 @@ const Sill = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
-        if (e) e.preventDefault();
-
+    const handleSubmit = async () => {
         setError("");
-        const nameInput = studentName.trim();
-        const idInput = studentId.trim();
 
-        if (!nameInput || !idInput) {
+        if (!studentName.trim() || !studentId.trim()) {
             setError("Please fill in both Student Name and Student ID.");
             return;
         }
 
         setLoading(true);
-
         try {
-            // Fetch student details
-            const response = await axios.get(`${API_BASE_URL}/admissions/student/${idInput}`);
+            const res = await fetch(
+                `/api/admissions/student/${studentId.trim()}`
+            );
+            const data = await res.json();
 
-            const { success, data } = response.data;
-
-            if (!success || !data) {
+            if (!res.ok || !data.success) {
                 setError("Student ID not found. Please check your ID.");
                 setLoading(false);
                 return;
             }
 
-            // Name verification
-            const dbName = data.studentName?.toLowerCase().trim();
-            const enteredName = nameInput.toLowerCase();
+            const dbName = data.data.studentName?.toLowerCase().trim();
+            const enteredName = studentName.toLowerCase().trim();
 
             if (dbName !== enteredName) {
                 setError("Student Name does not match our records.");
@@ -48,11 +39,13 @@ const Sill = () => {
                 return;
             }
 
-            // Clean class data
-            const rawClass = data.applyClass?.toString().replace(/\D/g, "");
+            // ✅ "6th", "1st" jeva strings fix karo
+            const rawClass = data.data.applyClass?.toString().replace(/\D/g, "");
             const applyClass = parseInt(rawClass);
-            const language = data.language || "English";
-            const stream = data.stream || "NA";
+            const language = data.data.language || "English";
+            const stream = data.data.stream || "NA";
+
+            console.log("✅ applyClass:", applyClass, "| language:", language, "| stream:", stream);
 
             if (isNaN(applyClass)) {
                 setError("Invalid class data. Please contact admin.");
@@ -60,89 +53,83 @@ const Sill = () => {
                 return;
             }
 
-            // Navigation based on class
-            const commonState = {
-                studentName: data.studentName,
-                applyClass,
-                language
-            };
-
-            let targetPath = "";
-
-            if (applyClass >= 1 && applyClass <= 5) targetPath = "/AfterLogin/Syllabus/Primary";
-            else if (applyClass >= 6 && applyClass <= 8) targetPath = "/AfterLogin/Syllabus/Middle";
-            else if (applyClass >= 9 && applyClass <= 12) targetPath = "/AfterLogin/Syllabus/High";
-
-            if (targetPath) {
-                navigate(targetPath, {
+            // ✅ Navigate based on class
+            if (applyClass >= 1 && applyClass <= 5) {
+                navigate("/AfterLogin/Syllabus/Primary", {
+                    state: { studentName: data.data.studentName, applyClass, language, stream: "NA" }
+                });
+            } else if (applyClass >= 6 && applyClass <= 8) {
+                navigate("/AfterLogin/Syllabus/Middle", {
+                    state: { studentName: data.data.studentName, applyClass, language, stream: "NA" }
+                });
+            } else if (applyClass >= 9 && applyClass <= 10) {
+                navigate("/AfterLogin/Syllabus/High", {
+                    state: { studentName: data.data.studentName, applyClass, language, stream: "NA" }
+                });
+            } else if (applyClass >= 11 && applyClass <= 12) {
+                navigate("/AfterLogin/Syllabus/High", {
                     state: {
-                        ...commonState,
-                        stream: (applyClass >= 11 && stream !== "NA") ? stream : "NA"
+                        studentName: data.data.studentName,
+                        applyClass,
+                        language,
+                        stream: stream !== "NA" ? stream : "Science"
                     }
                 });
             } else {
-                setError("Class route not found.");
+                setError("Class not recognized. Please contact admin.");
             }
+
         } catch (err) {
-            console.error("❌ Login Error:", err);
-            const msg = err.response?.data?.message || "Server error. Please try again.";
-            setError(msg);
-        } finally {
-            setLoading(false);
+            console.error("❌ Error:", err);
+            setError("Server error. Please try again.");
         }
+        setLoading(false);
     };
 
     return (
         <div className="sill-bg">
             <div className="sill-card">
                 <div className="sill-header">
-                    <div className="sill-logo">📚</div>
-                    <h2>Syllabus Portal</h2>
-                    <p>InspireEdge School Management</p>
+                    <h2>📚 Syllabus Portal</h2>
+                    <p>InspireEdge School</p>
                 </div>
-
-                <form className="sill-body" onSubmit={handleSubmit}>
+                <div className="sill-body">
                     <div className="sill-field">
                         <label>👤 STUDENT NAME</label>
                         <input
                             type="text"
-                            placeholder="e.g. Panchal Janu"
+                            placeholder="Enter your name"
                             value={studentName}
-                            autoComplete="off"
                             onChange={(e) => setStudentName(e.target.value)}
-                            disabled={loading}
+                            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
                         />
                     </div>
                     <div className="sill-field">
                         <label>🪪 STUDENT ID</label>
                         <input
                             type="text"
-                            placeholder="Enter ID Number"
+                            placeholder="Enter your ID"
                             value={studentId}
-                            autoComplete="off"
                             onChange={(e) => setStudentId(e.target.value)}
-                            disabled={loading}
+                            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
                         />
                     </div>
-
-                    {error && <div className="sill-error-box">⚠️ {error}</div>}
-
+                    {error && <p className="sill-error">⚠️ {error}</p>}
                     <button
-                        type="submit"
-                        className={`sill-btn ${loading ? "loading" : ""}`}
+                        className="sill-btn"
+                        onClick={handleSubmit}
                         disabled={loading}
                     >
                         {loading ? (
-                            <span className="btn-content">
-                                <i className="spinner"></i> Verifying...
+                            <span className="sill-btn-loading">
+                                <span className="sill-spinner"></span>
+                                Verifying...
                             </span>
                         ) : (
                             "LOGIN & CONTINUE"
                         )}
                     </button>
-                </form>
-
-
+                </div>
             </div>
         </div>
     );
