@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios"; // Axios વાપરવું વધુ હિતાવહ છે
+import axios from "axios";
 import "./Sill.css";
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_BASE_URL = "/api";   // ✅ Use relative path for Vercel proxy
 
 const Sill = () => {
     const [studentName, setStudentName] = useState("");
@@ -13,9 +13,9 @@ const Sill = () => {
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
-        if (e) e.preventDefault(); // Form submit રોકવા માટે
-        setError("");
+        if (e) e.preventDefault();
 
+        setError("");
         const nameInput = studentName.trim();
         const idInput = studentId.trim();
 
@@ -25,9 +25,11 @@ const Sill = () => {
         }
 
         setLoading(true);
+
         try {
-            // API Call using Axios
-            const response = await axios.get(`${API_BASE_URL}/api/admissions/student/${idInput}`);
+            // Fetch student details
+            const response = await axios.get(`${API_BASE_URL}/admissions/student/${idInput}`);
+
             const { success, data } = response.data;
 
             if (!success || !data) {
@@ -36,7 +38,7 @@ const Sill = () => {
                 return;
             }
 
-            // Name Verification
+            // Name verification
             const dbName = data.studentName?.toLowerCase().trim();
             const enteredName = nameInput.toLowerCase();
 
@@ -46,7 +48,7 @@ const Sill = () => {
                 return;
             }
 
-            // Class Data Cleanup
+            // Clean class data
             const rawClass = data.applyClass?.toString().replace(/\D/g, "");
             const applyClass = parseInt(rawClass);
             const language = data.language || "English";
@@ -58,29 +60,29 @@ const Sill = () => {
                 return;
             }
 
-            // Navigation Logic
-            const commonState = { 
-                studentName: data.studentName, 
-                applyClass, 
-                language 
+            // Navigation based on class
+            const commonState = {
+                studentName: data.studentName,
+                applyClass,
+                language
             };
 
             let targetPath = "";
+
             if (applyClass >= 1 && applyClass <= 5) targetPath = "/AfterLogin/Syllabus/Primary";
             else if (applyClass >= 6 && applyClass <= 8) targetPath = "/AfterLogin/Syllabus/Middle";
             else if (applyClass >= 9 && applyClass <= 12) targetPath = "/AfterLogin/Syllabus/High";
 
             if (targetPath) {
-                navigate(targetPath, { 
-                    state: { 
-                        ...commonState, 
-                        stream: (applyClass >= 11 && stream !== "NA") ? stream : "NA" 
-                    } 
+                navigate(targetPath, {
+                    state: {
+                        ...commonState,
+                        stream: (applyClass >= 11 && stream !== "NA") ? stream : "NA"
+                    }
                 });
             } else {
                 setError("Class route not found.");
             }
-
         } catch (err) {
             console.error("❌ Login Error:", err);
             const msg = err.response?.data?.message || "Server error. Please try again.";
@@ -94,24 +96,23 @@ const Sill = () => {
         <div className="sill-bg">
             <div className="sill-card">
                 <div className="sill-header">
-                    <div className="sill-logo">🎓</div>
+                    <div className="sill-logo">📚</div>
                     <h2>Syllabus Portal</h2>
                     <p>InspireEdge School Management</p>
                 </div>
-                
+
                 <form className="sill-body" onSubmit={handleSubmit}>
                     <div className="sill-field">
                         <label>Student Full Name</label>
                         <input
                             type="text"
-                            placeholder="e.g. John Doe"
+                            placeholder="e.g. Panchal Janu"
                             value={studentName}
                             autoComplete="off"
                             onChange={(e) => setStudentName(e.target.value)}
                             disabled={loading}
                         />
                     </div>
-
                     <div className="sill-field">
                         <label>Student Admission ID</label>
                         <input
