@@ -5,150 +5,130 @@
 }
 
 .prime-banner {
-  background: linear-gradient(135deg, #15803d, #16a34a, #22c55e);
-  padding: 80px 20px 60px;
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  padding: 70px 20px 50px;
   text-align: center;
   color: white;
-  position: relative;
-  overflow: hidden;
 }
 
 .prime-banner h1 {
-  font-size: 2.4rem;
+  font-size: 2.5rem;
   font-weight: 800;
   margin-bottom: 8px;
 }
 
 .prime-banner p {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   opacity: 0.95;
 }
 
 .student-badge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background: rgba(255,255,255,0.2);
-  padding: 8px 20px;
+  gap: 10px;
+  background: rgba(255,255,255,0.25);
+  padding: 10px 24px;
   border-radius: 50px;
-  margin-top: 16px;
+  margin-top: 20px;
   font-weight: 600;
-  backdrop-filter: blur(10px);
+  font-size: 1.05rem;
 }
 
-/* Container */
+/* Main Container */
 .prime-container {
   max-width: 1200px;
-  margin: -40px auto 0;
+  margin: -30px auto 60px;
   padding: 0 20px;
-  position: relative;
 }
 
 /* Grid */
 .prime-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
   gap: 24px;
-  margin-top: 20px;
 }
 
-/* Subject Card - Exact match to your screenshot */
+/* Subject Card - Exact local design */
 .prime-subject-card {
   background: white;
   border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
   overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-  border-top: 5px solid var(--accent, #16a34a);
   transition: all 0.3s ease;
 }
 
 .prime-subject-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 15px 35px rgba(22, 163, 74, 0.15);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(34, 197, 94, 0.12);
 }
 
 .prime-subject-header {
-  padding: 20px 24px 16px;
+  padding: 20px 24px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   border-bottom: 1px solid #f1f5f9;
 }
 
 .subject-icon {
-  font-size: 1.8rem;
+  font-size: 1.9rem;
 }
 
 .prime-subject-header h3 {
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   font-weight: 700;
   color: #1f2937;
   margin: 0;
 }
 
-/* Topics */
+/* Topics List */
 .prime-topic-list {
-  list-style: none;
   padding: 20px 24px;
-  margin: 0;
+  list-style: none;
 }
 
 .prime-topic-list li {
-  padding: 8px 0;
+  padding: 9px 0;
   color: #374151;
-  font-size: 0.95rem;
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
+  font-size: 0.97rem;
+  line-height: 1.5;
 }
 
-.bullet {
-  color: var(--accent, #16a34a);
-  font-weight: bold;
-}
-
-/* Footer Button */
+/* Footer */
 .prime-footer {
   text-align: center;
-  margin: 40px 0 60px;
+  margin-top: 40px;
 }
 
-.prime-back-btn {
+.back-btn {
   background: linear-gradient(135deg, #16a34a, #22c55e);
   color: white;
-  padding: 14px 32px;
+  padding: 14px 36px;
   border: none;
   border-radius: 12px;
-  font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s;
+  font-size: 1rem;
 }
 
-.prime-back-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3);
+.back-btn:hover {
+  transform: translateY(-2px);
 }
 
-/* Loading & Error */
-.prime-loading, .prime-error-box {
+/* Loading / Error */
+.loading, .error-box {
   text-align: center;
-  padding: 80px 20px;
-  color: #15803d;
+  padding: 100px 20px;
+  color: #64748b;
 }
 
-.prime-spinner {
-  width: 50px;
-  height: 50px;
-  border: 5px solid #bbf7d0;
-  border-top-color: #16a34a;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 20px;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
+.error-box button {
+  margin-top: 20px;
+  padding: 12px 30px;
+  background: #22c55e;
+  color: white;
+  border: none;
+  border-radius: 10px;
 }
 
 /* Responsive */
@@ -157,6 +137,6 @@
     grid-template-columns: 1fr;
   }
   .prime-banner h1 {
-    font-size: 1.9rem;
+    font-size: 2rem;
   }
 }
