@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { FaCheckCircle, FaTimesCircle, FaTrophy, FaClock, FaEye, FaArrowLeft, FaPrint } from 'react-icons/fa';
-// import confetti from 'canvas-confetti'; // Jo install hoy to unlock karjo
+import { FaCheckCircle, FaTimesCircle, FaTrophy, FaClock, FaForward } from 'react-icons/fa';
 import './MockTestResults.css';
 
 const PASS_MARKS = { 25: 12, 50: 23 };
@@ -9,39 +8,21 @@ const PASS_MARKS = { 25: 12, 50: 23 };
 const MockTestResults = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const [animatedWidth, setAnimatedWidth] = useState(0);
 
-    // Destructuring with default empty objects to prevent crashes
-    const { studentInfo = {}, resultData = {} } = location.state || {};
+    const { studentInfo, resultData } = location.state || {};
 
-    const passMarks = PASS_MARKS[resultData.totalQuestions] || 23;
-    const passed = (resultData.correctAnswers || 0) >= passMarks;
-
-    useEffect(() => {
-        if (resultData?.percentage !== undefined) {
-            const timer = setTimeout(() => {
-                setAnimatedWidth(resultData.percentage);
-            }, 300);
-            
-            // Confetti effect logic (Optional)
-            // if (passed) {
-            //     confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-            // }
-            
-            return () => clearTimeout(timer);
-        }
-    }, [resultData, passed]);
-
-    // Error handling: Jo direct page access kare to
-    if (!location.state) {
+    if (!studentInfo || !resultData) {
         return (
             <div className="results-page">
                 <div className="results-container">
                     <div className="error-card">
-                        <h2>⚠️ Access Denied</h2>
-                        <p>No test data found. Please complete a test first.</p>
-                        <button onClick={() => navigate('/AfterLogin/Students')} className="primary-btn">
-                            Go to Students Portal
+                        <h2>⚠️ No Data Found</h2>
+                        <p>Please search for a student first.</p>
+                        <button
+                            onClick={() => navigate('/AfterLogin/Students')}
+                            className="back-btn"
+                        >
+                            Go Back to Check
                         </button>
                     </div>
                 </div>
@@ -49,117 +30,214 @@ const MockTestResults = () => {
         );
     }
 
+    if (!resultData.totalQuestions || resultData.correctAnswers === undefined || resultData.percentage === undefined) {
+        return (
+            <div className="results-page">
+                <div className="results-container">
+                    <div className="error-card">
+                        <h2>⚠️ Invalid Data</h2>
+                        <p>The result data appears to be incomplete.</p>
+                        <button
+                            onClick={() => navigate('/AfterLogin/Students')}
+                            className="back-btn"
+                        >
+                            Go Back to Check
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    const safeSkippedAnswers = resultData.skippedAnswers || 0;
+    const safeWrongAnswers = resultData.wrongAnswers || 0;
+    const safeTimeTaken = resultData.timeTaken || 0;
+    const passMarks = PASS_MARKS[resultData.totalQuestions] || 23;
+    const passed = resultData.correctAnswers >= passMarks;
+
     const formatTime = (seconds) => {
-        if (!seconds) return "0m 0s";
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
         return `${mins}m ${secs}s`;
     };
 
+    // ✅ Reattempt — Direct modal (Choose Question Count) screen par jump
+    const handleReattempt = () => {
+        navigate('/AfterLogin/MockTest', {
+            state: {
+                studentInfo: studentInfo
+            }
+        });
+    };
+
+    // ✅ Back to Check — Students page par jao
+    const handleBackToCheck = () => {
+        navigate('/AfterLogin/Students');
+    };
+
     return (
         <div className="results-page">
             <div className="results-container">
-                {/* Header Section */}
-                <div className="results-header no-print">
-                    <button onClick={() => navigate(-1)} className="back-nav-btn">
-                        <FaArrowLeft /> Back
+
+                {/* Header */}
+                <div className="results-header">
+                    <button onClick={() => navigate(-1)} className="back-button">
+                        ← Back
                     </button>
-                    <div className="header-actions">
-                        <button onClick={() => window.print()} className="icon-action-btn">
-                            <FaPrint /> Print Result
-                        </button>
+                    <h1>Mock Test Results</h1>
+                </div>
+
+                {/* Result Card */}
+                <div className="result-card">
+                    <div className={`result-header ${passed ? 'passed' : 'failed'}`}>
+                        {passed ? (
+                            <>
+                                <FaTrophy className="result-icon" />
+                                <h1>Congratulations! 🎉</h1>
+                                <p>You have Passed</p>
+                            </>
+                        ) : (
+                            <>
+                                <FaTimesCircle className="result-icon" />
+                                <h1>Not Qualified</h1>
+                                <p>Better luck next time</p>
+                            </>
+                        )}
+                    </div>
+
+                    <div className="result-body">
+
+                        {/* Student Info */}
+                        <div className="result-info">
+                            <div className="info-row">
+                                <span>Student</span>
+                                <span>{studentInfo.studentName}</span>
+                            </div>
+                            <div className="info-row">
+                                <span>ID</span>
+                                <span>{studentInfo.studentId}</span>
+                            </div>
+                            <div className="info-row">
+                                <span>Class</span>
+                                <span>{studentInfo.applyClass}</span>
+                            </div>
+                            <div className="info-row">
+                                <span>Medium</span>
+                                <span>{studentInfo.language}</span>
+                            </div>
+                            <div className="info-row">
+                                <span>Pass Marks</span>
+                                <span>{passMarks}/{resultData.totalQuestions}</span>
+                            </div>
+                        </div>
+
+                        {/* Stats Grid */}
+                        <div className="result-stats">
+                            <div className="stat total-stat">
+                                <div className="stat-icon">📝</div>
+                                <div className="value">{resultData.totalQuestions}</div>
+                                <div className="label">Total</div>
+                            </div>
+                            <div className="stat correct">
+                                <FaCheckCircle />
+                                <div className="value">{resultData.correctAnswers}</div>
+                                <div className="label">Correct</div>
+                            </div>
+                            <div className="stat wrong">
+                                <FaTimesCircle />
+                                <div className="value">{safeWrongAnswers}</div>
+                                <div className="label">Wrong</div>
+                            </div>
+                            <div className="stat skipped">
+                                <FaForward />
+                                <div className="value">{safeSkippedAnswers}</div>
+                                <div className="label">Skipped</div>
+                            </div>
+                        </div>
+
+                        {/* Percentage Bar */}
+                        <div className="percent-bar-wrap">
+                            <div className="percent-label">
+                                <span>Score</span>
+                                <span className="pct-val">{resultData.percentage.toFixed(1)}%</span>
+                            </div>
+                            <div className="percent-bar">
+                                <div className="percent-fill" style={{
+                                    width: `${resultData.percentage}%`,
+                                    background: passed
+                                        ? 'linear-gradient(90deg,#22c55e,#16a34a)'
+                                        : 'linear-gradient(90deg,#ef4444,#dc2626)'
+                                }} />
+                            </div>
+                        </div>
+
+                        {/* Time Taken */}
+                        <div className="time-section">
+                            <div className="time-item">
+                                <FaClock className="time-icon" />
+                                <div>
+                                    <div className="time-label">Time Taken</div>
+                                    <div className="time-value">{formatTime(safeTimeTaken)}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Feedback */}
+                        {!passed && (
+                            <div className="retry-msg">
+                                <p>📚 Study harder and try again!</p>
+                                <p>💪 Need {passMarks - resultData.correctAnswers} more correct answers to pass</p>
+                            </div>
+                        )}
+                        {passed && (
+                            <div className="success-msg">
+                                <p>🌟 Great effort! You performed well!</p>
+                                <p>Keep up the good work in your next attempt!</p>
+                            </div>
+                        )}
+
+                        {/* ✅ Action Buttons — Design same, logic changed */}
+                        <div className="action-buttons">
+                            <button onClick={handleReattempt} className="retry-btn">
+                                🔄 Reattempt Test
+                            </button>
+                            <button onClick={handleBackToCheck} className="secondary-btn">
+                                📋 Back to Check
+                            </button>
+                        </div>
+
                     </div>
                 </div>
 
-                {/* Main Result Card */}
-                <div className={`result-card-main ${passed ? 'status-pass' : 'status-fail'}`}>
-                    <div className="result-banner">
-                        <div className="banner-icon-circle">
-                            {passed ? <FaTrophy className="banner-icon bounce" /> : <FaTimesCircle className="banner-icon shake" />}
-                        </div>
-                        <h1>{passed ? 'Congratulations!' : 'Better Luck Next Time'}</h1>
-                        <p className="status-text">
-                            {passed ? 'You have successfully qualified the assessment.' : 'You did not meet the minimum passing criteria.'}
-                        </p>
-                    </div>
-
-                    <div className="result-content">
-                        {/* Student Info Bar */}
-                        <div className="student-info-strip">
-                            <div className="info-item">
-                                <span className="label">Student Name</span>
-                                <span className="value">{studentInfo.studentName || 'N/A'}</span>
-                            </div>
-                            <div className="info-item">
-                                <span className="label">Roll Number</span>
-                                <span className="value">{studentInfo.studentId || 'N/A'}</span>
-                            </div>
-                            <div className="info-item">
-                                <span className="label">Class/Medium</span>
-                                <span className="value">{studentInfo.applyClass} - {studentInfo.language}</span>
+                {/* Performance Summary */}
+                <div className="summary-card">
+                    <h3>📈 Performance Summary</h3>
+                    <div className="summary-grid">
+                        <div className="summary-item">
+                            <div className="summary-label">Accuracy</div>
+                            <div className="summary-value">
+                                {resultData.totalQuestions > 0
+                                    ? `${((resultData.correctAnswers / resultData.totalQuestions) * 100).toFixed(1)}%`
+                                    : '0%'}
                             </div>
                         </div>
-
-                        {/* Summary Stats */}
-                        <div className="stats-dashboard">
-                            <div className="stat-card">
-                                <span className="stat-label">Total Questions</span>
-                                <span className="stat-value">{resultData.totalQuestions}</span>
-                            </div>
-                            <div className="stat-card score-correct">
-                                <FaCheckCircle className="stat-icon" />
-                                <span className="stat-label">Correct</span>
-                                <span className="stat-value">{resultData.correctAnswers}</span>
-                            </div>
-                            <div className="stat-card score-wrong">
-                                <FaTimesCircle className="stat-icon" />
-                                <span className="stat-label">Incorrect</span>
-                                <span className="stat-value">{resultData.wrongAnswers || 0}</span>
-                            </div>
-                            <div className="stat-card score-time">
-                                <FaClock className="stat-icon" />
-                                <span className="stat-label">Time Taken</span>
-                                <span className="stat-value">{formatTime(resultData.timeTaken)}</span>
+                        <div className="summary-item">
+                            <div className="summary-label">Attempted</div>
+                            <div className="summary-value">
+                                {resultData.totalQuestions - safeSkippedAnswers}
                             </div>
                         </div>
-
-                        {/* Performance Gauge */}
-                        <div className="performance-section">
-                            <div className="score-flex">
-                                <h3>Performance Summary</h3>
-                                <span className={`percentage-text ${passed ? 'txt-success' : 'txt-danger'}`}>
-                                    {resultData.percentage?.toFixed(1)}%
-                                </span>
+                        <div className="summary-item">
+                            <div className="summary-label">Efficiency</div>
+                            <div className="summary-value">
+                                {resultData.totalQuestions > 0
+                                    ? `${(safeTimeTaken / resultData.totalQuestions).toFixed(1)}s/Q`
+                                    : '0s/Q'}
                             </div>
-                            <div className="custom-progress-bar">
-                                <div 
-                                    className={`fill-bar ${passed ? 'fill-success' : 'fill-danger'}`}
-                                    style={{ width: `${animatedWidth}%` }}
-                                ></div>
-                            </div>
-                            <p className="min-req-note">
-                                * Minimum passing score for this test: <strong>{passMarks} marks</strong>
-                            </p>
-                        </div>
-
-                        {/* Footer Actions */}
-                        <div className="results-footer-btns no-print">
-                            <button onClick={() => navigate('/AfterLogin/MockTest', { state: { studentInfo } })} className="btn-retry">
-                                🔄 Retake Assessment
-                            </button>
-                            <button onClick={() => navigate('/AfterLogin/Students')} className="btn-dashboard">
-                                Go to Home
-                            </button>
-                            <button className="btn-review">
-                                <FaEye /> Review Detailed Answers
-                            </button>
                         </div>
                     </div>
                 </div>
 
-                <div className="print-footer-note only-print">
-                    <p>This is a system-generated result for InspireEdge School.</p>
-                </div>
             </div>
         </div>
     );
