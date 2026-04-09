@@ -103,7 +103,7 @@ const Sill = () => {
 
                 <form className="sill-body" onSubmit={handleSubmit}>
                     <div className="sill-field">
-                        <label>Student Full Name</label>
+                        <label>👤 STUDENT NAME</label>
                         <input
                             type="text"
                             placeholder="e.g. Panchal Janu"
@@ -114,7 +114,7 @@ const Sill = () => {
                         />
                     </div>
                     <div className="sill-field">
-                        <label>Student Admission ID</label>
+                        <label>🪪 STUDENT ID</label>
                         <input
                             type="text"
                             placeholder="Enter ID Number"
