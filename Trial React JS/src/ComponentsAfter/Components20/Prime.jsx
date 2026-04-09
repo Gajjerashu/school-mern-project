@@ -5,19 +5,12 @@ import "./Prime.css";
 
 const API_BASE_URL = "/api";
 
-const SUBJECT_COLORS = [
-    "#16a34a", "#0284c7", "#7c3aed", "#dc2626", "#d97706",
-    "#0891b2", "#be185d", "#65a30d", "#9333ea", "#ea580c"
-];
-
 const ICON_MAP = {
-    Mathematics: "🔢", Ganit: "🔢", English: "📖", Gujarati: "📖",
-    EVS: "🌿", Paryavaran: "🌿", Hindi: "🇮🇳", Science: "🔬",
-    Vigyan: "🔬", "Social Science": "🌍", "Samajik Vigyan": "🌍",
-    Art: "🎨", Kala: "🎨", Physics: "⚡", Bhautikshaastr: "⚡",
-    Chemistry: "🧪", Rasayanshaastr: "🧪", Biology: "🧬", Jivvigyan: "🧬",
-    Accountancy: "📊", "Hisabi Vidya": "📊", "Business Studies": "💼",
-    "Vanijya Vyavasaay": "💼", Economics: "📈", Arthashastr: "📈",
+    "Ganit": "📐", "Mathematics": "📐",
+    "Gujarati": "📖", "English": "📖",
+    "Vigyan": "🔬", "Science": "🔬",
+    "Samajik Vigyan": "🌍", "Social Science": "🌍",
+    "Hindi": "🇮🇳"
 };
 
 const Prime = () => {
@@ -50,7 +43,7 @@ const Prime = () => {
             try {
                 const params = {
                     standard: applyClass,
-                    medium: language || "English"
+                    medium: language || "Gujarati"
                 };
 
                 if (parseInt(applyClass) >= 11 && stream && stream !== "NA") {
@@ -69,7 +62,7 @@ const Prime = () => {
                 }
             } catch (err) {
                 if (!axios.isCancel(err)) {
-                    setError(err.response?.data?.message || "Server error. Please try again.");
+                    setError("Server error. Please try again.");
                 }
             } finally {
                 setLoading(false);
@@ -77,66 +70,41 @@ const Prime = () => {
         };
 
         fetchSyllabus();
-        return () => source.cancel("Operation canceled by the user.");
+        return () => source.cancel();
     }, [applyClass, language, stream, studentName]);
 
     if (!studentName || !applyClass) {
-        return (
-            <div className="prime-error-container">
-                <div className="prime-error-card">
-                    <h2>🚫 Access Denied</h2>
-                    <p>Please login from the Syllabus portal.</p>
-                    <button className="prime-back-btn" onClick={() => navigate("/AfterLogin/Syllabus")}>
-                        Go to Syllabus Portal
-                    </button>
-                </div>
-            </div>
-        );
+        return <div className="prime-error">Access Denied. Go back to Syllabus Portal.</div>;
     }
 
     return (
         <div className="prime-bg">
             <div className="prime-banner">
-                <div className="prime-banner-content">
-                    <h1>🎓 Higher Secondary School Syllabus</h1>
-                    <p>Standard {applyClass} — {stream || "General"} — {language} Medium</p>
-                    <div className="student-badge">
-                        👤 {studentName}
-                    </div>
-                </div>
+                <h1>📚 High School Syllabus</h1>
+                <p>Standard {applyClass} — Gujarati Medium</p>
+                <div className="student-badge">👤 {studentName}</div>
             </div>
 
             <div className="prime-container">
                 {loading ? (
-                    <div className="prime-loading">
-                        <div className="prime-spinner"></div>
-                        <p>Fetching your syllabus...</p>
-                    </div>
+                    <div className="loading">Loading syllabus...</div>
                 ) : error ? (
-                    <div className="prime-error-box">
+                    <div className="error-box">
                         <p>⚠️ {error}</p>
-                        <button className="prime-back-btn" onClick={() => navigate("/AfterLogin/Syllabus")}>
-                            ← Try Again
-                        </button>
+                        <button onClick={() => navigate("/AfterLogin/Syllabus")}>Try Again</button>
                     </div>
                 ) : (
                     <>
                         <div className="prime-grid">
                             {syllabusData?.subjects?.map((subj, idx) => (
-                                <div
-                                    className="prime-subject-card"
-                                    key={subj.subjectName}
-                                    style={{ "--accent": SUBJECT_COLORS[idx % SUBJECT_COLORS.length] }}
-                                >
+                                <div className="prime-subject-card" key={subj.subjectName}>
                                     <div className="prime-subject-header">
                                         <span className="subject-icon">{getIcon(subj.subjectName)}</span>
                                         <h3>{subj.subjectName}</h3>
                                     </div>
                                     <ul className="prime-topic-list">
                                         {subj.topics.map((topic, i) => (
-                                            <li key={i}>
-                                                <span className="bullet">•</span> {topic}
-                                            </li>
+                                            <li key={i}>• {topic}</li>
                                         ))}
                                     </ul>
                                 </div>
@@ -145,7 +113,7 @@ const Prime = () => {
 
                         <div className="prime-footer">
                             <button 
-                                className="prime-back-btn"
+                                className="back-btn"
                                 onClick={() => navigate("/AfterLogin/Syllabus")}
                             >
                                 ← Back to Syllabus Portal
