@@ -60,7 +60,8 @@ const FeedSchema = new mongoose.Schema({
         default: Date.now
     }
 }, {
-    timestamps: true
+    timestamps: true,
+    collection: 'feeds'
 });
 
 // Create indexes for better query performance
