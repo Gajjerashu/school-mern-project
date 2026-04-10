@@ -1,16 +1,12 @@
-// Routes/feed.js - Complete Feedback Routes
 const express = require('express');
 const router = express.Router();
 const Feed = require('../Models/Feed');
 
-// @route   POST /api/feedback
-// @desc    Submit feedback
-// @access  Public
-router.post('/feedback', async (req, res) => {
+// POST /api/feedback
+router.post('/', async (req, res) => {
     try {
         const { studentName, studentId, email, goodPoints, badPoints, comment } = req.body;
 
-        // Validation
         if (!studentName || !studentId || !email) {
             return res.status(400).json({
                 success: false,
@@ -32,7 +28,6 @@ router.post('/feedback', async (req, res) => {
             });
         }
 
-        // Validate email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             return res.status(400).json({
@@ -41,7 +36,6 @@ router.post('/feedback', async (req, res) => {
             });
         }
 
-        // Create new feedback entry
         const newFeedback = new Feed({
             studentName: studentName.trim(),
             studentId: studentId.trim(),
@@ -75,10 +69,8 @@ router.post('/feedback', async (req, res) => {
     }
 });
 
-// @route   GET /api/feedback
-// @desc    Get all feedbacks
-// @access  Public
-router.get('/feedback', async (req, res) => {
+// GET /api/feedback
+router.get('/', async (req, res) => {
     try {
         const feedbacks = await Feed.find().sort({ createdAt: -1 });
 
@@ -100,10 +92,46 @@ router.get('/feedback', async (req, res) => {
     }
 });
 
-// @route   GET /api/feedback/:id
-// @desc    Get single feedback by ID
-// @access  Public
-router.get('/feedback/:id', async (req, res) => {
+// GET /api/feedback/stats/summary
+// ⚠️ આ route /:id થી ઉપર રાખવો જ પડે
+router.get('/stats/summary', async (req, res) => {
+    try {
+        const totalFeedbacks = await Feed.countDocuments();
+        const feedbacks = await Feed.find();
+
+        const goodPointsFrequency = {};
+        const badPointsFrequency = {};
+
+        feedbacks.forEach(feedback => {
+            feedback.goodPoints.forEach(point => {
+                goodPointsFrequency[point] = (goodPointsFrequency[point] || 0) + 1;
+            });
+            feedback.badPoints.forEach(point => {
+                badPointsFrequency[point] = (badPointsFrequency[point] || 0) + 1;
+            });
+        });
+
+        res.status(200).json({
+            success: true,
+            data: {
+                totalFeedbacks,
+                goodPointsFrequency,
+                badPointsFrequency
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ Error fetching statistics:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error. Please try again later.',
+            error: error.message
+        });
+    }
+});
+
+// GET /api/feedback/:id
+router.get('/:id', async (req, res) => {
     try {
         const feedback = await Feed.findById(req.params.id);
 
@@ -129,10 +157,8 @@ router.get('/feedback/:id', async (req, res) => {
     }
 });
 
-// @route   DELETE /api/feedback/:id
-// @desc    Delete feedback by ID
-// @access  Private
-router.delete('/feedback/:id', async (req, res) => {
+// DELETE /api/feedback/:id
+router.delete('/:id', async (req, res) => {
     try {
         const feedback = await Feed.findById(req.params.id);
 
@@ -154,47 +180,6 @@ router.delete('/feedback/:id', async (req, res) => {
 
     } catch (error) {
         console.error('❌ Error deleting feedback:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Server error. Please try again later.',
-            error: error.message
-        });
-    }
-});
-
-// @route   GET /api/feedback/stats/summary
-// @desc    Get feedback statistics
-// @access  Public
-router.get('/feedback/stats/summary', async (req, res) => {
-    try {
-        const totalFeedbacks = await Feed.countDocuments();
-
-        const feedbacks = await Feed.find();
-
-        // Count good and bad points frequency
-        const goodPointsFrequency = {};
-        const badPointsFrequency = {};
-
-        feedbacks.forEach(feedback => {
-            feedback.goodPoints.forEach(point => {
-                goodPointsFrequency[point] = (goodPointsFrequency[point] || 0) + 1;
-            });
-            feedback.badPoints.forEach(point => {
-                badPointsFrequency[point] = (badPointsFrequency[point] || 0) + 1;
-            });
-        });
-
-        res.status(200).json({
-            success: true,
-            data: {
-                totalFeedbacks,
-                goodPointsFrequency,
-                badPointsFrequency
-            }
-        });
-
-    } catch (error) {
-        console.error('❌ Error fetching statistics:', error);
         res.status(500).json({
             success: false,
             message: 'Server error. Please try again later.',
