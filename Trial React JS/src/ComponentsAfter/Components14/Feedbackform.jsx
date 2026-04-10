@@ -145,7 +145,7 @@ const Feedbackform = () => {
                 comment: formData.comment || 'No additional comments'
             };
 
-            const response = await axios.post('https://school-backend-drm6.onrender.com/api/feedback', submitData);
+            const response = await axios.post('/api/feedback', submitData);  // ✅ Vercel updated
 
             if (response.data.success) {
                 setSuccess(true);
