@@ -16,7 +16,7 @@ export default function Slide() {
     const fetchFeedbacks = async () => {
         try {
             setLoading(true);
-            const response = await axios.post('https://school-backend-drm6.onrender.com/api/feedback', submitData);
+            const response = await axios.get('/api/feedback');  // ✅ Vercel updated
             
             if (response.data.success && Array.isArray(response.data.data)) {
                 setFeedbacks(response.data.data);
