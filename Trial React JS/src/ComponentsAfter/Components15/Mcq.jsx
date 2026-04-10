@@ -4,7 +4,7 @@ import axios from 'axios';
 import './Mcq.css';
 import { FaUser, FaIdCard, FaCheckCircle, FaTimesCircle, FaClock, FaTrophy, FaForward } from 'react-icons/fa';
 
-const API_BASE_URL = "/api";   // ✅ Only this changed for Vercel
+const API_BASE_URL = "/api";
 
 const PASS_MARKS = { 25: 12, 50: 23 };
 
@@ -24,6 +24,7 @@ const Mcq = () => {
     const [totalTime, setTotalTime] = useState(0);
     const [qTimer, setQTimer] = useState(30);
     const [resultData, setResultData] = useState(null);
+
     const questionsRef = useRef([]);
     const selectedRef = useRef({});
     const currentIdxRef = useRef(0);
@@ -147,6 +148,7 @@ const Mcq = () => {
                 std: studentInfo.applyClass,
                 medium: studentInfo.language
             });
+
             if (res.data.questions?.length > 0) {
                 const sliced = res.data.questions.slice(0, count);
                 submittedRef.current = false;
@@ -167,6 +169,7 @@ const Mcq = () => {
                 setLoginMsg({ type: 'error', text: 'No questions found for your class/medium.' });
             }
         } catch (err) {
+            console.error("Questions load error:", err);
             setLoginMsg({ type: 'error', text: 'Error loading questions. Please try again.' });
         } finally {
             setLoading(false);
@@ -226,7 +229,7 @@ const Mcq = () => {
         </div>
     );
 
-    // MODAL SCREEN
+    // MODAL SCREEN (Question Count)
     if (screen === 'modal') return (
         <div className="mcq-page">
             <div className="count-modal">
@@ -235,7 +238,7 @@ const Mcq = () => {
                         <span className="badge-avatar">👨‍🎓</span>
                         <div>
                             <h3>{studentInfo?.studentName}</h3>
-                            <p>Std: {studentInfo?.applyClass} &nbsp;|&nbsp; {studentInfo?.language}</p>
+                            <p>Std: {studentInfo?.applyClass} | {studentInfo?.language}</p>
                         </div>
                     </div>
                 </div>
@@ -246,14 +249,14 @@ const Mcq = () => {
                     <div className="count-card" onClick={() => !loading && handleStartExam(25)}>
                         <div className="count-num">25</div>
                         <div className="count-label">Questions</div>
-                        <div className="count-info">⏱ 25 min &nbsp;|&nbsp; Pass: 12/25</div>
+                        <div className="count-info">⏱ 25 min | Pass: 12/25</div>
                         <div className="count-btn">{loading ? 'Loading...' : 'Start →'}</div>
                     </div>
                     <div className="count-card featured" onClick={() => !loading && handleStartExam(50)}>
                         <div className="count-badge-tag">Recommended</div>
                         <div className="count-num">50</div>
                         <div className="count-label">Questions</div>
-                        <div className="count-info">⏱ 50 min &nbsp;|&nbsp; Pass: 23/50</div>
+                        <div className="count-info">⏱ 50 min | Pass: 23/50</div>
                         <div className="count-btn">{loading ? 'Loading...' : 'Start →'}</div>
                     </div>
                 </div>
@@ -273,10 +276,11 @@ const Mcq = () => {
             <div className="mcq-page">
                 <div className="result-card">
                     <div className={`result-header ${passed ? 'passed' : 'failed'}`}>
-                        {passed
-                            ? <><FaTrophy /><h1>Congratulations! 🎉</h1><p>You have Passed</p></>
-                            : <><FaTimesCircle /><h1>Not Qualified</h1><p>Better luck next time</p></>
-                        }
+                        {passed ? (
+                            <><FaTrophy /><h1>Congratulations! 🎉</h1><p>You have Passed</p></>
+                        ) : (
+                            <><FaTimesCircle /><h1>Not Qualified</h1><p>Better luck next time</p></>
+                        )}
                     </div>
                     <div className="result-body">
                         <div className="result-info">
@@ -316,9 +320,7 @@ const Mcq = () => {
                             <div className="percent-bar">
                                 <div className="percent-fill" style={{
                                     width: `${pct}%`,
-                                    background: passed
-                                        ? 'linear-gradient(90deg,#22c55e,#16a34a)'
-                                        : 'linear-gradient(90deg,#ef4444,#dc2626)'
+                                    background: passed ? 'linear-gradient(90deg,#22c55e,#16a34a)' : 'linear-gradient(90deg,#ef4444,#dc2626)'
                                 }} />
                             </div>
                         </div>
