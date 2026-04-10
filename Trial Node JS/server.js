@@ -19,11 +19,15 @@ const allowedOrigins = [
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
-    const isAllowed = allowedOrigins.some(allowed => 
+    const isAllowed = allowedOrigins.some(allowed =>
       typeof allowed === 'string' ? allowed === origin : allowed.test(origin)
     );
-    if (isAllowed) callback(null, true);
-    else callback(new Error(`CORS blocked: ${origin}`), false);
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      console.log(`❌ CORS Blocked: ${origin}`);
+      callback(new Error(`CORS blocked: ${origin}`), false);
+    }
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -37,7 +41,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // MongoDB
 mongoose.connect(MONGO_URI)
-  .then(() => console.log("✅ MongoDB Connected"))
+  .then(() => console.log("✅ MongoDB Connected Successfully"))
   .catch(err => {
     console.error("❌ MongoDB Error:", err);
     process.exit(1);
@@ -58,7 +62,7 @@ const feedbackRoutes = require('./Routes/feed');
 const mcqRoutes = require('./Routes/mcq');
 const syllabusDataRoutes = require('./Routes/syllabusData');
 
-// Routes - Order matters, specific first
+// Routes - Specific first, no overlapping prefixes
 app.use("/api/auth", signupRouter);
 app.use("/api/inquiries", inquiryRouter);
 app.use("/api/admin", adminRoutes);
@@ -69,19 +73,22 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/fee-management", feeManagementRoutes);
 app.use("/api/check", checkRoutes);
 app.use("/api/admission-dash", admissionShowRoutes);
-app.use('/api/feedback', feedbackRoutes);  
-app.use('/api/mocktest', mcqRoutes);      
+
+app.use('/api/feedback', feedbackRoutes);   // Correct prefix
+app.use('/api/mocktest', mcqRoutes);
 app.use('/api/syllabus-data', syllabusDataRoutes);
 
-// Base
+// Base Route
 app.get("/", (req, res) => res.json({ message: "InspireEdge School Server is running!" }));
 
-// Global Error
+// Global Error Handler
 app.use((err, req, res, next) => {
   console.error("❌ Global Error:", err.stack);
   res.status(500).json({ error: "Internal Server Error", details: err.message });
 });
 
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
 
-module.exports = app; // Optional for testing
+module.exports = app;
