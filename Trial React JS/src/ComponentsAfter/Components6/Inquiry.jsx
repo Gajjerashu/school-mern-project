@@ -1,25 +1,22 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios"; // Axios is more reliable for handling JSON
+import axios from "axios";
 import "./Inquiry.css";
 
 const MAX_MESSAGE_LENGTH = 500;
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const Inquiry = () => {
     const navigate = useNavigate();
-
     const [formData, setFormData] = useState({
         studentName: "",
         parentName: "",
         parentPhone: "",
         parentEmail: "",
         applyClass: "",
-        language: "", 
+        language: "",
         previousSchool: "",
         message: "",
     });
-
     const [submitted, setSubmitted] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState({});
@@ -37,37 +34,34 @@ const Inquiry = () => {
         const e = {};
         if (!formData.studentName.trim()) e.studentName = "Student name is required.";
         if (!formData.parentName.trim()) e.parentName = "Parent name is required.";
-        
+       
         if (!formData.parentPhone.trim()) {
             e.parentPhone = "Parent phone is required.";
         } else if (!/^\d{10}$/.test(formData.parentPhone)) {
             e.parentPhone = "Please enter a valid 10-digit phone number.";
         }
-
         if (!formData.parentEmail.trim()) {
             e.parentEmail = "Parent email is required.";
         } else if (!/^\S+@\S+\.\S+$/.test(formData.parentEmail)) {
             e.parentEmail = "Enter a valid email address.";
         }
-
         if (!formData.applyClass) e.applyClass = "Please select a standard.";
         if (!formData.language) e.language = "Please select medium.";
-        
+       
         if (formData.message.length > MAX_MESSAGE_LENGTH)
             e.message = `Limit exceeded: ${formData.message.length}/${MAX_MESSAGE_LENGTH}`;
-            
+           
         return e;
     };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        
+       
         // Restriction: Only numbers for Phone
         if (name === "parentPhone") {
             if (value !== "" && !/^\d+$/.test(value)) return;
             if (value.length > 10) return;
         }
-
         setFormData((p) => ({ ...p, [name]: value }));
         // Clear specific error on change
         if (errors[name]) setErrors((prev) => ({ ...prev, [name]: undefined }));
@@ -78,15 +72,14 @@ const Inquiry = () => {
         const validationErrors = validate();
         if (Object.keys(validationErrors).length) {
             setErrors(validationErrors);
-            window.scrollTo({ top: 100, behavior: 'smooth' }); // Scroll to see errors
+            window.scrollTo({ top: 100, behavior: 'smooth' });
             return;
         }
-
         setIsSubmitting(true);
         try {
-            const response = await axios.post(`${API_BASE_URL}/api/inquiries`, formData);
-            const data = response.data;
+            const response = await axios.post("/api/inquiries", formData);  // ✅ Only this changed for Vercel
 
+            const data = response.data;
             if (data.success || response.status === 201) {
                 // Save to sessionStorage for Admission flow
                 const inquiryData = {
@@ -98,7 +91,7 @@ const Inquiry = () => {
                     language: formData.language,
                 };
                 sessionStorage.setItem('inquiryData', JSON.stringify(inquiryData));
-                
+               
                 setSubmitted(true);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
@@ -127,7 +120,6 @@ const Inquiry = () => {
                     <h2 className="inquiry-title">📋 Admission Inquiry</h2>
                     <p className="inquiry-subtitle">Start your journey with InspireEdge School</p>
                 </header>
-
                 {!submitted ? (
                     <form className="inquiry-form" onSubmit={handleSubmit} noValidate>
                         <div className="form-row">
@@ -142,7 +134,6 @@ const Inquiry = () => {
                                 />
                                 {errors.studentName && <small className="error-text">{errors.studentName}</small>}
                             </div>
-
                             <div className="form-group">
                                 <label>👨‍👩‍👦 PARENT/GUARDIAN NAME</label>
                                 <input
@@ -155,7 +146,6 @@ const Inquiry = () => {
                                 {errors.parentName && <small className="error-text">{errors.parentName}</small>}
                             </div>
                         </div>
-
                         <div className="form-row">
                             <div className="form-group">
                                 <label>📱 PHONE NUMBER</label>
@@ -169,7 +159,6 @@ const Inquiry = () => {
                                 />
                                 {errors.parentPhone && <small className="error-text">{errors.parentPhone}</small>}
                             </div>
-
                             <div className="form-group">
                                <label>📧 EMAIL ADDRESS</label>
                                 <input
@@ -183,7 +172,6 @@ const Inquiry = () => {
                                 {errors.parentEmail && <small className="error-text">{errors.parentEmail}</small>}
                             </div>
                         </div>
-
                         <div className="form-row">
                             <div className="form-group">
                                 <label>🎓 STANDARD/CLASS</label>
@@ -197,7 +185,6 @@ const Inquiry = () => {
                                 </select>
                                 {errors.applyClass && <small className="error-text">{errors.applyClass}</small>}
                             </div>
-
                             <div className="form-group">
                                 <label>🌐 MEDIUM OF INSTRUCTION</label>
                                 <select name="language" value={formData.language} onChange={handleChange} className={errors.language ? "input-error" : ""}>
@@ -208,7 +195,6 @@ const Inquiry = () => {
                                 {errors.language && <small className="error-text">{errors.language}</small>}
                             </div>
                         </div>
-
                         <div className="form-group">
                             <label>🏫 PREVIOUS SCHOOL NAME</label>
                             <input
@@ -218,7 +204,6 @@ const Inquiry = () => {
                                 onChange={handleChange}
                             />
                         </div>
-
                         <div className="form-group">
                             <label>💬 ADDITIONAL MESSAGE</label>
                             <textarea
@@ -236,9 +221,7 @@ const Inquiry = () => {
                                 </span>
                             </div>
                         </div>
-
                         {errors.submit && <div className="error-banner">❌ {errors.submit}</div>}
-
                         <button type="submit" className="inquiry-submit-btn" disabled={isSubmitting}>
                             {isSubmitting ? "Sending Inquiry..." : "Submit Inquiry Now"}
                         </button>
