@@ -1,4 +1,3 @@
-// Models/Feed.js - Complete Feedback MongoDB Schema
 const mongoose = require('mongoose');
 
 const FeedSchema = new mongoose.Schema({
@@ -61,10 +60,10 @@ const FeedSchema = new mongoose.Schema({
     }
 }, {
     timestamps: true,
-    collection: 'feeds'
+    collection: 'feeds'   // ← Force exact collection name
 });
 
-// Create indexes for better query performance
+// Indexes
 FeedSchema.index({ createdAt: -1 });
 FeedSchema.index({ studentId: 1 });
 FeedSchema.index({ email: 1 });
