@@ -69,8 +69,8 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/fee-management", feeManagementRoutes);
 app.use("/api/check", checkRoutes);
 app.use("/api/admission-dash", admissionShowRoutes);
-app.use('/api/feedback', feedbackRoutes);   // Changed from /api to /api/feedback to avoid conflict
-app.use('/api/mocktest', mcqRoutes);        // ← MUST be here
+app.use('/api/feedback', feedbackRoutes);  
+app.use('/api/mocktest', mcqRoutes);      
 app.use('/api/syllabus-data', syllabusDataRoutes);
 
 // Base
