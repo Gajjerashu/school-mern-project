@@ -4,13 +4,13 @@ import axios from 'axios';
 import './Mcq.css';
 import { FaUser, FaIdCard, FaCheckCircle, FaTimesCircle, FaClock, FaTrophy, FaForward } from 'react-icons/fa';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://school-backend-drm6.onrender.com';
+const API_BASE_URL = "/api";   // ✅ Only this changed for Vercel
+
 const PASS_MARKS = { 25: 12, 50: 23 };
 
 const Mcq = () => {
     const location = useLocation();
     const navigate = useNavigate();
-
     const [screen, setScreen] = useState('login');
     const [loginData, setLoginData] = useState({ studentName: '', studentId: '' });
     const [studentInfo, setStudentInfo] = useState(null);
@@ -24,7 +24,6 @@ const Mcq = () => {
     const [totalTime, setTotalTime] = useState(0);
     const [qTimer, setQTimer] = useState(30);
     const [resultData, setResultData] = useState(null);
-
     const questionsRef = useRef([]);
     const selectedRef = useRef({});
     const currentIdxRef = useRef(0);
@@ -34,7 +33,7 @@ const Mcq = () => {
     const questionCountRef = useRef(50);
     const totalTimeRef = useRef(0);
 
-    // ✅ Reattempt support
+    // Reattempt support
     useEffect(() => {
         if (location.state?.studentInfo) {
             const studentData = location.state.studentInfo;
@@ -55,7 +54,7 @@ const Mcq = () => {
     useEffect(() => { questionCountRef.current = questionCount; }, [questionCount]);
     useEffect(() => { totalTimeRef.current = totalTime; }, [totalTime]);
 
-    // ── Total exam timer ──
+    // Total exam timer
     useEffect(() => {
         if (screen !== 'exam') return;
         const t = setInterval(() => {
@@ -67,7 +66,7 @@ const Mcq = () => {
         return () => clearInterval(t);
     }, [screen]);
 
-    // ── Per-question 30s timer ──
+    // Per-question 30s timer
     useEffect(() => {
         if (screen !== 'exam') return;
         clearInterval(qTimerIntervalRef.current);
@@ -92,19 +91,16 @@ const Mcq = () => {
         if (submittedRef.current) return;
         submittedRef.current = true;
         clearInterval(qTimerIntervalRef.current);
-
         const qs = questionsRef.current;
         const ans = selectedRef.current;
         const info = studentInfoRef.current;
         const qCount = questionCountRef.current;
         const tLeft = totalTimeRef.current;
-
         const correct = qs.filter(q => ans[q.id] !== undefined && ans[q.id] === q.correctAnswer).length;
         const wrong = qs.filter(q => ans[q.id] !== undefined && ans[q.id] !== q.correctAnswer).length;
         const skipped = qs.filter(q => ans[q.id] === undefined).length;
         const pct = qs.length > 0 ? (correct / qs.length) * 100 : 0;
         const passed = correct >= (PASS_MARKS[qCount] || 23);
-
         const payload = {
             studentId: (info.studentId || '').trim(),
             studentName: (info.studentName || '').trim(),
@@ -118,13 +114,11 @@ const Mcq = () => {
             passed,
             timeTaken: parseInt(qs.length * 60 - tLeft) || 0
         };
-
         try {
-            await axios.post(`${API_BASE_URL}/api/mocktest/submit`, payload);
+            await axios.post(`${API_BASE_URL}/mocktest/submit`, payload);
         } catch (err) {
             console.error("❌ Failed to save result:", err);
         }
-
         setResultData({ correct, wrong, skipped, pct, passed, total: qs.length, qCount });
         setScreen('result');
     }, []);
@@ -134,7 +128,7 @@ const Mcq = () => {
         setLoading(true);
         setLoginMsg({ type: '', text: '' });
         try {
-            const res = await axios.post(`${API_BASE_URL}/api/mocktest/verify`, loginData);
+            const res = await axios.post(`${API_BASE_URL}/mocktest/verify`, loginData);
             setStudentInfo(res.data.student);
             studentInfoRef.current = res.data.student;
             setScreen('modal');
@@ -149,11 +143,10 @@ const Mcq = () => {
         setLoading(true);
         setLoginMsg({ type: '', text: '' });
         try {
-            const res = await axios.post(`${API_BASE_URL}/api/mocktest/questions`, {
+            const res = await axios.post(`${API_BASE_URL}/mocktest/questions`, {
                 std: studentInfo.applyClass,
                 medium: studentInfo.language
             });
-
             if (res.data.questions?.length > 0) {
                 const sliced = res.data.questions.slice(0, count);
                 submittedRef.current = false;
@@ -162,7 +155,6 @@ const Mcq = () => {
                 currentIdxRef.current = 0;
                 questionCountRef.current = count;
                 totalTimeRef.current = count * 60;
-
                 setQuestions(sliced);
                 setQuestionCount(count);
                 setSelectedAnswers({});
@@ -196,9 +188,7 @@ const Mcq = () => {
 
     const fmt = s => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
 
-    // ══════════════════════════════
     // LOGIN SCREEN
-    // ══════════════════════════════
     if (screen === 'login') return (
         <div className="mcq-page">
             <div className="login-card">
@@ -236,9 +226,7 @@ const Mcq = () => {
         </div>
     );
 
-    // ══════════════════════════════
     // MODAL SCREEN
-    // ══════════════════════════════
     if (screen === 'modal') return (
         <div className="mcq-page">
             <div className="count-modal">
@@ -278,9 +266,7 @@ const Mcq = () => {
         </div>
     );
 
-    // ══════════════════════════════
     // RESULT SCREEN
-    // ══════════════════════════════
     if (screen === 'result' && resultData) {
         const { correct, wrong, skipped, pct, passed, total, qCount } = resultData;
         return (
@@ -351,9 +337,7 @@ const Mcq = () => {
         );
     }
 
-    // ══════════════════════════════
     // EXAM SCREEN
-    // ══════════════════════════════
     if (screen !== 'exam' || questions.length === 0 || currentIdx >= questions.length) {
         return (
             <div className="mcq-page">
@@ -390,7 +374,6 @@ const Mcq = () => {
                     <span>{fmt(totalTime)}</span>
                 </div>
             </div>
-
             <div className="exam-content">
                 <div className="question-panel">
                     <div className="q-header">
@@ -416,7 +399,6 @@ const Mcq = () => {
                         ))}
                     </div>
                 </div>
-
                 <div className="stats-panel">
                     <div className="stats-grid">
                         <div className="stat-box">
